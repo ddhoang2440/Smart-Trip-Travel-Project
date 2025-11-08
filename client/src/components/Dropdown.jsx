@@ -27,7 +27,7 @@ const Dropdown = ({ showDropdown, setShowDropdown, logout }) => {
             onClick={() => setShowDropdown(false)}
           />
           <div className="absolute right-0 z-50">
-            <div className="dropdown-menu bg-neutral-700 rounded-b-xl px-4 pb-4 w-[13vw] flex flex-col gap-2 transition-all">
+            <div className="dropdown-menu bg-neutral-700 rounded-b-xl px-4 pb-4 w-[30vw] lg:w-[10vw] flex flex-col gap-2 transition-all">
               <div
                 className="dropdown-item border-gray-500 border-b pb-2 pt-3 active:scale-95 hover:scale-95 group"
                 onClick={() => setShowDropdown(false)}
@@ -73,10 +73,12 @@ const Dropdown = ({ showDropdown, setShowDropdown, logout }) => {
               >
                 <button className="flex items-center flex-1 cursor-pointer">
                   <IconHomeDollar />
-                  <span className="text-sm px-1 flex-1">My Business</span>
-                  <span className="text-xs text-gray-500 group-hover:text-white">
-                    <IconChevronCompactRight />
-                  </span>
+                 <div className="flex flex-row justify-between items-center">
+                   <span className="text-sm px-1 flex-1">My Business</span>
+                   <span className="text-xs text-gray-500 group-hover:text-white">
+                     <IconChevronCompactRight />
+                   </span>
+                 </div>
                 </button>
               </div>
               <div className="dropdown-divider"></div>

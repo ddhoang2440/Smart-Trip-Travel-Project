@@ -82,7 +82,7 @@ const Navbar = () => {
           ) : (
             <div className="relative" onClick={(e) => e.stopPropagation()}>
               <button
-                className={` w-[13vw] flex items-center gap-2 bg-neutral-700 p-2 active:scale-95 cursor-pointer transition-all
+                className={` lg:w-[8vw] w-[30vw] flex items-center gap-2 bg-transparent p-2 active:scale-95 cursor-pointer transition-all
     ${showDropdown ? "rounded-t-2xl border-gray-500 border-b" : "rounded-2xl"}`}
                 onClick={() => setShowDropdown(!showDropdown)}
               >
@@ -101,6 +101,7 @@ const Navbar = () => {
               />
             </div>
           )}
+          <IconMenu3 className="lg:hidden block" />
         </div>
       </div>
     </>
