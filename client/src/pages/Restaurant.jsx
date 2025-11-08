@@ -6,6 +6,8 @@ import {
   IconSearch,
   IconStar,
   IconStarFilled,
+  IconThumbDown,
+  IconThumbUp,
   IconWifi,
 } from "@tabler/icons-react";
 import React, { useEffect, useRef, useState } from "react";
@@ -13,20 +15,23 @@ import Title from "../components/Title";
 import CardFood from "../components/CardFood";
 import Footer from "../components/Footer";
 
-import {Restaurants } from "../assets/assets";
+import { Restaurants } from "../assets/assets";
 import Menu from "../components/Menu";
 const rt = Restaurants.restaurant;
 
 const Restaurant = () => {
+  const [value, setValue] = useState(0);
+  const [isFocused, setIsFocused] = useState(false);
+  const [showReply, setShowReply] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  let formatted = useRef("");
 
-
-  const [value, setValue]  = useState(0)
-  let formatted = useRef('')
-
-  useEffect(()=>{
-    
-       formatted.current = value.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
-  ,[value])
+  useEffect(() => {
+    formatted.current = value.toLocaleString("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    });
+  }, [value]);
 
   return (
     <div>
@@ -60,7 +65,9 @@ const Restaurant = () => {
               <IconMapPin />
               <p>{rt.details.address}</p>
             </span>
-             <label className="label">Add to Wishlist <IconHeart className="hover:cursor-pointer" /></label>
+            <label className="label">
+              Add to Wishlist <IconHeart className="hover:cursor-pointer" />
+            </label>
           </div>
           <div className="flex flex-col items-center gap-4">
             {!rt.details.opening_hours.currently_open ? (
@@ -76,7 +83,6 @@ const Restaurant = () => {
               Open: {rt.details.opening_hours.from} -{" "}
               {rt.details.opening_hours.to}
             </p>
-           
           </div>
         </div>
 
@@ -147,7 +153,7 @@ const Restaurant = () => {
         />
         <div className="flex flex-row justify-between relative">
           <Menu data={rt.details.menu} />
-          <div className="flex flex-col gap-4  py-[2vh] mt-[6vh] sticky top-[16%] l-0  w-[16vw] rounded-lg px-[1.5vw] h-fit">
+          <div className="flex flex-col gap-4  py-[2vh] mt-[6vh] top-[16%] l-0  w-[16vw] rounded-lg px-[1.5vw] h-fit border">
             <h1 className="text-3xl font-bold text-accent py-2 border-b border-gray-300/60">
               Filter
             </h1>
@@ -203,33 +209,116 @@ const Restaurant = () => {
         </div>
       </div>
       <div className="px-[12vw] pb-[8vh] pt-[4vh] flex flex-col gap-4">
-        <h1 className="text-4xl font-bold font-playfair">View customer Commnent</h1>
+        <h1 className="text-4xl font-bold font-playfair">
+          View customer Commnent
+        </h1>
         <p>Comment Count</p>
-        <div className="flex flex-row gap-2 items-center" >
-            <img className="w-[3vw] h-[3vw] rounded-full" src="/pizza.jpg" alt="" />
-            <input placeholder="add a comment ..." className="focus:border-black focus:border-b-2 focus:outline-0  text-lg transition-all duration-100 w-full px-4 py-2"></input>
-        </div >
-        <div className="flex justify-end gap-4">
-          <button className="btn btn-ghost p">Cancle</button>
-          <button  className="btn btn-primary rounded-lg p">Comment</button>
+        <div className="flex flex-row gap-2 items-center">
+          <img
+            className="w-[3vw] h-[3vw] rounded-full"
+            src="/pizza.jpg"
+            alt=""
+          />
+          <input
+            onFocus={() => setIsFocused(true)}
+            placeholder="Add a comment ..."
+            className="focus:border-black focus:border-b-2 focus:outline-0  text-lg transition-all duration-100 w-full px-4 py-2"
+          ></input>
         </div>
-<div className="flex px-[2vw] flex-col gap-8 mt-[4vh]">
-          {
-            Array(3).fill(1).map(() => {
-              return(
+        {isFocused && (
+          <div className="flex justify-end gap-4 ">
+            <button
+              onClick={() => setIsFocused(false)}
+              className="px-3 py-1 rounded-lg hover:bg-gray-200 transition"
+            >
+              Cancel
+            </button>
+            <button className="btn btn-primary rounded-lg p">Comment</button>
+          </div>
+        )}
+        <div className="flex px-[2vw] flex-col gap-8 mt-[4vh]">
+          {Array(3)
+            .fill(1)
+            .map(() => {
+              return (
                 <>
-                <div className="flex flex-row gap-4 ">
-                  <img className="w-[3vw] h-[3vw] rounded-full" src="/pizza.jpg" alt="" />
-                  <div className="flex flex-col gap-1">
-                    <p>@name</p>
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias corrupti dolore modi est quidem ad, autem </p>
+                  <div className="flex flex-row gap-4 ">
+                    <img
+                      className="w-[3vw] h-[3vw] rounded-full"
+                      src="/pizza.jpg"
+                      alt=""
+                    />
+                    <div className="flex flex-col gap-1">
+                      <p className="bg-">@name</p>
+                      <p
+                        className={`text-gray-800 transition-all ${
+                          isExpanded ? "line-clamp-none" : "line-clamp-2"
+                        }`}
+                      >
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                        Molestias corrupti dolore modi est quidem ad, autem
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                        At, velit dignissimos totam enim sint quidem ad eveniet
+                        praesentium? Alias, fugit? Lorem ipsum dolor sit amet
+                        consectetur adipisicing elit. Ex, temporibus?{" "}
+                      </p>
+                      <button
+                        onClick={() => setIsExpanded(!isExpanded)}
+                        className="mt-1 flex text-gray-500 hover:underline font-medium"
+                      >
+                        {isExpanded ? "Thu gọn" : "Đọc thêm"}
+                      </button>
+                      <div className="flex gap-4 items-center">
+                        <button className="flex gap-1 items-center">
+                          <IconThumbUp />
+                          <span> 12</span>
+                        </button>
+                        <button>
+                          <IconThumbDown />
+                        </button>
+                        <button
+                          onClick={() => setShowReply(!showReply)}
+                          className="py-2 px-3 rounded-full hover:bg-gray-300 transition"
+                        >
+                          Reply
+                        </button>
+                      </div>
+                      {showReply && (
+                        <div className="mt-2 flex flex-col gap-2">
+                          <div className="flex flex-row gap-2 items-center">
+                            <img
+                              className="w-[3vw] h-[3vw] rounded-full"
+                              src="/pizza.jpg"
+                              alt=""
+                            />
+                            <input
+                              placeholder="Add a comment..."
+                              className="focus:border-black focus:border-b-2 focus:outline-0 text-lg transition-all duration-100 w-full px-4 py-2"
+                            />
+                          </div>
+
+                          <div className="flex justify-end gap-4">
+                            <button
+                              onClick={() => setShowReply(false)}
+                              className="px-3 py-1 rounded-lg hover:bg-gray-200 transition"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              onMouseOver={() => (this.style.color = "red")}
+                              className="btn btn-primary rounded-lg p"
+                            >
+                              Comment
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
                 </>
-              )
-            })
-          }
-</div>
+              );
+            })}
+        </div>
       </div>
       <Footer />
     </div>

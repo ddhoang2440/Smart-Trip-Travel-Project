@@ -13,7 +13,8 @@ const Menu = ({ data }) => {
               </figure>
               <div className="card-body gap-1 lg:gap-2">
                 <h2 className="font-bold text-lg overflow-hidden text-ellipsis whitespace-nowrap">
- Dish: {items.food_name}</h2>
+                  Dish: {items.food_name}
+                </h2>
                 <p className="text-sm">Price: {items.price}</p>
 
                 <p>Allergy: {items.allergy_info}</p>
@@ -23,7 +24,13 @@ const Menu = ({ data }) => {
                       .fill(1)
                       .map((data, idx) => {
                         return (
-                          <>{idx > 3 ? <IconStar color="orange" /> : <IconStarFilled color="orange" />}</>
+                          <>
+                            {idx > 3 ? (
+                              <IconStar color="orange" />
+                            ) : (
+                              <IconStarFilled color="orange" />
+                            )}
+                          </>
                         );
                       })}
                   </div>{" "}

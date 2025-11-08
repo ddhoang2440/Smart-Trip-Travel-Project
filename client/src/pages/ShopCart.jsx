@@ -1,5 +1,5 @@
 import {
-    IconCheckbox,
+  IconCheckbox,
   IconMinus,
   IconPlus,
   IconStar,
@@ -14,11 +14,11 @@ import { CheckOut } from "../components/CheckOut";
 const ShopCart = () => {
   const rt = Restaurants.restaurant;
 
-    const [check , setCheck] = useState(false);
+  const [check, setCheck] = useState(false);
 
   return (
     <>
-    <CheckOut check={check} setCheck={setCheck} />
+      <CheckOut check={check} setCheck={setCheck} />
       <div className="py-[18vh] px-[10vw]">
         <h1 className="font-bold font-playfair text-5xl">Shopping Cart</h1>
         <p className="text-gray-600/80 max-w-[30vw]">
@@ -31,7 +31,7 @@ const ShopCart = () => {
             .map((data, idx) => {
               return (
                 <>
-                  {idx === 0 && (
+                  {/* {idx === 0 && (
                     <div className="flex gap-2 items-center w-full border-b border-gray-600/70 px-4">
                       <h1 className="w-[24vw] text-left">Product</h1>
                       <h1 className="w-[12vw] text-center">Price</h1>
@@ -86,6 +86,61 @@ const ShopCart = () => {
                     <div className="flex items-center w-[8vw] justify-center ">
                       <IconX className="p" />
                     </div>
+                  </div> */}
+                  {idx === 0 && (
+                    <div className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-4 w-full border-b border-gray-600/70 px-4 py-2 items-center">
+                      <h1 className="text-left">Product</h1>
+                      <h1 className="text-center w-[10vw]">Price</h1>
+                      <h1 className="text-center w-[10vw]">Quantity</h1>
+                      <h1 className="text-center w-[10vw]">Total</h1>
+                      <h1 className="text-center w-[8vw]">Remove</h1>
+                    </div>
+                  )}
+                  <div className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-4 w-full border-b border-gray-500/40 py-4 px-4 items-center">
+                    <div className="flex gap-4 items-center min-w-0">
+                      {" "}
+                      <img
+                        className="w-[10vw] h-[7vw] object-cover rounded-lg flex-shrink-0"
+                        src="/pizza.jpg"
+                        alt=""
+                      />
+                      <div className="flex flex-col gap-1 py-2 min-w-0 flex-1">
+                        <p className="text-lg font-semibold truncate">
+                          {rt.details.menu[0].food_name}
+                        </p>
+                        <p className="text-sm text-gray-600 truncate">
+                          {rt.details.address}
+                        </p>
+                        <p className="text-sm text-gray-600 truncate">
+                          {rt.name}
+                        </p>
+                        <div className="flex gap-1">
+                          {Array(5)
+                            .fill(1)
+                            .map((data, idx) => (
+                              <React.Fragment key={"cart" + idx}>
+                                {idx > 3 ? (
+                                  <IconStar color="orange" size={16} />
+                                ) : (
+                                  <IconStarFilled color="orange" size={16} />
+                                )}
+                              </React.Fragment>
+                            ))}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-lg text-center w-[10vw]">$35.00</div>
+                    <div className="flex justify-center w-[10vw]">
+                      <div className="bg-gray-300/40 flex items-center gap-4 py-2 px-4 rounded-full">
+                        <IconMinus className="cursor-pointer" size={16} />
+                        <p className="border-x-2 border-gray-300 px-3">1</p>
+                        <IconPlus className="cursor-pointer" size={16} />
+                      </div>
+                    </div>
+                    <div className="text-lg text-center w-[10vw]">$240.00</div>
+                    <div className="flex justify-center w-[8vw]">
+                      <IconX className="cursor-pointer" />
+                    </div>
                   </div>
                 </>
               );
@@ -94,8 +149,8 @@ const ShopCart = () => {
         <div className="flex flex-row gap-4 justify-between mt-[8vh] ">
           <div className="space-y-8 ">
             <h1 className="text-4xl font-semibold">Coupon Code</h1>
-            <div className="bg-white shadow-gray px-6 py-5 flex flex-col gap-6 h-[17vh] ">
-              <p className="max-w-[30vw] text-gray-900/70"> 
+            <div className="bg-white shadow-gray px-6 py-5 flex flex-col gap-6 h-[25vh] ">
+              <p className="max-w-[30vw] text-gray-900/70">
                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum
                 porro sit vitae in minima sequi dolorum esse nostrum iusto culpa
                 incidunt?
@@ -114,7 +169,7 @@ const ShopCart = () => {
           </div>
           <div className="w-[50%] space-y-8">
             <h1 className="text-4xl font-semibold ">Total Bill</h1>
-            <div className="bg-white shadow-gray flex flex-col justify-between gap-2 px-6 py-3 h-[17vh]">
+            <div className="bg-white shadow-gray flex flex-col justify-between gap-2 px-6 py-3 h-[25vh]">
               <div className="flex flex-row justify-between border-b-2 border-gray-500/20 pb-4">
                 <div className="flex flex-col gap-4">
                   <b className="text-lg">Cart Subtotal</b>
@@ -132,7 +187,12 @@ const ShopCart = () => {
             </div>
           </div>
         </div>
-        <button onClick={() => setCheck(true)} className="btn w-full bg-linear-to-r from-warning/30 to-warning/80 text-white mt-[6vh] btn-lg">Process to Checkout <IconCheckbox /></button>
+        <button
+          onClick={() => setCheck(true)}
+          className="btn w-full bg-linear-to-r from-warning/30 to-warning/80 text-white mt-[6vh] btn-lg"
+        >
+          Process to Checkout <IconCheckbox />
+        </button>
       </div>
       <Footer />
     </>

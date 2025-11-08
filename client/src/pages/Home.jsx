@@ -11,7 +11,6 @@ import {
   IconMichelinStar,
   IconPlayCard1Filled,
   IconSearch,
-
 } from "@tabler/icons-react";
 import React from "react";
 import Title from "../components/Title";
@@ -20,7 +19,6 @@ import CardFood from "../components/CardFood";
 import Footer from "../components/Footer";
 import AvatarCard from "../components/AvatarCard";
 import PhoneSearch from "../components/PhoneSearch";
-
 
 const Home = () => {
   return (
@@ -207,7 +205,8 @@ const Home = () => {
             <img className="w-3/5 rounded-box" src="/sandwitch.jpg" alt="" />
           </div>
           <div className="bg-white shadow-gray rounded-box w-full flex flex-row mb-[10vh]">
-            <img className="w-3/5 rounded-box" src="/sandwitch.jpg" alt="" />`1`
+            <img className="w-3/5 rounded-box" src="/sandwitch.jpg" alt="" />
+            `1`
             <div className="flex flex-col justify-between lg:px-16 px-4 py-8 lg:gap-0 gap-2 w-2/5 items-center">
               <div className="flex flex-col gap-5 lg:mt-16">
                 <p className="text-xl lg:text-5xl font-bold">

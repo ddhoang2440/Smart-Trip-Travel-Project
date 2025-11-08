@@ -1,51 +1,47 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Playfair:ital,opsz,wght@0,5..1200,300..900;1,5..1200,300..900&display=swap');
-
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Playfair:ital,opsz,wght@0,5..1200,300..900;1,5..1200,300..900&display=swap");
 
 @import "tailwindcss";
 @plugin 'tailwind-scrollbar';
 
 @plugin "daisyui";
 
-
-*{
-    font-family: "Outfit", sans-serif;
+* {
+  font-family: "Outfit", sans-serif;
 }
 
-.font-playfair{
-    font-family: "Playfair", serif;
+.font-playfair {
+  font-family: "Playfair", serif;
 }
 
-.p:hover{
-    cursor: pointer;
+.p:hover {
+  cursor: pointer;
 }
-.p-child *:hover{
-    cursor: pointer;
-}
-
-.show:focus *{
-    display: block;
+.p-child *:hover {
+  cursor: pointer;
 }
 
-.hide *{
-    display: none;
+.show:focus * {
+  display: block;
 }
 
-.shadow-gray{
+.hide * {
+  display: none;
+}
+
+.shadow-gray {
   box-shadow: 2px 2px 5px 2px lightgray;
 }
 
 .scrollbar-hide::-webkit-scrollbar {
-  display: none; 
-  opacity: 0;         
+  display: none;
+  opacity: 0;
 }
 
-
-fade-in{
-    animation: fade-in 0.5s ease-in;
+fade-in {
+  animation: fade-in 0.5s ease-in;
 }
 
-
-@keyframes fade-in{
+@keyframes fade-in {
   0% {
     opacity: 0;
   }
