@@ -1,5 +1,12 @@
-import { IconArrowForward, IconBowlChopsticks, IconBrandFacebook, IconBrandInstagram, IconBrandLinkedin, IconBrandX } from '@tabler/icons-react';
-import React from 'react'
+import {
+  IconArrowForward,
+  IconBowlChopsticks,
+  IconBrandFacebook,
+  IconBrandInstagram,
+  IconBrandLinkedin,
+  IconBrandX,
+} from "@tabler/icons-react";
+import React from "react";
 
 const Footer = () => {
   return (
@@ -53,9 +60,12 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a className="link link-hover" href="">
-                  Parner With Us
-                </a>
+                <button
+                  className="link link-hover"
+                  // onClick={()=>setisOP}
+                >
+                  Partner With Us
+                </button>
               </li>
               <li>
                 <a className="link link-hover" href="">
@@ -131,6 +141,6 @@ const Footer = () => {
       </div>
     </>
   );
-}
+};
 
-export default Footer
+export default Footer;

@@ -1,7 +1,10 @@
-import React from 'react'
-import { IconArrowBigLeftLinesFilled, IconArrowBigRightLinesFilled } from "@tabler/icons-react";
+import React from "react";
+import {
+  IconArrowBigLeftLinesFilled,
+  IconArrowBigRightLinesFilled,
+} from "@tabler/icons-react";
 
-export const CheckOut = ({check,setCheck}) => {
+export const CheckOut = ({ check, setCheck }) => {
   return (
     check && (
       <div
@@ -33,14 +36,16 @@ export const CheckOut = ({check,setCheck}) => {
           </div>
           <label className="label text-lg ">Address</label>
           <input type="text" className="input input-lg w-full" />
-          <div className='flex justify-between gap-4'>
-            <button className='flex gap-2 items-center justify-center shadow-xl transition-all duration-500 py-3 px-2 bg-gray-300/40 hover:bg-black/70 p w-1/2 text-center hover:text-white'>
+          <div className="flex justify-between gap-4">
+            <button className="flex gap-2 items-center justify-center shadow-xl transition-all duration-500 py-3 px-2 bg-gray-300/40 hover:bg-black/70 p w-1/2 text-center hover:text-white">
               <IconArrowBigLeftLinesFilled /> Back To Cart
             </button>
-            <button className='flex gap-2 items-center w-1/2 justify-center shadow-lg shadow-warning/40 bg-warning/70 text-black py-3 px-2 p hover:bg-warning transition-all duration-500 hover:text-white '>Proceed to Shipping <IconArrowBigRightLinesFilled /></button>
+            <button className="flex gap-2 items-center w-1/2 justify-center shadow-lg shadow-warning/40 bg-warning/70 text-black py-3 px-2 p hover:bg-warning transition-all duration-500 hover:text-white ">
+              Proceed to Shipping <IconArrowBigRightLinesFilled />
+            </button>
           </div>
         </form>
       </div>
     )
   );
-}
+};
