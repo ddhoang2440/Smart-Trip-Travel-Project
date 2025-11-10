@@ -11,7 +11,21 @@ import React from "react";
 const Footer = () => {
   return (
     <>
-      <div className="bg-neutral-800 text-white px-[10vw] py-[10vh]">
+      <div className="bg-neutral-800 text-white  px-[10vw] py-[4vh] lg:py-[10vh]">
+        <div className="flex flex-col gap-4 lg:hidden mb-[4vh]">
+          <div className="flex items-center gap-4 p-child">
+            <IconBowlChopsticks color="orange" size={56} />
+            <p className="text-xl">
+              Food<span className="text-warning">Tuck</span>
+            </p>
+          </div>
+          <div className="lg:hidden flex flex-row gap-2 px-[2vw]">
+            <IconBrandInstagram />
+            <IconBrandFacebook />
+            <IconBrandX />
+            <IconBrandLinkedin />
+          </div>
+        </div>
         <div className="  grid lg:grid-cols-5 grid-cols-3 gap-8 pb-[4vh] border-b border-white/50">
           <div className="lg:flex flex-col gap-4 hidden">
             <div className="flex items-center gap-4 p-child">
@@ -64,7 +78,7 @@ const Footer = () => {
                   className="link link-hover"
                   // onClick={()=>setisOP}
                 >
-                  Partner With Us
+                  Partner
                 </button>
               </li>
               <li>
@@ -92,11 +106,6 @@ const Footer = () => {
                   Privacy Policy
                 </a>
               </li>
-              <li>
-                <a className="link link-hover" href="">
-                  Cookie Policy
-                </a>
-              </li>
             </ul>
           </div>
           <div className="space-y-4">
@@ -114,20 +123,6 @@ const Footer = () => {
               <button className="btn btn-neutral">
                 <IconArrowForward />
               </button>
-            </div>
-          </div>
-          <div className="flex flex-col gap-4 lg:hidden ml-[25vw]">
-            <div className="flex items-center gap-4 p-child">
-              <IconBowlChopsticks color="orange" size={56} />
-              <p className="text-xl">
-                Food<span className="text-warning">Tuck</span>
-              </p>
-            </div>
-            <div className="lg:hidden flex flex-row gap-2">
-              <IconBrandInstagram />
-              <IconBrandFacebook />
-              <IconBrandX />
-              <IconBrandLinkedin />
             </div>
           </div>
         </div>

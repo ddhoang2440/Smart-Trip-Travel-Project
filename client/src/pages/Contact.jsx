@@ -1,11 +1,12 @@
 import React from "react";
 import Footer from "../components/Footer";
+import { IconFileDescription, IconMail, IconMessage, IconUser } from "@tabler/icons-react";
 
 const Contact = () => {
   return (
     <>
       <div
-        className="w-full h-screen flex flex-col items-center justify-end mb-4 "
+        className="w-full h-screen flex flex-col items-center justify-center mb-4 "
         style={{ backgroundColor: "#F9F9F7" }}
       >
         <h1 className="text-6xl font-playfair font-bold">Contact Us</h1>
@@ -21,7 +22,7 @@ const Contact = () => {
                 type="text"
                 placeholder="Name"
               />
-              <span className="text-xl">Name</span>
+              <span className="text-xl flex gap-1 items-center"><IconUser />Name</span>
             </label>
             <div>
               <label className="floating-label">
@@ -30,7 +31,7 @@ const Contact = () => {
                   type="email"
                   placeholder="Email"
                 />
-                <span>Email</span>
+                <span className="flex gap-1 items-center"><IconMail />Email</span>
               </label>
             </div>
           </div>
@@ -40,14 +41,14 @@ const Contact = () => {
               className="input input-lg border  w-full"
               placeholder="Subject"
             />
-            <span>Subject</span>
+            <span className="flex gap-1 items-center"><IconFileDescription />Subject</span>
           </label>
           <label className="floating-label">
             <textarea
               className="textarea textarea-lg textarea-info border border-black/20 w-full"
               placeholder="Write you message"
             ></textarea>
-            <span className="text-xl">Message</span>
+            <span className="text-xl flex gap-1 items-center"><IconMessage />Message</span>
           </label>
           <button className="btn btn-error rounded-full text-white">
             Send

@@ -145,14 +145,16 @@ const Home = () => {
               Decription="Discover delicious dishes by selecting your favorite food type."
               align="left"
             />
-            <button className="lg:flex hidden btn btn-lg  btn-warning text-white mr-[2vw] ">
+            <button className="lg:flex hidden btn btn-lg btn-warning text-white mr-[2vw] ">
               View All <IconArrowRight />
             </button>
           </div>
           <AvatarCard />
-          <button className="btn btn-wide lg:hidden flex btn-neutral text-white btn-lg">
-            View All
-          </button>
+        <div className="flex justify-center">
+            <button className="btn btn-wide lg:hidden flex btn-neutral text-white btn-lg">
+              View All
+            </button>
+        </div>
         </div>
         <div className="px-[14vw] py-[16vh] bg-linear-to-b from-white to-warning flex flex-col items-center justify-center gap-[8vh]">
           <h1 className="text-warning lg:text-6xl text-4xl font-bold ">
@@ -168,7 +170,7 @@ const Home = () => {
             </div>
             <div className="flex flex-col gap-4 items-center">
               <IconBellFilled size={108} color="orange" />
-              <b className="lg:text-2xl text-lg text-center">Choose Order</b>
+              <b className="lg:text-2xl text-lg text-center  max-w-[20vw] lg:max-w-[100vw]">Choose Order</b>
               <p className="max-w-[30vw] lg:max-w-[12vw] text-center text-white text-sm lg:text-xl">
                 Check over hundreds of menus to pick your favourite food
               </p>
@@ -182,16 +184,16 @@ const Home = () => {
             </div>
             <div className="flex flex-col gap-4 items-center">
               <IconChartDonutFilled size={108} color="orange" />
-              <b className="text-2xl">Enjoy Meal</b>
+              <b className="text-lg lg:text-2xl max-w-[20vw] lg:max-w-[100vw]  text-center">Enjoys Meal</b>
               <p className="max-w-[30vw] lg:max-w-[12vw] text-center text-white text-sm lg:text-xl">
                 Food is made and delivery directly to your home
               </p>
             </div>
           </div>
         </div>
-        <div className="lg:px-[14vw] px-[4vw] bg-yellow-700/10 py-[16vh] ">
-          <div className="bg-white shadow-gray rounded-box w-full flex flex-row mb-[10vh] max-h-[60vh]">
-            <div className="flex flex-col justify-between lg:px-16 px-4 py-8 lg:gap-0 gap-2 w-2/5 items-center">
+        <div className="lg:px-[14vw] px-[4vw] bg-yellow-700/10 py-[8vh] lg:py-[16vh] ">
+          <div className="bg-white shadow-gray rounded-box w-full flex flex-col lg:flex-row mb-[10vh] max-h-[60vh]">
+            <div className="lg:flex hidden flex-col justify-between lg:px-16 px-4 py-8 lg:gap-0 gap-2 lg:w-2/5 w-full  items-center">
               <div className="flex flex-col gap-5 lg:mt-16">
                 <p className="text-xl lg:text-5xl font-bold">
                   Món Tây:
@@ -206,16 +208,16 @@ const Home = () => {
                 PROCESS TO ORDER <IconArrowRightBar color="white" />
               </button>
             </div>
-            <img className="w-3/5 rounded-box" src="/sandwitch.jpg" alt="" />
+            <img className="lg:w-3/5 w-full rounded-box" src="/sandwitch.jpg" alt="" />
           </div>
           <div className="bg-white shadow-gray rounded-box w-full max-h-[60vh] flex flex-row mb-[10vh]">
             <img
-              className="w-3/5 rounded-box"
+              className="w-full lg:w-3/5 rounded-box"
               src="https://cdn.pixabay.com/photo/2020/09/26/02/08/banh-xeo-5602960_960_720.jpg"
               alt=""
             />
 
-            <div className="flex flex-col justify-between lg:px-16 px-4 py-8  lg:gap-0 gap-2 w-2/5 items-center">
+            <div className="hidden lg:flex flex-col justify-between lg:px-16 px-4 py-8  lg:gap-0 gap-2 w-2/5 items-center">
               <div className="flex flex-col gap-5 lg:mt-16">
                 <p className="text-xl lg:text-5xl font-bold">
                   {" "}
@@ -233,8 +235,8 @@ const Home = () => {
               </button>
             </div>
           </div>
-          <div className="bg-white shadow-gray rounded-box w-full max-h-[60vh] flex flex-row mb-[10vh]">
-            <div className="flex flex-col justify-between lg:px-16 px-4 py-8 lg:gap-0 gap-2 w-2/5 items-center">
+          <div className="bg-white shadow-gray rounded-box w-full max-h-[60vh] flex flex-row mb-[2vh] lg:mb-[10vh]">
+            <div className="hidden lg:flex flex-col justify-between lg:px-16 px-4 py-8 lg:gap-0 gap-2 w-2/5 items-center">
               <div className="flex flex-col gap-5 lg:mt-16">
                 <p className="text-xl lg:text-5xl font-bold">
                   {" "}
@@ -254,7 +256,7 @@ const Home = () => {
               </button>
             </div>
             <img
-              className="w-3/5 rounded-box"
+              className="w-full lg:w-3/5 rounded-box"
               src="https://mia.vn/media/uploads/blog-du-lich/bun-nuoc-leo-soc-trang-dam-da-huong-vi-am-thuc-tay-nam-bo-01-1664031706.jpeg"
               alt=""
             />

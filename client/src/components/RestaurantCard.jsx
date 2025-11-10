@@ -4,18 +4,18 @@ import { IconCurrency, IconCurrencyDollar, IconEyeDollar, IconHome, IconMapPin, 
 
 const RestaurantCard = ({ number }) => {
   return (
-    <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 py-[6vh] max-w-[64vw] px-[2vw]">
+    <div className="grid lg:grid-cols-2 grid-cols-1 gap-8  py-[4vh] lg:py-[6vh] lg:max-w-[64vw] px-[1vw] lg:px-[2vw]">
       {Array(number)
         .fill(1)
         .map(() => {
           return (
             <>
-              <div className="card card-side bg-base-100 shadow-gray">
-                <figure className="lg:w-[30vw] w-[34vw]">
+              <div className="card lg:card-side bg-base-100 shadow-gray">
+                <figure className="lg:w-[30vw] w-full">
                   <img src="/bg2.jpg" alt="Food" />
                 </figure>
                 <div className="card-body gap-1 lg:gap-2">
-                  <h2 className="card-title items-center flex">
+                  <h2 className="card-title items-center flex lg text-sm">
                     <IconHome />
                     {Restaurants.restaurant.name}
                   </h2>
@@ -43,7 +43,7 @@ const RestaurantCard = ({ number }) => {
                     data-tip={Restaurants.restaurant.details.address}
                   >
                     <p className="flex flex-row gap-2 px-1 items-center">
-                      <IconMapPin size={37} />
+                      <IconMapPin className="lg:size-[2vw] size-auto" />
                       {Restaurants.restaurant.details.address}
                     </p>
                   </div>

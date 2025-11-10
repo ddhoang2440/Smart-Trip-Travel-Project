@@ -3,7 +3,7 @@ import React from "react";
 
 const Menu = ({ data }) => {
   return (
-    <div className="grid lg:grid-cols-3 grid-cols-1 py-[6vh]  max-w-[60vw] px-[2vw] gap-6">
+    <div className="grid lg:grid-cols-3 grid-cols-1 py-[6vh] max-w-full  lg:max-w-[60vw] px-[2vw] gap-6">
       {data.map((items, idx) => {
         return (
           <React.Fragment key={idx + items.food_name}>
