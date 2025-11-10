@@ -12,7 +12,7 @@ import {
 } from "@tabler/icons-react";
 import React, { useEffect, useRef, useState } from "react";
 import Title from "../components/Title";
-import CardFood from "../components/RestaurantCard";
+import CardFood from "../components/CardFood";
 import Footer from "../components/Footer";
 
 import { Restaurants } from "../assets/assets";
@@ -39,7 +39,7 @@ const Restaurant = () => {
         <div className="flex flex-row justify-between">
           <div className="flex flex-col gap-3">
             <div className="flex items-end gap-4">
-              <h1 className="font-playfair font-bold  text-2xl lg:text-4xl">{rt.name}</h1>
+              <h1 className="font-playfair font-bold text-4xl">{rt.name}</h1>
               <p>{rt.type}</p>
               <p className="bg-orange-400 text-white px-2 py-1 rounded-xl">
                 20% OFF
@@ -61,7 +61,7 @@ const Restaurant = () => {
                 })}
               <p>200+ reviews</p>
             </div>
-            <span className="flex gap-2 lg-max-w-full max-w-[40vw]">
+            <span className="flex gap-2">
               <IconMapPin />
               <p>{rt.details.address}</p>
             </span>
@@ -145,7 +145,7 @@ const Restaurant = () => {
           </button>
         </div>
       </div>
-      <div className="lg:px-[10vw] px-[4vw] py-[12vh]">
+      <div className="px-[10vw] py-[12vh]">
         <Title
           Title="Menu"
           Decription={"Found my restaurant food here"}
@@ -153,17 +153,15 @@ const Restaurant = () => {
         />
         <div className="flex flex-row justify-between relative">
           <Menu data={rt.details.menu} />
-          <div className="flex flex-col gap-4  py-[2vh] mt-[6vh] top-[16%] l-0 w-[26vw]  lg:w-[16vw] h-fit border">
-            <h1 className="text-3xl font-bold text-accent py-2 border-b border-gray-300/60 px-4">
+          <div className="flex flex-col gap-4  py-[2vh] mt-[6vh] top-[16%] l-0  w-[16vw] rounded-lg px-[1.5vw] h-fit border">
+            <h1 className="text-3xl font-bold text-accent py-2 border-b border-gray-300/60">
               Filter
             </h1>
-        <div className="px-4">
-              <label className="input input-warning">
-                <IconSearch />
-                <input type="text" placeholder="Search" />
-              </label>
-        </div>
-            <div className="flex flex-col gap-4 border-b py-4  px-4">
+            <label className="input input-warning">
+              <IconSearch />
+              <input type="text" placeholder="Search Product" />
+            </label>
+            <div className="flex flex-col gap-4 border-b border-gray-300/60">
               <h1 className="text-xl">Price</h1>
               <input
                 type="range"
@@ -171,12 +169,12 @@ const Restaurant = () => {
                 max="1000000"
                 value={value}
                 className="range"
-                step="5000"
+                step="20000"
                 onChange={(e) => setValue(e.target.value)}
               />
               <p>{formatted.current}đ</p>
             </div>
-            <div className="flex flex-col gap-6 py-4 border-b px-4 ">
+            <div className="flex flex-col gap-6 py-2">
               <h1 className="text-xl">Category</h1>
               <div className="flex gap-2">
                 <input type="checkbox" className="checkbox checkbox-warning" />
@@ -187,7 +185,7 @@ const Restaurant = () => {
                 <p>Vegetarian Dishes</p>
               </div>
             </div>
-            <div className="flex flex-col gap-6 py-4 px-4">
+            <div className="flex flex-col gap-6 py-2">
               <h1 className="text-xl">Type of Food</h1>
               <div className="flex gap-2">
                 <input type="checkbox" className="checkbox checkbox-warning" />

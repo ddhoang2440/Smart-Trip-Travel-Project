@@ -1,47 +1,39 @@
 import React, { useState } from "react";
 import Footer from "../components/Footer";
+import CardFood from "../components/CardFood";
 import Menu from "../components/Menu";
 import { Restaurants } from "../assets/assets";
-import FoodFilter from "../components/FoodFilter";
-import RestaurantCard from "../components/RestaurantCard";
-import RestaurantFilter from "../components/RestaurantFilter";
 
 const Products = () => {
   const [stage, setStage] = useState(false);
 
   return (
     <>
-      <div className="lg:px-[10vw] px-[4vw] pt-[20vh] pb-[10vh]">
+      <div className="px-[10vw] pt-[20vh] pb-[10vh]">
         <h1 className="text-6xl font-bold font-playfair">Products</h1>
         <p className="text-xl text-gray-800/60">
           Find all luxury restaurant and food here
         </p>
-        <div className="flex flex-row justify-between w-screen lg:w-[80vw] gap-4">
-          <div className="flex flex-col gap-4 lg:w-[60vw] w-[90vw] py-[4vh]">
+        <div className="flex flex-row justify-between max-w-[80vw] w-[80vw] gap-4">
+          <div className="flex flex-col gap-4 w-[60vw] py-[4vh]">
             <div className="flex-row flex ">
               <button
-                className=" py-3 lg:w-[20%] w-[50vw] px-6 p transition-all duration-300 hover:bg-warning border-r border-gray-800/40 rounded-l-xl bg-gray-400/20"
+                className=" py-3 w-[20%] px-6 p transition-all duration-300 hover:bg-warning border-r border-gray-800/40 rounded-l-xl bg-gray-400/20"
                 onClick={() => setStage(false)}
               >
                 Restaurants
               </button>
               <button
-                className=" py-3 lg:w-[20%] w-[50vw] px-6 p transition-all duration-300 hover:bg-warning bg-gray-400/20 rounded-r-xl "
+                className=" py-3 w-[20%] px-6 p transition-all duration-300 hover:bg-warning bg-gray-400/20 rounded-r-xl "
                 onClick={() => setStage(true)}
               >
                 Foods
               </button>
             </div>
             {!stage ? (
-              <div className="flex justify-between lg:w-[80vw] w-[90vw] gap-[4vw] lg:gap-0">
-                <RestaurantCard number={12} />
-                <RestaurantFilter />
-              </div>
+              <CardFood number={12} />
             ) : (
-            <div className="flex lg:gap-0 gap-9 justify-between lg:w-[80vw] w-[90vw]">
-                <Menu data={Restaurants.restaurant.details.menu} />
-                <FoodFilter />
-            </div>
+              <Menu data={Restaurants.restaurant.details.menu} />
             )}
             {/* Pagination */}
             <div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">

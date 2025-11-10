@@ -1,12 +1,9 @@
 import {
   IconCheckbox,
-  IconHome,
-  IconMapPin,
   IconMinus,
   IconPlus,
   IconStar,
   IconStarFilled,
-  IconToolsKitchen2,
   IconX,
 } from "@tabler/icons-react";
 import React, { useState } from "react";
@@ -103,29 +100,21 @@ const ShopCart = () => {
                     <div className="flex gap-4 items-center min-w-0">
                       {" "}
                       <img
-                        className="w-[10vw] h-[7vw] object-cover rounded-lg shrink-0"
+                        className="w-[10vw] h-[7vw] object-cover rounded-lg flex-shrink-0"
                         src="/pizza.jpg"
                         alt=""
                       />
                       <div className="flex flex-col gap-1 py-2 min-w-0 flex-1">
-                        <p className="text-lg font-semibold truncate flex gap-1">
-                          <IconToolsKitchen2 />
+                        <p className="text-lg font-semibold truncate">
                           {rt.details.menu[0].food_name}
                         </p>
-                        <div className="flex items-center gap-1">
-                          <IconMapPin />
-                          <p className="text-sm text-gray-600 truncate">
-                            {rt.details.address}
-                          </p>
-                        </div>
-                        <div className="flex gap-1 items-center">
-                          <IconHome size={18} />
-                          <p className="text-sm text-gray-600 truncate">
-                            {rt.name}
-                          </p>
-                        </div>
-                        <div className="flex gap-1 items-center">
-                          <p>4.2 star</p>
+                        <p className="text-sm text-gray-600 truncate">
+                          {rt.details.address}
+                        </p>
+                        <p className="text-sm text-gray-600 truncate">
+                          {rt.name}
+                        </p>
+                        <div className="flex gap-1">
                           {Array(5)
                             .fill(1)
                             .map((data, idx) => (

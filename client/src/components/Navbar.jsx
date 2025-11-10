@@ -19,13 +19,12 @@ const Navbar = () => {
   const [search, setSearch] = useState(false);
   const [scroll, setScroll] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(true);
-  const [showDropdown, setShowDropdown] = useState(false);
 
   const location = useLocation();
 
   const logout = () => {
     setIsLoggedIn(false);
-    setShowDropdown(false);
+    // setShowDropdown(false);
     navigate("/");
   };
 
@@ -80,28 +79,12 @@ const Navbar = () => {
               Login
             </button>
           ) : (
-            <div className="relative" onClick={(e) => e.stopPropagation()}>
-              <button
-                className={` lg:w-[8vw] w-[30vw] flex items-center gap-2 bg-transparent p-2 active:scale-95 cursor-pointer transition-all
-    ${showDropdown ? "rounded-t-2xl border-gray-500 border-b" : "rounded-2xl"}`}
-                onClick={() => setShowDropdown(!showDropdown)}
-              >
-                <img
-                  src={"/pizza.jpg"}
-                  alt="Avatar"
-                  className="size-[2.25vw] rounded-full"
-                />
-                <span className=" flex-1">{"Lmao"}</span>
-                <span>▼</span>
-              </button>
-              <Dropdown
-                showDropdown={showDropdown}
-                setShowDropdown={setShowDropdown}
-                logout={logout}
-              />
-            </div>
+            <Dropdown
+              // showDropdown={showDropdown}
+              // setShowDropdown={setShowDropdown}
+              logout={logout}
+            />
           )}
-          <IconMenu3 className="lg:hidden block" />
         </div>
       </div>
     </>

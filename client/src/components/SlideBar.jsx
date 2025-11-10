@@ -12,7 +12,7 @@ const SlideBar = ({ isOpen, setIsOpen }) => {
       {/* {isOpen && ( */}
       <div
         className={`
-        fixed inset-0 bg-gray-800/30 z-50 flex justify-start
+        fixed inset-0 bg-gray-800/30 z-40 flex justify-start
         transition-opacity duration-300 ease-in-out
         ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}
       `}

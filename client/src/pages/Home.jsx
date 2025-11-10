@@ -15,11 +15,10 @@ import {
 import React from "react";
 import Title from "../components/Title";
 import Cards from "../components/Cards";
-import CardFood from "../components/RestaurantCard";
+import CardFood from "../components/CardFood";
 import Footer from "../components/Footer";
 import AvatarCard from "../components/AvatarCard";
 import PhoneSearch from "../components/PhoneSearch";
-import RestaurantCard from "../components/RestaurantCard";
 
 const Home = () => {
   return (
@@ -28,18 +27,18 @@ const Home = () => {
       <div
         className={`bg-cover w-full h-screen bg-[url(/bg2.jpg)] flex flex-col gap-4 bg-linear-to-b from-black/90 to-black/40`}
       >
-        <div className="lg:pt-[22vh] pt-[18vh] pb-[16vh] pl-[12vw] mt-[4vh] ">
-          <p className="text-[2vh] relative z-30 text-white bg-blue-400/40 rounded-xl px-4 w-fit p-2">
+        <div className="lg:pt-[22vh] pt-[18vh] pb-[16vh] pl-[12vw] ">
+          <p className="text-xl relative z-100 text-white bg-blue-400/40 rounded-xl px-4 w-fit p-2">
             The Ultimate Restaurants Experience !
           </p>
-          <h1 className="label relative z-30 font-ro font-playfair lg:text-[10vh] text-5xl max-w-[70vw] text-white lg:max-w-[50vw] text-wrap">
+          <h1 className="label relative z-100 font-ro font-playfair lg:text-8xl text-5xl max-w-[70vw] text-white lg:max-w-[50vw] text-wrap">
             Discover Your Perfect Restaurants and Foods
           </h1>
-          <p className="text-[2vh] relative z-30 text-white mt-[2vh] ml-2">
+          <p className="text-xl relative z-100 text-white mt-[2vh] ml-2">
             Nhanh chóng, tiện lợi - khám phá các món ăn gần bạn chỉ trong vài
             giây
           </p>
-          <div className="bg-white relative z-30 lg:flex hidden flex-row items-center w-fit py-6 px-12 rounded-2xl lg:gap-14 gap-8 mt-[4vh]">
+          <div className="bg-white relative z-100 lg:flex hidden flex-row items-center w-fit py-8 px-12 rounded-2xl lg:gap-14 gap-8 mt-[6vh]">
             <div className="flex flex-col gap-2">
               <div className="flex gap-1">
                 <IconMichelinStar />
@@ -114,9 +113,7 @@ const Home = () => {
             align="center"
             Decription="Discover one of the city's most talked-about restaurants — where every dish tells a story and every visit feels like a celebration. Known for its vibrant atmosphere and top-tier cuisine"
           />
-          <div className="flex justify-center">
-            <RestaurantCard number={4} />
-          </div>
+          <Cards />
           <div className="flex justify-center mt-[4vh]">
             <button className="btn btn-wide btn-error text-white btn-lg">
               View All
@@ -129,9 +126,7 @@ const Home = () => {
             Decription="Dive into the delicious world of Popular Food! From sizzling street snacks to iconic global dishes, discover what people around the world crave most"
             align="center"
           />
-          <div className="flex justify-center">
-            <CardFood number={4} />
-          </div>
+          <CardFood number={4} />
           <div className="flex justify-center mt-[4vh]">
             <button className="btn btn-wide btn-neutral text-white btn-lg">
               View All
@@ -190,16 +185,17 @@ const Home = () => {
           </div>
         </div>
         <div className="lg:px-[14vw] px-[4vw] bg-yellow-700/10 py-[16vh] ">
-          <div className="bg-white shadow-gray rounded-box w-full flex flex-row mb-[10vh] max-h-[60vh]">
+          <div className="bg-white shadow-gray rounded-box w-full flex flex-row mb-[10vh]">
             <div className="flex flex-col justify-between lg:px-16 px-4 py-8 lg:gap-0 gap-2 w-2/5 items-center">
               <div className="flex flex-col gap-5 lg:mt-16">
                 <p className="text-xl lg:text-5xl font-bold">
-                  Món Tây:
-                  <span className="text-warning"> Crispy Sanwiches</span>{" "}
+                  {" "}
+                  Best Deal{" "}
+                  <span className="text-warning">Crispy Sanwiches</span>{" "}
                 </p>
                 <p className="text-sm lg:text-xl text-neutral-400">
-                  Thưởng thức sandwich cỡ lớn, những lát cắt hoàn hảo cho từng
-                  chiếc bánh
+                  Enjoy the large size of sandwiches Complete perfect slice for
+                  sandwitches.
                 </p>
               </div>
               <button className="btn lg:btn-wide btn-sm btn-warning lg:btn-lg text-white">
@@ -208,24 +204,19 @@ const Home = () => {
             </div>
             <img className="w-3/5 rounded-box" src="/sandwitch.jpg" alt="" />
           </div>
-          <div className="bg-white shadow-gray rounded-box w-full max-h-[60vh] flex flex-row mb-[10vh]">
-            <img
-              className="w-3/5 rounded-box"
-              src="https://cdn.pixabay.com/photo/2020/09/26/02/08/banh-xeo-5602960_960_720.jpg"
-              alt=""
-            />
-
-            <div className="flex flex-col justify-between lg:px-16 px-4 py-8  lg:gap-0 gap-2 w-2/5 items-center">
+          <div className="bg-white shadow-gray rounded-box w-full flex flex-row mb-[10vh]">
+            <img className="w-3/5 rounded-box" src="/sandwitch.jpg" alt="" />
+            `1`
+            <div className="flex flex-col justify-between lg:px-16 px-4 py-8 lg:gap-0 gap-2 w-2/5 items-center">
               <div className="flex flex-col gap-5 lg:mt-16">
                 <p className="text-xl lg:text-5xl font-bold">
                   {" "}
-                  Đặc Biệt{" "}
-                  <span className="text-warning">Bánh Xèo Giòn Rụm</span>{" "}
+                  Best Deal{" "}
+                  <span className="text-warning">Crispy Sanwiches</span>{" "}
                 </p>
                 <p className="text-sm lg:text-xl text-neutral-400">
-                  Thưởng thức bánh xèo cỡ lớn, giòn tan từng miếng. Hoàn hảo từ
-                  lớp vỏ đến nhân đầy đặn – món ăn khiến bạn phải xuýt xoa từng
-                  lần cắn!
+                  Enjoy the large size of sandwiches Complete perfect slice for
+                  sandwitches.
                 </p>
               </div>
               <button className="btn lg:btn-wide btn-sm btn-warning lg:btn-lg text-white">
@@ -233,31 +224,24 @@ const Home = () => {
               </button>
             </div>
           </div>
-          <div className="bg-white shadow-gray rounded-box w-full max-h-[60vh] flex flex-row mb-[10vh]">
+          <div className="bg-white shadow-gray rounded-box w-full flex flex-row mb-[10vh]">
             <div className="flex flex-col justify-between lg:px-16 px-4 py-8 lg:gap-0 gap-2 w-2/5 items-center">
               <div className="flex flex-col gap-5 lg:mt-16">
                 <p className="text-xl lg:text-5xl font-bold">
                   {" "}
-                  Miền Tây{" "}
-                  <span className="text-warning">
-                    Bún Nước Lèo – Trọn Vị Miền Tây
-                  </span>{" "}
+                  Best Deal{" "}
+                  <span className="text-warning">Crispy Sanwiches</span>{" "}
                 </p>
                 <p className="text-sm lg:text-xl text-neutral-400">
-                  Tô bún nóng hổi, đậm đà hương vị đặc trưng. Sợi bún mềm mại
-                  hòa quyện cùng nước lèo thơm ngon – một trải nghiệm ẩm thực
-                  không thể bỏ qua!
+                  Enjoy the large size of sandwiches Complete perfect slice for
+                  sandwitches.
                 </p>
               </div>
               <button className="btn lg:btn-wide btn-sm btn-warning lg:btn-lg text-white">
                 PROCESS TO ORDER <IconArrowRightBar color="white" />
               </button>
             </div>
-            <img
-              className="w-3/5 rounded-box"
-              src="https://mia.vn/media/uploads/blog-du-lich/bun-nuoc-leo-soc-trang-dam-da-huong-vi-am-thuc-tay-nam-bo-01-1664031706.jpeg"
-              alt=""
-            />
+            <img className="w-3/5 rounded-box" src="/sandwitch.jpg" alt="" />
           </div>
         </div>
       </div>
