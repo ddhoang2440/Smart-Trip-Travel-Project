@@ -24,22 +24,22 @@ import RestaurantCard from "../components/RestaurantCard";
 const Home = () => {
   return (
     <>
-      <div className="absolute w-full h-screen bg-linear-to-r from-black/40 to-black/0"></div>
+      <div className="absolute w-full h-[78vh] lg:h-screen bg-linear-to-r from-black/40 to-black/0"></div>
       <div
-        className={`bg-cover w-full h-screen bg-[url(/bg2.jpg)] flex flex-col gap-4 bg-linear-to-b from-black/90 to-black/40`}
+        className={`bg-cover w-full h-[78vh]  lg:h-screen bg-[url(/bg2.jpg)] flex flex-col gap-4 bg-linear-to-b from-black/90 to-black/40`}
       >
         <div className="lg:pt-[22vh] pt-[18vh] pb-[16vh] pl-[12vw] mt-[4vh] ">
           <p className="text-[2vh] relative z-30 text-white bg-blue-400/40 rounded-xl px-4 w-fit p-2">
             The Ultimate Restaurants Experience !
           </p>
-          <h1 className="label relative z-30 font-ro font-playfair lg:text-[10vh] text-5xl max-w-[70vw] text-white lg:max-w-[50vw] text-wrap">
+          <h1 className="label relative z-30 font-ro font-playfair lg:text-[8vh] text-6xl max-w-[70vw] text-white lg:max-w-[50vw] text-wrap">
             Discover Your Perfect Restaurants and Foods
-          </h1>
+          </h1> 
           <p className="text-[2vh] relative z-30 text-white mt-[2vh] ml-2">
             Nhanh chóng, tiện lợi - khám phá các món ăn gần bạn chỉ trong vài
             giây
           </p>
-          <div className="bg-white relative z-30 lg:flex hidden flex-row items-center w-fit py-6 px-12 rounded-2xl lg:gap-14 gap-8 mt-[4vh]">
+          <div className="bg-white  relative z-30 lg:flex hidden flex-row items-center w-fit py-5 px-12 rounded-2xl lg:gap-14 gap-8 mt-[4vh]">
             <div className="flex flex-col gap-2">
               <div className="flex gap-1">
                 <IconMichelinStar />
@@ -104,7 +104,6 @@ const Home = () => {
               Search
             </button>
           </div>
-          <PhoneSearch />
         </div>
       </div>
       <div className="">

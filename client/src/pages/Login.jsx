@@ -319,17 +319,17 @@ const Login = () => {
 
   return (
     <>
-      <div className="pt-[13vh] pb-[10vh] px-[8vw] bg-[rgb(255,230,201)]">
-        <div className="w-full py-8 flex items-center justify-center bg-white px-8  rounded-2xl">
-          <div className="flex flex-row gap-18  ">
-            <div className="w-1/2 h-full">
+      <div className="pt-[16vh] lg:pt-[13vh] pb-[10vh] px-[8vw] bg-[rgb(255,230,201)]">
+        <div className="w-full py-8  flex items-center  lg:justify-between bg-white px-8  rounded-2xl">
+          <div className="flex flex-col lg:flex-row lg:gap-18 lg:w-auto w-full ">
+            <div className="hidden lg:block w-1/2 h-[74vh]">
               <img
-                className="object-cover rounded-2xl"
+                className="hidden lg:block object-cover w-[60vw] h-[74vh] rounded-2xl"
                 src="/loginpage2.jpeg"
                 alt=""
               />
             </div>
-            <div className="flex flex-col gap-4 px-16 py-4 w-[30vw] justify-center">
+            <div className=" flex flex-col gap-4 lg:px-16 py-4 lg:w-[32vw] justify-center">
               <div className="flex items-center gap-2">
                 <IconBowlChopsticks color="orange" size={56} />
                 <p className="text-xl">
