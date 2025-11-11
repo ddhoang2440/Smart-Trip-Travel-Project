@@ -24,9 +24,9 @@ import RestaurantCard from "../components/RestaurantCard";
 const Home = () => {
   return (
     <>
-      <div className="absolute w-full h-[78vh] lg:h-screen bg-linear-to-r from-black/40 to-black/0"></div>
+      <div className="absolute w-full h-screen bg-linear-to-r from-black/40 to-black/0"></div>
       <div
-        className={`bg-cover w-full h-[78vh]  lg:h-screen bg-[url(/bg2.jpg)] flex flex-col gap-4 bg-linear-to-b from-black/90 to-black/40`}
+        className={`bg-cover w-full h-screen bg-[url(/bg2.jpg)] flex flex-col gap-4 bg-linear-to-b from-black/90 to-black/40`}
       >
         <div className="lg:pt-[22vh] pt-[18vh] pb-[16vh] pl-[12vw] mt-[4vh] ">
           <p className="text-[2vh] relative z-30 text-white bg-blue-400/40 rounded-xl px-4 w-fit p-2">

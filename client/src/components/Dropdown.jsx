@@ -44,7 +44,7 @@ const Dropdown = ({ showDropdown, setShowDropdown, logout }) => {
                 className="dropdown-item border-gray-500 border-b py-2 hover:scale-95 group"
                 onClick={() => setShowDropdown(false)}
               >
-                <a href="/settings" className="flex gap-2">
+                <a href="/setting" className="flex gap-2">
                   <IconSettings />
                   <span className="text-sm flex-1">Settings</span>
                   <span className="text-xs text-gray-500 group-hover:text-white">

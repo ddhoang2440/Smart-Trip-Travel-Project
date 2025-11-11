@@ -35,7 +35,7 @@ const Navbar = () => {
         setScroll(true);
         return;
       }
-      setScroll(window.scrollY > 900);
+      setScroll(window.scrollY > 100);
     };
     handleScroll();
     window.addEventListener("scroll", handleScroll);

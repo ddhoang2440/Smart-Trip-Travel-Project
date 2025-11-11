@@ -12,7 +12,7 @@ const SearchBar = ({ search, setSearch }) => {
           >
             <label
               onClick={(e) => e.stopPropagation()}
-              className="input input-xl input-success w-[30vw]"
+              className="input input-xl input-success w-[80vw] lg:w-[30vw]"
             >
               <span className="label border-r-2 border-black/50">
                 <IconSearch />
