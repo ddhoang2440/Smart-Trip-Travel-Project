@@ -10,7 +10,7 @@ import {
 const AboutUs = () => {
   return (
     <>
-      <div className="py-[20vh]">
+      <div className="py-[6vh]">
         <div className="flex flex-col lg:flex-row px-[10vw] gap-6 h-screen items-center">
           <img
             src="/bg2.jpg"

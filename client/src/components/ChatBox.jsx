@@ -28,7 +28,7 @@ const ChatBox = () => {
                       <div className="flex-row flex gap-4 max-w-full mb-[2vh] ">
                         <IconRobot /> 
                         <div className="bg-[#FEEEB7] max-w-[74%] rounded-2xl py-2 px-4">
-                          <p className="font-bold pb-1">Duy ne</p>
+                          <p className="font-bold pb-1">Bot</p>
                           <p selectable className="max-w-full wrap-break-word">
                             Lorem ipsum dolor sit amet ccte weqwek
                           </p>
@@ -37,7 +37,7 @@ const ChatBox = () => {
                       </div>
                       <div className="flex flex-row justify-end mb-[2vh]  ">
                         <div className="bg-[#FFDCC4] flex flex-col p-4 rounded-2xl">
-                          <p className="pr-[2vw]">Hellu bro! hahahahahah</p>
+                          <p className="pr-[2vw]">Hellu bro!</p>
                           <div className="flex justify-end">
                             <p className="text-sm">10:38AM</p>
                           </div>
