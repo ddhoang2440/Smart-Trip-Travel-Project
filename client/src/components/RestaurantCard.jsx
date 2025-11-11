@@ -1,8 +1,10 @@
 import React from "react";
 import { Restaurants } from "../assets/assets";
 import { IconCurrency, IconCurrencyDollar, IconEyeDollar, IconHome, IconMapPin, IconStar, IconStarFilled } from "@tabler/icons-react";
+import { useNavigate } from "react-router-dom";
 
 const RestaurantCard = ({ number }) => {
+    const navigate = useNavigate();
   return (
     <div className="grid lg:grid-cols-2 grid-cols-1 gap-8  py-[4vh] lg:py-[6vh] lg:max-w-[64vw] px-[1vw] lg:px-[2vw]">
       {Array(number)
@@ -48,7 +50,7 @@ const RestaurantCard = ({ number }) => {
                     </p>
                   </div>
                   <div className="card-actions justify-end">
-                    <button className="btn btn-accent text-white lg:px-8">
+                    <button className="btn btn-accent text-white lg:px-8" onClick={() => navigate("/restaurant") }>
                       View More
                     </button>
                   </div>

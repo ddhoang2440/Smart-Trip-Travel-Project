@@ -3,9 +3,11 @@ import React, { useState } from 'react'
 
 const RestaurantFilter = () => {
      const [value,setValue] = useState(0);
+
+  
   return (
     <>
-      <div className="hidden lg:flex flex-col gap-4 sticky  py-[2vh] mt-[6vh] top-[16%] l-0 w-[30vw]  lg:w-[12vw] h-fit border">
+      <div className="hidden lg:flex flex-col gap-4 sticky  py-[2vh] mt-[6vh] top-[16%] l-0 w-[30vw]  lg:w-[14vw] h-fit border">
         <h1 className="text-3xl font-bold text-accent py-2 border-b border-gray-300/60 px-4">
           Filter
         </h1>

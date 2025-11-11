@@ -1,6 +1,7 @@
 import React from "react";
 import Footer from "../components/Footer";
 import { IconFileDescription, IconMail, IconMessage, IconUser } from "@tabler/icons-react";
+import ChatBox from "../components/ChatBox";
 
 const Contact = () => {
   return (
@@ -10,11 +11,11 @@ const Contact = () => {
         style={{ backgroundColor: "#F9F9F7" }}
       >
         <h1 className="text-6xl font-playfair font-bold">Contact Us</h1>
-        <p className="text-gray-600/80 text-lg max-w-[30vw] text-center">
+        <p className="text-gray-600/80 text-lg max-w-[80vw] lg:max-w-[30vw] text-center">
           We consider all the drives of changes give you the components you need
           to changeto create truly happens
         </p>
-        <form className="flex flex-col gap-6 bg-white shadow-gray py-12 px-8 rounded-xl w-[30vw] mt-[6vh]">
+        <form className="flex flex-col gap-6 bg-white shadow-gray py-12 px-8 rounded-xl w-[84vw] lg:w-[30vw] mt-[6vh]">
           <div className="flex gap-2">
             <label className="floating-label">
               <input
