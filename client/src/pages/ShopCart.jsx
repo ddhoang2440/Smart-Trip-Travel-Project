@@ -146,8 +146,8 @@ const ShopCart = () => {
               );
             })}
         </div>
-        <div className="flex flex-col lg:flex-row gap-16 lg:gap-4 justify-between mt-[8vh] ">
-          <div className="space-y-8 ">
+        <div className="flex flex-col  lg:flex-row gap-16 lg:gap-4 justify-between mt-[8vh] ">
+          <div className="space-y-8 w-[90vw]  lg:w-[45%]  ">
             <h1 className="text-4xl font-semibold">Coupon Code</h1>
             <div className="bg-white shadow-gray px-6 py-5 flex flex-col gap-6 h-[20vh] ">
               <p className="lg:max-w-[30vw] text-gray-900/70">

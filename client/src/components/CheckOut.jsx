@@ -12,21 +12,21 @@ export const CheckOut = ({ check, setCheck }) => {
         onClick={() => setCheck(false)}
       >
         <form
-          className="bg-white px-14 py-10 fixed shadow-gray flex flex-col rounded-lg gap-4"
+          className="bg-white lg:w-[30vw] w-[90vw] px-14 py-10 fixed shadow-gray flex flex-col rounded-lg gap-4"
           onClick={(e) => e.stopPropagation()}
         >
           <h1 className="text-4xl font-semibold">Shipping Address</h1>
           <label className="label text-lg">Name</label>
           <input type="text" className="input input-lg w-full" />
-          <div className="flex flex-row gap-4">
-            <div className="flex flex-col ">
+          <div className="flex flex-col lg:flex-row gap-13">
+            <div className="flex flex-col w-4/9 ">
               <label className="label text-lg">Email</label>
               <input
                 type="email"
                 className="py-3 px-4 border border-gray-600/30 rounded-box"
               />
             </div>
-            <div className="flex flex-col">
+            <div className="flex flex-col w-4/9">
               <label className="label text-lg">Phone Number</label>
               <input
                 type="number"
@@ -36,11 +36,11 @@ export const CheckOut = ({ check, setCheck }) => {
           </div>
           <label className="label text-lg ">Address</label>
           <input type="text" className="input input-lg w-full" />
-          <div className="flex justify-between gap-4">
-            <button className="flex gap-2 items-center justify-center shadow-xl transition-all duration-500 py-3 px-2 bg-gray-300/40 hover:bg-black/70 p w-1/2 text-center hover:text-white">
+          <div className="flex lg:flex-row flex-col justify-between gap-4">
+            <button type="button" className="flex gap-2 items-center justify-center shadow-xl transition-all duration-500 py-3 px-2 bg-gray-300/40 hover:bg-black/70 p w-full lg:w-1/2 text-center hover:text-white">
               <IconArrowBigLeftLinesFilled /> Back To Cart
             </button>
-            <button className="flex gap-2 items-center w-1/2 justify-center shadow-lg shadow-warning/40 bg-warning/70 text-black py-3 px-2 p hover:bg-warning transition-all duration-500 hover:text-white ">
+            <button className="flex gap-2 items-center w-full lg:w-1/2 justify-center shadow-lg shadow-warning/40 bg-warning/70 text-black py-3 px-2 p hover:bg-warning transition-all duration-500 hover:text-white ">
               Proceed to Shipping <IconArrowBigRightLinesFilled />
             </button>
           </div>
