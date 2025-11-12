@@ -18,13 +18,13 @@ const App = () => {
       <ChatBox />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="restaurant" element={<Restaurant />} />
-        <Route path="login" element={<Login />} />
-        <Route path="contact" element={<Contact />} />
-        <Route path="cart" element={<ShopCart />} />
-        <Route path="product" element={<Products />} />
-        <Route path="aboutUs" element={<AboutUs />} />
-        <Route path="setting" element={<Setting />} />
+        <Route path="/restaurant" element={<Restaurant />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/cart" element={<ShopCart />} />
+        <Route path="/product" element={<Products />} />
+        <Route path="/aboutUs" element={<AboutUs />} />
+        <Route path="/setting" element={<Setting />} />
 
       </Routes>
     </div>
