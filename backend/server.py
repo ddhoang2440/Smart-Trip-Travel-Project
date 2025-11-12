@@ -1,11 +1,12 @@
 from fastapi import FastAPI
-from routes.authRoutes import user_service
-from routes.restaurantRoutes import restaurant_service  
-from routes.menuRoutes import menu_service 
 from pydantic import BaseModel
 from fastapi_jwt_auth import AuthJWT
 import os
 from dotenv import load_dotenv
+
+from routes.userRoute import user_service
+from routes.restaurantRoute import restaurant_service  
+from routes.menuRoute import menu_service 
 
 load_dotenv()
 
