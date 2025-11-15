@@ -2,6 +2,10 @@ from pydantic import BaseModel, EmailStr, Field
 from typing import Optional, List
 from datetime import datetime
 from bson import ObjectId
+import os
+
+class Settings(BaseModel):
+    authjwt_secret_key: str = os.getenv("JWT_SECRET")
 
 class PyObjectId(ObjectId):
     @classmethod
@@ -17,6 +21,11 @@ class PyObjectId(ObjectId):
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+
+class UserUpdatable(BaseModel):
+    contacts: Optional[str] = None
+    allergy: Optional[List[str]] = []
+    image: Optional[str] = None
 
 class UserInformation(BaseModel):
     user_id: Optional[PyObjectId] = Field(alias="_id")

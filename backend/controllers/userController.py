@@ -1,15 +1,15 @@
-from fastapi import Depends, HTTPException
+from fastapi import HTTPException
 from fastapi_jwt_auth import AuthJWT
 from typing import Optional
 
 from services.userService import signup_service, login_service, logout_service, verify_token_service, get_info_service, update_info_service
-from entities.User import UserLogin
+from entities.User import UserLogin, UserUpdatable
 
 # Signup
 def signup_control(data: UserLogin):
     try:
         result = signup_service(data)
-        if signup_service(data) == "exists":
+        if result == "exists":
             raise HTTPException(status_code=400, detail="Email already exists")
         return {
             "message": "Signup successful", 
@@ -21,7 +21,7 @@ def signup_control(data: UserLogin):
         raise HTTPException(status_code=500, detail=str(e))
 
 # Login
-def login_control(data: UserLogin, Authorize: AuthJWT = Depends()):
+def login_control(data: UserLogin, Authorize: AuthJWT):
     try:
         result = login_service(data, Authorize)
         if result == "notfound":
@@ -38,7 +38,7 @@ def login_control(data: UserLogin, Authorize: AuthJWT = Depends()):
         raise HTTPException(status_code=500, detail=str(e))
 
 # Logout
-def logout_control(Authorize: AuthJWT = Depends()):
+def logout_control(Authorize: AuthJWT):
     try:
         Authorize.jwt_required()
         jti = Authorize.get_raw_jwt()["jti"]
@@ -51,7 +51,7 @@ def logout_control(Authorize: AuthJWT = Depends()):
         raise HTTPException(status_code=500, detail=str(e))
 
 # Verify token
-def verify_control(Authorize: AuthJWT = Depends()):
+def verify_control(Authorize: AuthJWT):
     try:
         result = verify_token_service(Authorize)
         if result == "invalid":
@@ -77,16 +77,7 @@ def get_info_control(user_id: str):
         raise HTTPException(status_code=500, detail=str(e))
     
 # Update information
-def update_info_control(user_id: str, contact: Optional[str] = None, 
-                allergy: Optional[list[str]] = None, 
-                image_url: Optional[str] = None):
-    data = {}
-    if contact is not None:
-        data['contact'] = contact
-    if allergy is not None:
-        data['allergy'] = allergy
-    if image_url is not None:
-        data['image_url'] = image_url
+def update_info_control(user_id: str, data: UserUpdatable):
     try:
         result = update_info_service(user_id, data)
         if result == "invalid":

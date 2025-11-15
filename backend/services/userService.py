@@ -5,7 +5,7 @@ from bson import ObjectId
 from datetime import datetime
 
 from models.userModel import users
-from entities.User import UserLogin, UserInformation
+from entities.User import UserLogin, UserInformation, UserUpdatable
 
 context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 blacklist = set()
@@ -26,13 +26,13 @@ def signup_service(user: UserLogin):
         raise e
 
 #Login
-def login_service(user: UserLogin, Authorize: AuthJWT):
+def login_service(data: UserLogin, Authorize: AuthJWT):
     try:
-        user = users.find_one({"email": user.email})
+        user = users.find_one({"email": data.email})
         if not user:
             return "notfound"
         
-        if not context.verify(user.password, user["password"]):
+        if not context.verify(data.password, user["password"]):
             return "wrongpassword"
         token = Authorize.create_access_token(subject=str(user["_id"]))
         return token
@@ -70,9 +70,9 @@ def get_info_service(user_id: str):
         raise e
 
 # Update information
-def update_info_service(user_id: str, user_info: dict):
+def update_info_service(user_id: str, user_info: UserUpdatable):
     try:
-        data = UserInformation(**user_info).dict(exclude_unset=True)
+        data = user_info.dict(exclude_unset=True)
         if not data:
             return "invalid"
         data['updated_at'] = datetime.utcnow()

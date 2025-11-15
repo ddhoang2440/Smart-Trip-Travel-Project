@@ -7,7 +7,7 @@ class Menu(BaseModel):
     price: int
     signature_dish: Optional[bool] = False
     allergy_info: Optional[List[str]] = []
-    food_id: int
+    food_id: Optional[int] = None
 
 class MenuUpdate(BaseModel):
     food_name: Optional[str] = None
