@@ -1,5 +1,5 @@
-from typing import List, Optional
-from fastapi import Query, HTTPException
+from typing import Optional
+from fastapi import Query
 
 from models.restaurantModel import restaurants
 from entities.Restaurant import Restaurant
@@ -23,7 +23,6 @@ def get_restaurant_service(r_type: Optional[str] = Query(None), r_price: Optiona
             restaurant_data = item.get("restaurant", {})
             restaurant_obj = Restaurant(**restaurant_data)
             restaurant_list.append(restaurant_obj)
-        return {"restaurants": restaurant_list}, 200
-    
+        return restaurant_list    
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise e

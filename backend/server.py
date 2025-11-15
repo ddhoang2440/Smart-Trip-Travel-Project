@@ -1,6 +1,4 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
-from fastapi_jwt_auth import AuthJWT
 import os
 from dotenv import load_dotenv
 
