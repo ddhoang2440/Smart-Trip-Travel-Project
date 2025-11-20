@@ -6,9 +6,9 @@ const AvatarCard = () => {
       <div className=" flex flex-row lg:gap-12 gap-4">
         {Array(8)
           .fill(1)
-          .map(() => {
+          .map((d,idx) => {
             return (
-              <>
+              <React.Fragment key={"avarta" + idx}>
                 <div className="avatar flex flex-col items-center">
                   <div className="rounded-full lg:w-[12vw] w-[25vw] lg:h-[12vw] object-cover">
                     <img src="/pizza.jpg" />
@@ -17,7 +17,7 @@ const AvatarCard = () => {
                     Pizza
                   </p>
                 </div>
-              </>
+              </React.Fragment>
             );
           })}
       </div>

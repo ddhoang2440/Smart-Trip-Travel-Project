@@ -1,37 +1,46 @@
 import {
-  IconBed,
-  IconEggFried,
+
   IconHeart,
   IconMapPin,
-  IconSearch,
   IconStar,
   IconStarFilled,
-  IconThumbDown,
-  IconThumbUp,
-  IconWifi,
 } from "@tabler/icons-react";
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 import Title from "../components/Title";
-import CardFood from "../components/RestaurantCard";
 import Footer from "../components/Footer";
 
 import { Restaurants } from "../assets/assets";
 import Menu from "../components/Menu";
-const rt = Restaurants.restaurant;
+import { useDispatch, useSelector } from "react-redux";
+import FoodFilter from "../components/FoodFilter";
+import { useEffect } from "react";
+import { createComment, getComment } from "../contexts/CommentRedux";
+import { useState } from "react";
+import { formatDistanceToNow } from 'date-fns';
+import { vi } from 'date-fns/locale'; 
+import { getRestaurantMenu } from "../contexts/MenuRedux";
+
+
+
 
 const Restaurant = () => {
-  const [value, setValue] = useState(0);
-  const [isFocused, setIsFocused] = useState(false);
-  const [showReply, setShowReply] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
-  let formatted = useRef("");
+  const [content, setContent] = useState("");
+  const { currentRestaurant } = useSelector((state) => state.restaurant);
+  const { comment } = useSelector((state) => state.comment );
+  const { image } = useSelector((state) => state.auth);
+    const { restaurantmenu } = useSelector((state) => state.menu);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    formatted.current = value.toLocaleString("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    });
-  }, [value]);
+      dispatch(getComment({restaurant_id : currentRestaurant._id}));
+  },[dispatch,currentRestaurant]);
+    useEffect(() => {
+      dispatch(getRestaurantMenu({ restaurant_id: currentRestaurant._id }));
+      console.log(restaurantmenu);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+
 
   return (
     <div>
@@ -39,8 +48,8 @@ const Restaurant = () => {
         <div className="flex flex-row justify-between">
           <div className="flex flex-col gap-3">
             <div className="flex items-end gap-4">
-              <h1 className="font-playfair font-bold  text-2xl lg:text-4xl">{rt.name}</h1>
-              <p>{rt.type}</p>
+              <h1 className="font-playfair font-bold  text-2xl lg:text-4xl">{currentRestaurant.name}</h1>
+              <p>{currentRestaurant.type}</p>
               <p className="bg-orange-400 text-white px-2 py-1 rounded-xl">
                 20% OFF
               </p>
@@ -50,27 +59,29 @@ const Restaurant = () => {
                 .fill(1)
                 .map((data, idx) => {
                   return (
-                    <>
-                      {idx > 3 ? (
+                    <React.Fragment
+                      key={currentRestaurant.name + "rating" + idx}
+                    >
+                      {idx > currentRestaurant.rating - 1 ? (
                         <IconStar color="orange" />
                       ) : (
                         <IconStarFilled color="orange" />
                       )}
-                    </>
+                    </React.Fragment>
                   );
                 })}
-              <p>200+ reviews</p>
+              <p>{currentRestaurant.review}+ reviews</p>
             </div>
             <span className="flex gap-2 lg-max-w-full max-w-[40vw]">
               <IconMapPin />
-              <p>{rt.details.address}</p>
+              <p>{currentRestaurant.address}</p>
             </span>
             <label className="label">
               Add to Wishlist <IconHeart className="hover:cursor-pointer" />
             </label>
           </div>
           <div className="flex flex-col items-center gap-4">
-            {!rt.details.opening_hours.currently_open ? (
+            {!currentRestaurant.open ? (
               <>
                 <p className="btn btn-wide text-white btn-success">Opened</p>
               </>
@@ -80,8 +91,8 @@ const Restaurant = () => {
               </>
             )}
             <p className="badge badge-accent text-white badge-xl">
-              Open: {rt.details.opening_hours.from} -{" "}
-              {rt.details.opening_hours.to}
+              Open: {currentRestaurant.from} -{" "}
+              {currentRestaurant.to}
             </p>
           </div>
         </div>
@@ -93,8 +104,8 @@ const Restaurant = () => {
             alt=""
           />
           <div className="lg:w-[55%] grid grid-cols-2 gap-6">
-            <img className="rounded-2xl p shadow-xl" src="/bg.jpg" alt="" />
-            <img className="rounded-2xl p shadow-xl" src="/bg.jpg" alt="" />
+            <img className="rounded-2xl p shadow-xl" src={"bg.jpg"} alt="" />
+            <img className="rounded-2xl p shadow-xl" src={"bg.jpg"} alt="" />
             <img className="rounded-2xl p shadow-xl" src="/bg.jpg" alt="" />
             <img className="rounded-2xl p shadow-xl" src="/bg.jpg" alt="" />
           </div>
@@ -104,22 +115,8 @@ const Restaurant = () => {
             <p className="text-3xl font-playfair font-semibold">
               Experience Luxury Like Never Before
             </p>
-            <div className="flex flex-row py-6 items-center gap-2 flex-wrap text-sm p-child">
-              <span className="flex flex-row gap-2 bg-gray-300/50 px-3 rounded-xl py-2 ">
-                <IconWifi />
-                <p>free wifi</p>
-              </span>
-              <span className="flex flex-row gap-2 bg-gray-300/50 px-3 rounded-xl py-2">
-                <IconEggFried />
-                <p>free breakfast</p>
-              </span>
-              <span className="flex flex-row gap-2  bg-gray-300/50 px-3 rounded-xl py-2">
-                <IconBed />
-                <p>Table Booking</p>
-              </span>
-            </div>
           </div>
-          <p className="text-3xl font-bold p">Average 100$/ Meal</p>
+          <p className="text-3xl font-bold p">Average {currentRestaurant.medium_price}$/ Meal</p>
         </div>
         <div className="flex lg:flex-row flex-col gap-4 lg:gap-0 justify-between bg-white rounded-xl shadow-gray px-8 py-8 my-12">
           <div className="flex lg:flex-row flex-col lg:gap-12 gap-6 justify-center lg:items-center">
@@ -152,57 +149,8 @@ const Restaurant = () => {
           align={"center"}
         />
         <div className="flex flex-row justify-between relative">
-          <Menu data={rt.details.menu} />
-          <div className="flex flex-col gap-4  py-[2vh] mt-[6vh] top-[16%] l-0 w-[26vw]  lg:w-[16vw] h-fit border">
-            <h1 className="text-3xl font-bold text-accent py-2 border-b border-gray-300/60 px-4">
-              Filter
-            </h1>
-        <div className="px-4">
-              <label className="input input-warning">
-                <IconSearch />
-                <input type="text" placeholder="Search" />
-              </label>
-        </div>
-            <div className="flex flex-col gap-4 border-b py-4  px-4">
-              <h1 className="text-xl">Price</h1>
-              <input
-                type="range"
-                min={0}
-                max="1000000"
-                value={value}
-                className="range"
-                step="5000"
-                onChange={(e) => setValue(e.target.value)}
-              />
-              <p>{formatted.current}đ</p>
-            </div>
-            <div className="flex flex-col gap-6 py-4 border-b px-4 ">
-              <h1 className="text-xl">Category</h1>
-              <div className="flex gap-2">
-                <input type="checkbox" className="checkbox checkbox-warning" />
-                <p>Salty Dishes</p>
-              </div>
-              <div className="flex gap-2">
-                <input type="checkbox" className="checkbox checkbox-warning" />
-                <p>Vegetarian Dishes</p>
-              </div>
-            </div>
-            <div className="flex flex-col gap-6 py-4 px-4">
-              <h1 className="text-xl">Type of Food</h1>
-              <div className="flex gap-2">
-                <input type="checkbox" className="checkbox checkbox-warning" />
-                <p>Desserts</p>
-              </div>
-              <div className="flex gap-2">
-                <input type="checkbox" className="checkbox checkbox-warning" />
-                <p>Drink</p>
-              </div>
-              <div className="flex gap-2">
-                <input type="checkbox" className="checkbox checkbox-warning" />
-                <p>Normal Food</p>
-              </div>
-            </div>
-          </div>
+          <Menu data={restaurantmenu || []} />
+          <FoodFilter />
         </div>
         <div className="flex justify-center">
           <button className="btn lg:w-[16vw] btn-warning text-white btn-lg ">
@@ -218,108 +166,46 @@ const Restaurant = () => {
         <div className="flex flex-row gap-2 items-center">
           <img
             className="w-[3vw] h-[3vw] rounded-full"
-            src="/pizza.jpg"
+            src={image || null}
             alt=""
           />
           <input
-            onFocus={() => setIsFocused(true)}
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
             placeholder="Add a comment ..."
-            className="focus:border-black focus:border-b-2 focus:outline-0  text-lg transition-all duration-100 w-full px-4 py-2"
+            className="focus:border-black border-b border-gray-300 focus:border-b-2 focus:outline-0  text-lg transition-all duration-100 w-full px-4 py-2"
           ></input>
         </div>
-        {isFocused && (
           <div className="flex justify-end gap-4 ">
-            <button
-              onClick={() => setIsFocused(false)}
-              className="px-3 py-1 rounded-lg hover:bg-gray-200 transition"
-            >
-              Cancel
-            </button>
-            <button className="btn btn-primary rounded-lg p">Comment</button>
+            <button onClick={() => dispatch(createComment({restaurant_id: currentRestaurant._id, content}))} className="btn btn-primary rounded-lg p">Comment</button>
           </div>
-        )}
-        <div className="flex px-[2vw] flex-col gap-8 mt-[4vh]">
-          {Array(3)
-            .fill(1)
-            .map(() => {
-              return (
-                <>
-                  <div className="flex flex-row gap-4 ">
-                    <img
-                      className="w-[3vw] h-[3vw] rounded-full"
-                      src="/pizza.jpg"
-                      alt=""
-                    />
-                    <div className="flex flex-col gap-1">
-                      <p className="bg-">@name</p>
-                      <p
-                        className={`text-gray-800 transition-all ${
-                          isExpanded ? "line-clamp-none" : "line-clamp-2"
-                        }`}
-                      >
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                        Molestias corrupti dolore modi est quidem ad, autem
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                        At, velit dignissimos totam enim sint quidem ad eveniet
-                        praesentium? Alias, fugit? Lorem ipsum dolor sit amet
-                        consectetur adipisicing elit. Ex, temporibus?{" "}
-                      </p>
-                      <button
-                        onClick={() => setIsExpanded(!isExpanded)}
-                        className="mt-1 flex text-gray-500 hover:underline font-medium"
-                      >
-                        {isExpanded ? "Thu gọn" : "Đọc thêm"}
-                      </button>
-                      <div className="flex gap-4 items-center">
-                        <button className="flex gap-1 items-center">
-                          <IconThumbUp />
-                          <span> 12</span>
-                        </button>
-                        <button>
-                          <IconThumbDown />
-                        </button>
-                        <button
-                          onClick={() => setShowReply(!showReply)}
-                          className="py-2 px-3 rounded-full hover:bg-gray-300 transition"
-                        >
-                          Reply
-                        </button>
-                      </div>
-                      {showReply && (
-                        <div className="mt-2 flex flex-col gap-2">
-                          <div className="flex flex-row gap-2 items-center">
-                            <img
-                              className="w-[3vw] h-[3vw] rounded-full"
-                              src="/pizza.jpg"
-                              alt=""
-                            />
-                            <input
-                              placeholder="Add a comment..."
-                              className="focus:border-black focus:border-b-2 focus:outline-0 text-lg transition-all duration-100 w-full px-4 py-2"
-                            />
-                          </div>
-
-                          <div className="flex justify-end gap-4">
-                            <button
-                              onClick={() => setShowReply(false)}
-                              className="px-3 py-1 rounded-lg hover:bg-gray-200 transition"
-                            >
-                              Cancel
-                            </button>
-                            <button
-                              onMouseOver={() => (this.style.color = "red")}
-                              className="btn btn-primary rounded-lg p"
-                            >
-                              Comment
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
+        <div className="flex px-[2vw] flex-col gap-8 mt-[1vh]">
+          {comment.map((cmt, idx) => {
+            return (
+              <div
+                key={cmt._id + idx}
+                className="flex flex-row gap-4 items-center"
+              >
+                <img
+                  className="w-[3vw] h-[3vw] rounded-full"
+                  src={image || null}
+                  alt=""
+                />
+                <div className="flex flex-col gap-1">
+                  <div className="flex gap-2">
+                    <h1 className="font-bold">@{cmt.user_id.username}</h1>
+                    <p>{formatDistanceToNow(new Date(cmt.createdAt), {
+                      addSuffix:true,
+                      locale: vi,
+                    })}</p>
                   </div>
-                </>
-              );
-            })}
+                  <p className="text-xl border-b-2 border-dotted">
+                    {cmt.content}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
       <Footer />

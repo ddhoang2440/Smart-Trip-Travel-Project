@@ -20,8 +20,13 @@ import Footer from "../components/Footer";
 import AvatarCard from "../components/AvatarCard";
 import PhoneSearch from "../components/PhoneSearch";
 import RestaurantCard from "../components/RestaurantCard";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
+
+  const navigate = useNavigate();
+  const {popularRestaurant} = useSelector((state) => state.restaurant);
   return (
     <>
       <div className="absolute w-full h-screen bg-linear-to-r from-black/40 to-black/0"></div>
@@ -32,22 +37,22 @@ const Home = () => {
           <p className="text-[2vh] relative z-30 text-white bg-blue-400/40 rounded-xl px-4 w-fit p-2">
             The Ultimate Restaurants Experience !
           </p>
-          <h1 className="label relative z-30 font-ro font-playfair lg:text-[10vh] text-5xl max-w-[70vw] text-white lg:max-w-[50vw] text-wrap">
+          <h1 className="label relative z-30 font-ro font-playfair lg:text-[8vh] text-6xl max-w-[70vw] text-white lg:max-w-[50vw] text-wrap">
             Discover Your Perfect Restaurants and Foods
-          </h1>
+          </h1> 
           <p className="text-[2vh] relative z-30 text-white mt-[2vh] ml-2">
             Nhanh chóng, tiện lợi - khám phá các món ăn gần bạn chỉ trong vài
             giây
           </p>
-          <div className="bg-white relative z-30 lg:flex hidden flex-row items-center w-fit py-6 px-12 rounded-2xl lg:gap-14 gap-8 mt-[4vh]">
+          <div className="bg-white  relative z-30 lg:flex hidden flex-row items-center w-fit py-5 px-12 rounded-2xl lg:gap-14 gap-8 mt-[4vh]">
             <div className="flex flex-col gap-2">
               <div className="flex gap-1">
                 <IconMichelinStar />
                 Type
               </div>
 
-              <select className="select">
-                <option className="" selected disabled>
+              <select defaultValue={"Choose Type"} className="select">
+                <option value={"Choose Type"} disabled>
                   Choose Type
                 </option>
                 <option className="">Normal</option>
@@ -59,8 +64,8 @@ const Home = () => {
                 <IconChefHat />
                 Food
               </div>
-              <select className="select">
-                <option selected disabled>
+              <select defaultChecked="Food Region" className="select">
+                <option value={"Food Region"} disabled>
                   Food Region
                 </option>
                 <option>Eastern</option>
@@ -73,8 +78,8 @@ const Home = () => {
                 City
               </div>
               <div>
-                <select className="select">
-                  <option value="" selected disabled>
+                <select defaultValue="Your City" className="select">
+                  <option value="Your City" disabled>
                     Your City
                   </option>
                 </select>
@@ -86,25 +91,21 @@ const Home = () => {
                 <p>PriceRange</p>
               </div>
               <div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 items-center">
                   <input
-                    type="range"
-                    min={0}
-                    max="100"
-                    value="0"
-                    className="range"
+                    type="number"
+                    className="input w-[6vw]"
                     step="1"
                   />
                   <p>$</p>
                 </div>
               </div>
             </div>
-            <button className="flex btn btn-neutral btn-lg">
+            <button onClick={() => navigate("/restaurant")} className="flex btn btn-neutral btn-lg">
               <IconSearch />
               Search
             </button>
           </div>
-          <PhoneSearch />
         </div>
       </div>
       <div className="">
@@ -115,7 +116,7 @@ const Home = () => {
             Decription="Discover one of the city's most talked-about restaurants — where every dish tells a story and every visit feels like a celebration. Known for its vibrant atmosphere and top-tier cuisine"
           />
           <div className="flex justify-center">
-            <RestaurantCard number={4} />
+            <RestaurantCard data={popularRestaurant} />
           </div>
           <div className="flex justify-center mt-[4vh]">
             <button className="btn btn-wide btn-error text-white btn-lg">
@@ -130,7 +131,7 @@ const Home = () => {
             align="center"
           />
           <div className="flex justify-center">
-            <CardFood number={4} />
+            <CardFood data={popularRestaurant} />
           </div>
           <div className="flex justify-center mt-[4vh]">
             <button className="btn btn-wide btn-neutral text-white btn-lg">

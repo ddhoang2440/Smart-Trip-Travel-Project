@@ -1,56 +1,46 @@
-import { IconContract, IconCurrency, IconCurrencyDollar, IconStar, IconStarFilled, IconToolsKitchen2 } from "@tabler/icons-react";
+import { IconContract, IconCurrency, IconCurrencyDollar, IconFileDescription, IconStar, IconStarFilled, IconToolsKitchen2 } from "@tabler/icons-react";
 import React from "react";
+import { addToCart } from "../contexts/CartRedux";
+import { useDispatch } from "react-redux";
+import { formatPrice } from "./ultil";
 
 const Menu = ({ data }) => {
+  const dispatch = useDispatch();
   return (
     <div className="grid lg:grid-cols-3 grid-cols-1 py-[6vh] max-w-full  lg:max-w-[60vw] px-[2vw] gap-6">
       {data.map((items, idx) => {
         return (
-          <React.Fragment key={idx + items.food_name}>
-            <div className="card bg-base-100 shadow-gray max-=w-[20vw]">
+            <div key={items._id + idx} className="card bg-base-100 shadow-gray max-=w-[20vw]">
               <figure className="">
-                <img src="/food2.jpg" alt="Food" />
+                <img className="w-full h-[24vh]" src={items.image} alt="Food" />
               </figure>
               <div className="card-body gap-1 lg:gap-2">
                 <div className="flex gap-1 items-center">
                   <IconToolsKitchen2 />
                   <h2 className="font-bold text-lg truncate">
-                    Dish: {items.food_name}
+                    Dish: {items.name}
                   </h2>
                 </div>
                <div className="flex gap-1 items-center">
                 <IconCurrencyDollar />
-                 <p className="text-sm">Price: {items.price}</p>
+                 <p className="text-sm">Price: {formatPrice(items.price)}đ</p>
                </div>
 
-               <div className="flex gap-1 items-center">
-                <IconContract />
-                 <p>Igredients: {items.allergy_info}</p>
+               <div className="flex gap-1 items-center tooltip" data-tip={items.igredient?.join(" , ")}>
+                <IconContract className="shrink-0" />
+                 <p className=" truncate">Igredients: {items.igredient?.join(" , ")}.</p>
                </div>
-                <div className="card-actions justify-between items-center gap-1">
-                  <div className="flex items-center gap-1">
-                    <p className="pr-2 font-semibold">4.2 star</p>
-                    {Array(5)
-                      .fill(1)
-                      .map((data, idx) => {
-                        return (
-                          <>
-                            {idx > 3 ? (
-                              <IconStar color="orange" size={18}/>
-                            ) : (
-                              <IconStarFilled color="orange" size={18} />
-                            )}
-                          </>
-                        );
-                      })}
-                  </div>{" "}
-                  <button className="btn btn-accent text-white lg:px-8">
-                    Watch
+               <div className="flex gap-1 items-center tooltip" data-tip={items.description}>
+                <IconFileDescription className="shrink-0" />
+                <p className="truncate">Description: {items.description}</p>
+               </div>
+                <div className="card-actions justify-end items-center gap-1">
+                  <button onClick={() => dispatch(addToCart({...items, quantity: 1}))} className="btn bg-black/80 border-2 border-black hover:bg-black btn-neutral btn-soft text-white lg:px-8">
+                    Add To Cart
                   </button>
                 </div>
               </div>
             </div>
-          </React.Fragment>
         );
       })}
     </div>

@@ -8,6 +8,7 @@ import {
   IconUser,
 } from "@tabler/icons-react";
 import SlideBar from "./SlideBar";
+import { useNavigate } from "react-router-dom";
 
 const Dropdown = ({ showDropdown, setShowDropdown, logout }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,6 +17,7 @@ const Dropdown = ({ showDropdown, setShowDropdown, logout }) => {
     logout();
     setShowDropdown(false);
   };
+  const navigate = useNavigate();
 
   return (
     <>
@@ -44,13 +46,13 @@ const Dropdown = ({ showDropdown, setShowDropdown, logout }) => {
                 className="dropdown-item border-gray-500 border-b py-2 hover:scale-95 group"
                 onClick={() => setShowDropdown(false)}
               >
-                <a href="/settings" className="flex gap-2">
+                <div onClick={() => navigate("setting")} className="flex gap-2 p">
                   <IconSettings />
                   <span className="text-sm flex-1">Settings</span>
                   <span className="text-xs text-gray-500 group-hover:text-white">
                     <IconChevronCompactRight />
                   </span>
-                </a>
+                </div>
               </div>
               <div
                 className="dropdown-item border-gray-500 border-b py-2 hover:scale-95 group"

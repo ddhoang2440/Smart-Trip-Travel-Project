@@ -1,60 +1,86 @@
 import React from "react";
-import { Restaurants } from "../assets/assets";
-import { IconCurrency, IconCurrencyDollar, IconEyeDollar, IconHome, IconMapPin, IconStar, IconStarFilled } from "@tabler/icons-react";
 
-const RestaurantCard = ({ number }) => {
+import { IconCurrencyDollar,IconFileDescription, IconHome, IconMapPin, IconStar, IconStarFilled } from "@tabler/icons-react";
+import { useNavigate } from "react-router-dom";
+import { setCurrent } from "../contexts/ResRedux";
+import { useDispatch } from "react-redux";
+import { formatPrice } from "./ultil";
+
+const RestaurantCard = ({ data }) => {
+
+
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
   return (
-    <div className="grid lg:grid-cols-2 grid-cols-1 gap-8  py-[4vh] lg:py-[6vh] lg:max-w-[64vw] px-[1vw] lg:px-[2vw]">
-      {Array(number)
-        .fill(1)
-        .map(() => {
+    <div className="grid lg:grid-cols-2 grid-cols-1 gap-8  py-[4vh] lg:py-[6vh] w-full lg:max-w-[64vw] px-[1vw] lg:px-[2vw]">
+      {data  && data
+        .map((dat,idx) => {
           return (
-            <>
-              <div className="card lg:card-side bg-base-100 shadow-gray">
-                <figure className="lg:w-[30vw] w-full">
-                  <img src="/bg2.jpg" alt="Food" />
+            <React.Fragment key={dat._id + idx}>
+              <div className="card lg:card-side bg-base-100 shadow-gray lg:max-w-[32vw]  lg:w-[30vw] lg:h-[25vh]">
+                <figure className="lg:w-[16vw] w-full">
+                  <img
+                    src="https://cdn.pixabay.com/photo/2016/11/21/16/02/outdoor-dining-1846137_640.jpg"
+                    alt="Food"
+                  />
                 </figure>
-                <div className="card-body gap-1 lg:gap-2">
+                <div className="card-body gap-1 lg:gap-2 w-full lg:w-[14vw]">
                   <h2 className="card-title items-center flex lg text-sm">
-                    <IconHome />
-                    {Restaurants.restaurant.name}
+                    <IconHome className="shrink-0" />
+                    {dat.name}
                   </h2>
                   <div className="flex flex-row gap-1 items-center">
                     <div className="flex gap-1">
                       {Array(5)
                         .fill(1)
-                        .map((data, idx) => {
+                        .map((d, idex) => {
                           return (
-                            <>
-                              {idx > 3 ? (
+                            <React.Fragment key={dat._id + idex}>
+                              {idex > dat.rating - 1 ? (
                                 <IconStar color="orange" />
                               ) : (
                                 <IconStarFilled color="orange" />
                               )}
-                            </>
+                            </React.Fragment>
                           );
                         })}
                     </div>
-                    <b>4.2 star</b>
+                    <b>{dat.rating} star</b>
                   </div>
-                  <p className="flex gap-1"><IconCurrencyDollar />Avergate Price: 300$/ meal</p>
-                  <div
-                    className=" tooltip"
-                    data-tip={Restaurants.restaurant.details.address}
-                  >
-                    <p className="flex flex-row gap-2 px-1 items-center">
-                      <IconMapPin className="lg:size-[2vw] size-auto" />
-                      {Restaurants.restaurant.details.address}
+                  <p className="flex gap-1 items-center">
+                    <IconCurrencyDollar className="shrink-0" />
+                    Avergate: {formatPrice(dat.medium_price)}đ/ meal
+                  </p>
+                  <div className="flex gap-1 tooltip" data-tip={dat.address}>
+                    <IconMapPin className="shrink-0" />
+                    <p className="flex flex-row gap-2 items-center truncate ">
+                      {dat.address}
                     </p>
                   </div>
+                  <div
+                    className="tooltip flex  gap-1"
+                    data-tip={dat.description}
+                  >
+                    <IconFileDescription className="shrink-0" />
+                    <p className="flex gap-2 items-center truncate">
+                      {dat.description}
+                    </p>
+                  </div>
+
                   <div className="card-actions justify-end">
-                    <button className="btn btn-accent text-white lg:px-8">
+                    <button
+                      className="btn btn-accent  text-white"
+                      onClick={() => {
+                        dispatch(setCurrent(dat));
+                        navigate("/restaurant");
+                      }}
+                    >
                       View More
                     </button>
                   </div>
                 </div>
               </div>
-            </>
+            </React.Fragment>
           );
         })}
     </div>

@@ -6,18 +6,22 @@ import {
   IconClockUp,
   IconTableShortcut,
 } from "@tabler/icons-react";
+import { useEffect } from "react";
 
 const AboutUs = () => {
+  useEffect(() => {
+    window.scrollTo({top:0, behavior:"smooth"});
+  },[])
   return (
     <>
-      <div>
-        <div className="flex px-[10vw] gap-6 h-screen items-center">
+      <div className="py-[6vh]">
+        <div className="flex flex-col lg:flex-row px-[10vw] gap-6 h-screen items-center">
           <img
             src="/bg2.jpg"
             alt=""
-            className="w-[30vw] h-[65vh] object-cover rounded-2xl"
+            className="w-full lg:w-[30vw] h-[40vh] lg:h-[65vh] object-cover rounded-2xl"
           />
-          <div className="flex-1 flex flex-col gap-5 items-center justify-center">
+          <div className="flex-1 flex flex-col gap-5 items-center lg:justify-center justify-start">
             <Title
               Title="We provide healthy food for your family."
               Decription="Our story began with a vision to create a unique dining experience
@@ -35,13 +39,13 @@ const AboutUs = () => {
           </div>
         </div>
         <div className="px-[14vw] h-screen bg-[url(/bg2.jpg)] bg-no-repeat flex flex-col items-center justify-center gap-[8vh]">
-          <h2 className="text-white lg:text-4xl text-2xl font-bold w-[26vw] ">
+          <h2 className="text-white lg:text-4xl text-2xl font-bold text-center lg:max-w-[26vw] ">
             Feel the authentic & original taste from us
           </h2>
-          <div className="lg:flex grid grid-cols-2 flex-row gap-8 pt-10">
+          <div className="lg:flex grid grid-cols-2 flex-row gap-8 py-10">
             <div className="flex gap-2 items-center">
               <IconBoxMultiple color="white" size="50" />
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-4">
                 <b className=" text-white text-base lg:text-lg ">
                   Multi Cuisine
                 </b>
@@ -63,7 +67,7 @@ const AboutUs = () => {
                 </p>
               </div>
             </div>
-            <div className="flex gap-2 items-center">
+            <div className="flex gap-2 items-center lg:mt-0 mt-10">
               <IconClockUp color="white" size="50" />
               <div className="flex flex-col gap-4">
                 <b className=" text-white text-base lg:text-lg text-left">
@@ -77,16 +81,16 @@ const AboutUs = () => {
             </div>
           </div>
         </div>
-        <div className="h-screen pt-[15vh] px-[18vw]">
+        <div className=" pt-[15vh] px-[18vw]">
           <h2 className="text-4xl pb-[10vh] text-center">
             What Our Customers Say
           </h2>
-          <div className="flex justify-center items-center gap-10">
+          <div className="flex lg:flex-row flex-col justify-center items-center gap-10">
             {Array(3)
               .fill(1)
-              .map(() => {
+              .map((d,idx) => {
                 return (
-                  <>
+                  <React.Fragment key={"comment" + idx}>
                     <div className="flex flex-col shadow-2xl rounded-2xl bg-gray-200/80 p-4">
                       <h3 className="text-red-500/80 text-lg">
                         “The best restaurant”
@@ -112,7 +116,7 @@ const AboutUs = () => {
                         </div>
                       </div>
                     </div>
-                  </>
+                  </React.Fragment>
                 );
               })}
           </div>

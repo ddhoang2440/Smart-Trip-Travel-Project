@@ -13,21 +13,21 @@ import React, { useEffect, useState } from "react";
 import SearchBar from "./SearchBar";
 import { useLocation, useNavigate } from "react-router-dom";
 import Dropdown from "./Dropdown";
+import { useDispatch, useSelector } from "react-redux";
+import { signout } from "../contexts/AuthRedux";
+
 
 const Navbar = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState(false);
   const [scroll, setScroll] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [showDropdown, setShowDropdown] = useState(false);
+
+  const dispatch = useDispatch();
+   const { islogin, username, image} = useSelector((state) => state.auth);
 
   const location = useLocation();
 
-  const logout = () => {
-    setIsLoggedIn(false);
-    setShowDropdown(false);
-    navigate("/");
-  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -35,7 +35,7 @@ const Navbar = () => {
         setScroll(true);
         return;
       }
-      setScroll(window.scrollY > 900);
+      setScroll(window.scrollY > 100);
     };
     handleScroll();
     window.addEventListener("scroll", handleScroll);
@@ -74,7 +74,7 @@ const Navbar = () => {
             className="p hidden lg:block"
             onClick={() => setSearch(true)}
           />
-          {!isLoggedIn ? (
+          {!islogin ? (
             <button className="btn w-32" onClick={() => navigate("/login")}>
               <IconUser color="black" />
               Login
@@ -87,17 +87,17 @@ const Navbar = () => {
                 onClick={() => setShowDropdown(!showDropdown)}
               >
                 <img
-                  src={"/pizza.jpg"}
+                  src={ image || "https://cdn-icons-png.freepik.com/512/6858/6858504.png" }
                   alt="Avatar"
-                  className="size-[2.25vw] rounded-full"
+                  className="lg:size-[2.25vw] size-[3vh] rounded-full"
                 />
-                <span className=" flex-1">{"Lmao"}</span>
+                <span className=" flex-1">{username}</span>
                 <span>▼</span>
               </button>
               <Dropdown
                 showDropdown={showDropdown}
                 setShowDropdown={setShowDropdown}
-                logout={logout}
+                logout={() => dispatch(signout())}
               />
             </div>
           )}
