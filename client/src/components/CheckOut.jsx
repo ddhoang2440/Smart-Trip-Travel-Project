@@ -28,6 +28,7 @@ export const CheckOut = ({ check, setCheck, setEmail, setUser, setAddress, setCo
               />
             </div>
             <div className="flex flex-col lg:w-4/9">
+
               <label className="label text-lg">Phone Number</label>
               <input
                 type="text"
@@ -40,6 +41,7 @@ export const CheckOut = ({ check, setCheck, setEmail, setUser, setAddress, setCo
           <input type="text" className="input input-lg w-full" value={address} onChange={(e) => setAddress(e.target.value)} />
           <div className="flex lg:flex-row flex-col justify-between gap-4">
             <button type="button" onClick={() => setCheck(false)} className="flex gap-2 items-center justify-center shadow-xl transition-all duration-500 py-3 px-2 bg-gray-300/40 hover:bg-black/70 p w-full lg:w-1/2 text-center hover:text-white">
+
               <IconArrowBigLeftLinesFilled /> Back To Cart
             </button>
             <button className="flex gap-2 items-center w-full lg:w-1/2 justify-center shadow-lg shadow-warning/40 bg-warning/70 text-black py-3 px-2 p hover:bg-warning transition-all duration-500 hover:text-white ">

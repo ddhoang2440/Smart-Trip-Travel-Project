@@ -18,7 +18,6 @@ import { getAllRestaurant, getUserRestaurant } from "./contexts/ResRedux";
 import { getMenu } from "./contexts/MenuRedux";
 import ScrollTop from "./components/ScrollTop";
 
-
 const App = () => {
   const {email} = useSelector((state) => state.auth);
   const dispatch = useDispatch();

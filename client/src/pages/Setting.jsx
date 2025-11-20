@@ -37,6 +37,7 @@ const Setting = () => {
      dispatch(getUserMenu())
   },[dispatch])
 
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -54,6 +55,7 @@ const Setting = () => {
       ProfileForm.append("image", _image[0]);
       dispatch(profile(ProfileForm));
   }
+
 
   const renderContent = () => {
     switch (activeTab) {
@@ -78,6 +80,7 @@ const Setting = () => {
                   {allergy ?  allergy.join(" , ") : "không có"}
                 </p>
               </div>
+    
               <button className="py-1 px-4 border cursor-pointer rounded-3xl hover:bg-gray-100 transition">
                 Update
               </button>
@@ -86,8 +89,9 @@ const Setting = () => {
                 Remove
               </button>
             </div>
-
+    
             <form onSubmit={(e) => handleProfile(e)} className="space-y-4">
+
               <div>
                 <label
                   htmlFor="name"
@@ -97,8 +101,10 @@ const Setting = () => {
                 </label>
                 <input
                   type="text"
+  
                   value={name}
                   onChange={(e) => setName(e.target.value)}
+
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                   placeholder="Nhập họ và tên"
                 />
@@ -162,18 +168,73 @@ const Setting = () => {
                     </button>
                   </div>
                 </div>
+
+//                   htmlFor="email"
+//                   className="block text-sm font-medium text-gray-700 mb-1"
+//                 >
+//                   Email *
+//                 </label>
+//                 <input
+//                   type="email"
+//                   id="email"
+//                   name="email"
+//                   value={formData.email}
+//                   onChange={handleChange}
+//                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+//                   placeholder="your@email.com"
+//                 />
+//               </div>
+
+//               <div>
+//                 <label
+//                   htmlFor="password"
+//                   className="block text-sm font-medium text-gray-700 mb-1"
+//                 >
+//                   Mật khẩu *
+//                 </label>
+//                 <input
+//                   type="password"
+//                   id="password"
+//                   name="password"
+//                   value={formData.password}
+//                   onChange={handleChange}
+//                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+//                   placeholder="Nhập mật khẩu"
+//                 />
+//               </div>
+
+//               <div>
+//                 <label
+//                   htmlFor="bio"
+//                   className="block text-sm font-medium text-gray-700 mb-1"
+//                 >
+//                   Các món dị ứng
+//                 </label>
+//                 <textarea
+//                   id="bio"
+//                   name="bio"
+//                   value={formData.allergy}
+//                   onChange={handleChange}
+//                   rows={3}
+//                   className="w-full px-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 resize-none"
+//                   placeholder="Giới thiệu về bản thân..."
+//                 />
+
               </div>
 
               <div className="flex justify-between items-center pt-4">
                 <div className="flex gap-4">
                   <button
                     type="submit"
+//                     onClick={handleUpdate}
                     className="py-3 px-4 cursor-pointer border bg-amber-400 text-white rounded-3xl hover:bg-amber-500 transition"
                   >
                     Cập nhật
                   </button>
                   <button
                     type="button"
+//                     onClick={handleCancel}
+
                     className="py-3 px-4 cursor-pointer border rounded-3xl hover:bg-gray-100 transition"
                   >
                     Hủy
@@ -188,6 +249,7 @@ const Setting = () => {
                 </button>
               </div>
             </form>
+
           </div>
         );
       case "history":
@@ -239,6 +301,9 @@ const Setting = () => {
                 type="checkbox"
                 id="notifications"
                 name="notifications"
+//                 checked={formData.notifications}
+//                 onChange={handleChange}
+
                 className="size-5"
               />
               <label className="text-sm text-gray-700">
@@ -251,6 +316,9 @@ const Setting = () => {
                 Giao diện hiển thị
               </label>
               <select
+//                 value={formData.theme}
+//                 onChange={handleChange}
+
                 className="border cursor-pointer border-gray-300 px-3 py-2 rounded-md focus:ring-2"
               >
                 <option value="light"> Sáng</option>
@@ -260,6 +328,7 @@ const Setting = () => {
             </div>
 
             <button
+//               onClick={handleUpdate}
               className="py-3 px-4 cursor-pointer border bg-amber-400 text-white rounded-3xl hover:bg-amber-500 transition"
             >
               Lưu thay đổi
@@ -278,6 +347,7 @@ const Setting = () => {
         return(
           <MenuAdd />
         )
+
       default:
         return null;
     }
@@ -297,6 +367,7 @@ const Setting = () => {
             { key: "business", title: "Trở Thành Chủ Nhà Hàng" },
             { key: "restaurant", title: "Nhà hàng của tôi" },
             { key: "menu", title: "Menu Nhà Hàng" },
+
           ].map(({ key, title }) => (
             <button
               key={key}

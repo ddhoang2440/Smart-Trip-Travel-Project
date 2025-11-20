@@ -1,5 +1,4 @@
 import React from "react";
-
 import { IconCurrencyDollar,IconFileDescription, IconHome, IconMapPin, IconStar, IconStarFilled } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 import { setCurrent } from "../contexts/ResRedux";
@@ -11,6 +10,7 @@ const RestaurantCard = ({ data }) => {
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
+
   return (
     <div className="grid lg:grid-cols-2 grid-cols-1 gap-8  py-[4vh] lg:py-[6vh] w-full lg:max-w-[64vw] px-[1vw] lg:px-[2vw]">
       {data  && data
@@ -68,6 +68,7 @@ const RestaurantCard = ({ data }) => {
                   </div>
 
                   <div className="card-actions justify-end">
+
                     <button
                       className="btn btn-accent  text-white"
                       onClick={() => {
@@ -75,6 +76,7 @@ const RestaurantCard = ({ data }) => {
                         navigate("/restaurant");
                       }}
                     >
+
                       View More
                     </button>
                   </div>
