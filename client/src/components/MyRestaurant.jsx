@@ -29,12 +29,11 @@ const MyRestaurant = () => {
   const { usermenu } = useSelector((state) => state.menu);
   const { username } = useSelector((state) => state.auth)
 
-
   return (
     <>
       <div className="p-6">
         <div className="flex justify-between">
-          <h1 className="text-4xl font-playfair">{userRestaurant[0].name}</h1>
+          <h1 className="text-4xl font-playfair">{userRestaurant[0]?.name}</h1>
           <button className="px-3 py-2 bg-green-600 hover:bg-green-600/80 rounded-3xl text-white">
             Đang mở
           </button>
@@ -65,7 +64,7 @@ const MyRestaurant = () => {
               <IconBuildingWarehouse /> Tên Nhà Hàng
             </label>
             <input
-              value={userRestaurant[0].name}
+              value={userRestaurant[0]?.name}
               type="text"
               placeholder="Restaurant Name"
               className="input w-full text-gray-800/80 outline-0"
@@ -103,7 +102,7 @@ const MyRestaurant = () => {
               Average Price
             </label>
             <input
-              value={userRestaurant[0].medium_price}
+              value={userRestaurant[0]?.medium_price}
               type="number"
               placeholder="Name"
               className="input w-full text-black outline-0"
@@ -122,12 +121,12 @@ const MyRestaurant = () => {
             </div>
             <div className="flex gap-3 w-full justify-between">
               <input
-                value={userRestaurant[0].from}
+                value={userRestaurant[0]?.from}
                 type="time"
                 className="w-full input text-black outline-0 "
               />
               <input
-                value={userRestaurant[0].to}
+                value={userRestaurant[0]?.to}
                 type="time"
                 className="input w-full text-black outline-0"
               />
@@ -139,7 +138,7 @@ const MyRestaurant = () => {
               Location
             </label>
             <input
-              value={userRestaurant[0].address}
+              value={userRestaurant[0]?.address}
               type="text"
               className="input w-full text-black outline-0"
             />
@@ -150,7 +149,7 @@ const MyRestaurant = () => {
               Description
             </label>
             <textarea
-              value={userRestaurant[0].description}
+              value={userRestaurant[0]?.description}
               type="text"
               placeholder="Description"
               className="textarea w-full text-gray-800/80 outline-0"
