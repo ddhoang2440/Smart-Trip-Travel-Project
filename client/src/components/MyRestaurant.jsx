@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Restaurants } from "../assets/assets";
+import { formatPrice } from "./ultil";
 import {
   IconAdjustments,
   IconBuildingWarehouse,
@@ -21,9 +22,7 @@ import { useSelector } from "react-redux";
 
 const MyRestaurant = () => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isFocused, setIsFocused] = useState(false);
   const [showReply, setShowReply] = useState(false);
-  const rt = Restaurants.restaurant;
 
   const { userRestaurant } = useSelector((state) => state.restaurant)
   
@@ -169,22 +168,21 @@ const MyRestaurant = () => {
                   <div>
                     <div className="grid grid-cols-[1fr_auto_auto_auto_auto] w-full border-b border-gray-500/40 py-4 px-4 items-center">
                       <div className="flex gap-4 items-center min-w-0">
-                        {" "}
                         <img
-                          className="size-[3vw] rounded-ful object-cover rounded-full"
-                          src="/pizza.jpg"
+                          className="size-[3vw]  rounded-ful object-cover rounded-full"
+                          src={data.image}
                           alt=""
                         />
-                        <p className="text-lg font-semibold truncate">
-                          {rt.details.menu[0].food_name}
+                        <p className="w-[10vw] text-lg font-semibold truncate">
+                          {data.name}
                         </p>
-                        <div className="text-lg text-center flex-2 ">
-                          $35.00
+                        <div className="text-lg text-center w-[20vw]">
+                          {formatPrice(data.price)}đ
                         </div>
                         <div className=" py-1 text-center text-sm bg-gray-600/30 rounded-3xl flex-1">
                           còn hàng
                         </div>
-                        <div className="flex justify-center w-[3vw] flex-1">
+                        <div className="flex justify-center w-[5vw] gap-4">
                           <div className="p-2 bg-blue-600/30 rounded-3xl">
                             <IconAdjustments className="cursor-pointer" />
                           </div>
@@ -207,31 +205,6 @@ const MyRestaurant = () => {
               View customer Commnent
             </h1>
             <p>Comment Count</p>
-            <div className="flex flex-row gap-2 items-center">
-              <img
-                className="w-[3vw] h-[3vw] rounded-full"
-                src="/pizza.jpg"
-                alt=""
-              />
-              <input
-                onFocus={() => setIsFocused(true)}
-                placeholder="Add a comment ..."
-                className="focus:border-black focus:border-b-2 focus:outline-0  text-lg transition-all duration-100 w-full px-4 py-2"
-              ></input>
-            </div>
-            {isFocused && (
-              <div className="flex justify-end gap-4 ">
-                <button
-                  onClick={() => setIsFocused(false)}
-                  className="px-3 py-1 rounded-lg hover:bg-gray-200 transition"
-                >
-                  Cancel
-                </button>
-                <button className="btn btn-primary rounded-lg p">
-                  Comment
-                </button>
-              </div>
-            )}
             <div className="flex px-[2vw] flex-col gap-8 mt-[4vh]">
               {Array(3)
                 .fill(1)
