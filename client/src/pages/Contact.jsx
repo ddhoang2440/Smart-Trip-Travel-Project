@@ -17,7 +17,7 @@ const Contact = () => {
 
     // Kiểm tra dữ liệu rỗng
     if (!name || !email || !subject || !message) {
-      return toast.error("Vui lòng điền đầy đủ thông tin!");
+      return toast.error("Please fill in all information!");
     }
 
     try {
@@ -30,18 +30,18 @@ const Contact = () => {
       });
 
       if (res.data.success) {
-        toast.success("Gửi liên hệ thành công!");
+        toast.success("Contact sent successfully!");
         // Xóa trắng form sau khi gửi xong
         setName("");
         setEmail("");
         setSubject("");
         setMessage("");
       } else {
-        toast.error("Gửi thất bại: " + res.data.message);
+        toast.error("Contact sent failed: " + res.data.message);
       }
     } catch (error) {
       console.error(error);
-      toast.error("Lỗi kết nối đến server");
+      toast.error("Error connecting to server");
     }
   };
 
