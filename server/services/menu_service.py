@@ -131,8 +131,8 @@ class MenuService:
     async def get_restaurant_menu(restaurant_id: str):
         try:
             # 1. Validate ObjectId: Chặn lỗi crash nếu ID sai định dạng
-            if not ObjectId.is_valid(restaurant_id):
-                return {"success": False, "message": "Invalid Restaurant ID format!"}
+            # if not ObjectId.is_valid(restaurant_id):
+            #     return {"success": False, "message": "Invalid Restaurant ID format!"}
 
             # 2. Query Menu
             res_obj_id = PydanticObjectId(restaurant_id)

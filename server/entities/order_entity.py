@@ -17,6 +17,8 @@ class OrderEntity(Document):
     voucher_code: Optional[str] = None # Mã giảm giá (nếu có)
     discount_amount: float = 0  # Số tiền được giảm
     final_price: float          # Tiền phải trả
+    address: str = ""
+    contact: str = ""
     status: str = "PENDING"     # Trạng thái đơn
     created_at: datetime = Field(default_factory=datetime.now)
 

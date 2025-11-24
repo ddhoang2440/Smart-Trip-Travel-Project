@@ -47,22 +47,10 @@ async def create_comment(
 # =========================================================================
 # 2. Get Comment (POST /comment/get)
 # =========================================================================
-@router.post("/get")
-async def get_comment(request: Request):
-    restaurant_id = None
-    
-    sources = []
-    try: sources.append(await request.json())
-    except: pass
-    try: sources.append(await request.form())
-    except: pass
-    sources.append(request.query_params)
-
-    for src in sources:
-        if not restaurant_id:
-            restaurant_id = src.get("restaurant_id") or src.get("restaurant")
-            
-    if not restaurant_id:
-        return {"success": False, "message": "Missing restaurant_id"}
-
-    return await CommentService.get_comment(restaurant_id)
+@router.get("/get/{restaurant_id}")
+async def get_comment(restaurant_id: str):
+    try:
+        print(f"Getting menu for restaurant: {restaurant_id}")
+        return await CommentService.get_comment(restaurant_id)
+    except Exception as e:
+        return {"success": False, "message": str(e)}

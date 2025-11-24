@@ -13,13 +13,13 @@ router = APIRouter(prefix="/restaurant", tags=["Restaurant"])
 async def create_restaurant(
     name: str = Form(...),
     type: str = Form(...),
-    medium_price: float = Form(...),
+    price: float = Form(...),
     # Alias input để khớp với frontend gửi lên là 'from' và 'to'
     from_time: str = Form(..., alias="from"), 
     to_time: str = Form(..., alias="to"),
     address: str = Form(...),
     description: str = Form(...),
-    images: List[UploadFile] = File(default=[]), # Nhận danh sách file
+    image: List[UploadFile] = File(default=[]), # Nhận danh sách file
     current_user: UserEntity = Depends(get_current_user)
 ):
     if not current_user:
@@ -27,7 +27,7 @@ async def create_restaurant(
 
     return await RestaurantService.create_restaurant(
         current_user.id,
-        name, type, medium_price, from_time, to_time, address, description, images
+        name, type, price, from_time, to_time, address, description, image
     )
 
 # 2. Get All Restaurants (GET /restaurant/getall)

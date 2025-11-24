@@ -17,5 +17,7 @@ async def create_order(
     return await OrderService.create_order(
         user_id=current_user.id,
         items_req=data.items,
-        voucher_code=data.voucher_code
+        voucher_code=data.voucher_code,
+        address=data.address,
+        contact=data.contact  
     )

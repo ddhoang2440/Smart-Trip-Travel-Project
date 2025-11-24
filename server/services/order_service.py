@@ -7,7 +7,7 @@ from entities.voucher_entity import VoucherEntity
 
 class OrderService:
     @staticmethod
-    async def create_order(user_id: PydanticObjectId, items_req: List, voucher_code: str = None):
+    async def create_order(user_id: PydanticObjectId, items_req: List, voucher_code: str = None, address = "", contact = ""):
         try:
             # 1. Tính tổng tiền gốc từ DB
             total_price = 0
@@ -15,7 +15,7 @@ class OrderService:
 
             for item in items_req:
                 # Tìm món ăn để lấy giá gốc
-                menu = await MenuEntity.get(PydanticObjectId(item.menu_id))
+                menu = await MenuEntity.get(PydanticObjectId(item.menu))
                 if not menu: continue # Bỏ qua nếu món không tồn tại
                 
                 line_price = menu.price * item.quantity
@@ -65,7 +65,9 @@ class OrderService:
                 total_price=total_price,
                 voucher_code=voucher_code,
                 discount_amount=discount_amount,
-                final_price=final_price
+                final_price=final_price,
+                address=address, 
+                contact=contact
             )
             await new_order.insert()
 
