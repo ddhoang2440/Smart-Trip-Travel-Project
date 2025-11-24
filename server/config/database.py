@@ -9,6 +9,7 @@ from entities.menu_entity import MenuEntity
 from entities.comment_entity import CommentEntity
 from entities.voucher_entity import VoucherEntity
 from entities.order_entity import OrderEntity
+from entities.contact_entity import ContactEntity
 async def init_db():
     client = AsyncIOMotorClient(settings.MONGOOSE_URL)
     
@@ -21,6 +22,7 @@ async def init_db():
             MenuEntity,
             CommentEntity,
             VoucherEntity,
-            OrderEntity
+            OrderEntity,
+            ContactEntity
         ]
     )
