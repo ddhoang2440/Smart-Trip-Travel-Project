@@ -80,3 +80,34 @@ class OrderService:
         except Exception as e:
             print(f"Order Error: {e}")
             return {"success": False, "message": "Create Order Failed!"}
+        
+# =========================================================================
+    # 2. GET USER ORDERS (Lấy lịch sử đơn hàng)
+    # =========================================================================
+    @staticmethod
+    async def get_user_orders(user_id: PydanticObjectId):
+        try:
+            # Tìm tất cả đơn hàng của user, sắp xếp mới nhất trước
+            orders = await OrderEntity.find(
+                OrderEntity.user == user_id
+            ).sort("-created_at").to_list()
+            
+            if not orders:
+                return {"success": True, "message": "No orders found", "orders": []}
+
+            # Format dữ liệu trả về (Convert ObjectId -> String, Datetime -> String)
+            order_list = []
+            for order in orders:
+                order_dict = order.dict()
+                order_dict["_id"] = str(order.id) # Frontend cần _id
+                order_dict["created_at"] = order.created_at.strftime("%d/%m/%Y %H:%M") # Format ngày đẹp
+                order_list.append(order_dict)
+
+            return {
+                "success": True, 
+                "message": "Get user orders successfully!", 
+                "orders": order_list
+            }
+        except Exception as e:
+            print(f"Get orders error: {e}")
+            return {"success": False, "message": "Get user orders failed!"}

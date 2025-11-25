@@ -6,6 +6,9 @@ from routes.user_route import get_current_user
 
 router = APIRouter(prefix="/order", tags=["Order"])
 
+# =========================================================================
+# 2. Create Order (POST /order/create)
+# =========================================================================
 @router.post("/create")
 async def create_order(
     data: CreateOrderRequest,
@@ -21,3 +24,13 @@ async def create_order(
         address=data.address,
         contact=data.contact  
     )
+
+# =========================================================================
+# 2. Get User Orders (GET /order/user)
+# =========================================================================
+@router.get("/user")
+async def get_user_orders(current_user: UserEntity = Depends(get_current_user)):
+    if not current_user:
+         return {"success": False, "message": "Auth not Found!"}
+
+    return await OrderService.get_user_orders(current_user.id)
