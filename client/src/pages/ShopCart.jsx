@@ -14,14 +14,20 @@ import {
   IconToolsKitchen2,
   IconTrash,
   IconX,
-  IconArrowBigRightLinesFilled
+  IconArrowBigRightLinesFilled,
 } from "@tabler/icons-react";
 import React, { useState, useEffect } from "react";
 import { Restaurants } from "../assets/assets";
 import Footer from "../components/Footer";
 import { CheckOut } from "../components/CheckOut";
 import { useDispatch, useSelector } from "react-redux";
-import { changeQuantity, createOrder, decreaseQuantity, increaseQuantity, removeProduct } from "../contexts/CartRedux";
+import {
+  changeQuantity,
+  createOrder,
+  decreaseQuantity,
+  increaseQuantity,
+  removeProduct,
+} from "../contexts/CartRedux";
 import { formatPrice } from "../components/ultil";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -30,7 +36,7 @@ const ShopCart = () => {
 
   const [check, setCheck] = useState(false);
   const { usercart } = useSelector((state) => state.cart);
-  const { username, email, contact} = useSelector((state) => state.auth )
+  const { username, email, contact } = useSelector((state) => state.auth);
 
   const [address, setAddress] = useState("");
   const [_user, set_User] = useState(username);
@@ -40,30 +46,29 @@ const ShopCart = () => {
   const [appliedVoucher, setAppliedVoucher] = useState(null);
   const [discountAmount, setDiscountAmount] = useState(0);
 
-  
   const subTotal = usercart.reduce((acc, item) => {
-    return acc + (item.price * item.quantity);
+    return acc + item.price * item.quantity;
   }, 0);
 
   useEffect(() => {
     if (appliedVoucher) {
-        let discount = 0;
-        if (appliedVoucher.type === "PERCENT") {
-          discount = subTotal * (appliedVoucher.discount / 100);
-        } else {
-          discount = appliedVoucher.discount;
-        }
-        // Không giảm quá tổng tiền
-        if (discount > subTotal) discount = subTotal;
-        
-        setDiscountAmount(discount);
+      let discount = 0;
+      if (appliedVoucher.type === "PERCENT") {
+        discount = subTotal * (appliedVoucher.discount / 100);
+      } else {
+        discount = appliedVoucher.discount;
+      }
+      // Không giảm quá tổng tiền
+      if (discount > subTotal) discount = subTotal;
+
+      setDiscountAmount(discount);
     } else {
-        // Nếu không có voucher (ví dụ bị xóa hoặc chưa áp dụng), reset về 0
-        setDiscountAmount(0);
+      // Nếu không có voucher (ví dụ bị xóa hoặc chưa áp dụng), reset về 0
+      setDiscountAmount(0);
     }
   }, [usercart, subTotal, appliedVoucher]);
 
-  const handleShipping = async() => {
+  const handleShipping = async () => {
     let total_price = 0;
     const _cart = usercart.map((item) => {
       const newItem = {
@@ -71,10 +76,10 @@ const ShopCart = () => {
         restaurant: item.restaurant._id,
         quantity: item.quantity,
         price: item.price,
-      }
+      };
       total_price += item.price * item.quantity || 0;
       return newItem;
-    })
+    });
     const ship = {
       items: _cart,
       user: _user,
@@ -82,36 +87,37 @@ const ShopCart = () => {
       contact: _contact,
       address: address,
       total_price,
-      voucher_code: voucherCode
-    }
-      try {
-        const resultAction = await dispatch(createOrder(ship));
-        
-        if (createOrder.fulfilled.match(resultAction)) {
-            // Thành công
-            toast.success("Order successful!");
-            setCheck(false); // <-- Đóng Popup
-            // Có thể thêm lệnh xóa giỏ hàng ở đây nếu muốn
-        } else {
-            // Thất bại
-            toast.error(resultAction.payload || "Order failed");
-        }
-    } catch (err) {
-        console.error(err);
-    }
-  }
+      voucher_code: voucherCode,
+    };
+    try {
+      const resultAction = await dispatch(createOrder(ship));
 
-  
+      if (createOrder.fulfilled.match(resultAction)) {
+        // Thành công
+        toast.success("Order successful!");
+        setCheck(false); // <-- Đóng Popup
+        // Có thể thêm lệnh xóa giỏ hàng ở đây nếu muốn
+      } else {
+        // Thất bại
+        toast.error(resultAction.payload || "Order failed");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const handleApplyVoucher = async () => {
     if (!voucherCode) return toast.error("Please enter the code!");
 
     try {
-      const res = await axios.post("http://localhost:3000/voucher/check", { code: voucherCode });
-      
+      const res = await axios.post("http://localhost:3000/voucher/check", {
+        code: voucherCode,
+      });
+
       if (res.data.success) {
         const voucher = res.data.voucher;
         setAppliedVoucher(voucher); // Lưu voucher lại
-        
+
         // TÍNH TIỀN GIẢM
         let discount = 0;
         if (voucher.type === "PERCENT") {
@@ -119,10 +125,10 @@ const ShopCart = () => {
         } else {
           discount = voucher.discount;
         }
-        
+
         // Không giảm quá tổng tiền
         if (discount > subTotal) discount = subTotal;
-        
+
         setDiscountAmount(discount);
         toast.success("Code applied successfully!");
       } else {
@@ -137,12 +143,21 @@ const ShopCart = () => {
     }
   };
 
-
-  
   return (
     <>
-      <CheckOut check={check} setCheck={setCheck} email={_email} user={_user} address={address} contact={_contact} setAddress={setAddress}
-      setContact={set_Contact} setEmail={set_Email} setUser={set_User} handleShipping={handleShipping}/>
+      <CheckOut
+        check={check}
+        setCheck={setCheck}
+        email={_email}
+        user={_user}
+        address={address}
+        contact={_contact}
+        setAddress={setAddress}
+        setContact={set_Contact}
+        setEmail={set_Email}
+        setUser={set_User}
+        handleShipping={handleShipping}
+      />
       <div className="py-[18vh] px-[6vw] lg:px-[10vw]">
         <h1 className="font-bold font-playfair text-5xl">Shopping Cart</h1>
         <p className="text-gray-600/80 py-4 lg:max-w-[30vw]">
@@ -315,9 +330,9 @@ const ShopCart = () => {
                   value={voucherCode}
                   onChange={(e) => setVoucherCode(e.target.value)}
                 />
-                <button 
-                  type="button" 
-                  onClick={handleApplyVoucher} 
+                <button
+                  type="button"
+                  onClick={handleApplyVoucher}
                   className="label bg-warning px-4 text-white cursor-pointer hover:bg-warning/80 transition-all"
                 >
                   Apply
@@ -327,24 +342,28 @@ const ShopCart = () => {
           </div>
           <div className="lg:w-[50%] space-y-8">
             <h1 className="text-4xl font-semibold ">Total Bill</h1>
-              <div className="bg-white shadow-gray flex flex-col justify-between gap-2 px-6 py-3 h-auto pb-6">
-                <div className="flex flex-row justify-between border-b-2 border-gray-500/20 pb-4">
-                  <div className="flex flex-col gap-4">
-                    <b className="text-lg">Cart Subtotal</b>
-                    <p>Discount</p>
-                  </div>
-                  
-                  <div className="flex flex-col gap-4 text-right">
-                    <b>{formatPrice(subTotal)}đ</b>
-                    <p className="text-green-600">-{formatPrice(discountAmount)}đ</p>
-                  </div>
+            <div className="bg-white shadow-gray flex flex-col justify-between gap-2 px-6 py-3 h-auto pb-6">
+              <div className="flex flex-row justify-between border-b-2 border-gray-500/20 pb-4">
+                <div className="flex flex-col gap-4">
+                  <b className="text-lg">Cart Subtotal</b>
+                  <p>Discount</p>
                 </div>
-                
-                <div className="flex justify-between">
-                  <b className="text-2xl">Total Amount</b>
-                  <b className="text-2xl">{formatPrice(subTotal - discountAmount)}đ</b>
+
+                <div className="flex flex-col gap-4 text-right">
+                  <b>{formatPrice(subTotal)}đ</b>
+                  <p className="text-green-600">
+                    -{formatPrice(discountAmount)}đ
+                  </p>
                 </div>
               </div>
+
+              <div className="flex justify-between">
+                <b className="text-2xl">Total Amount</b>
+                <b className="text-2xl">
+                  {formatPrice(subTotal - discountAmount)}đ
+                </b>
+              </div>
+            </div>
           </div>
         </div>
         <button
