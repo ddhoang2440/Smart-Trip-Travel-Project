@@ -1,14 +1,18 @@
 from typing import List, Optional
+import uuid
 from beanie import Document, PydanticObjectId
 from pydantic import BaseModel, Field
 from datetime import datetime
 
 # Class con để lưu chi tiết từng món (nhúng trong Order)
 class OrderItem(BaseModel):
+    item_id: PydanticObjectId
     menu_id: PydanticObjectId
+    restaurant_id:PydanticObjectId
     name: str
     price: float
     quantity: int
+    status: str = "PENDING"
 
 class OrderEntity(Document):
     user: PydanticObjectId      # Khách hàng

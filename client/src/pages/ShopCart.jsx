@@ -47,6 +47,12 @@ const ShopCart = () => {
 
   useEffect(() => {
     if (appliedVoucher) {
+        if (appliedVoucher.min_order_value && subTotal < appliedVoucher.min_order_value) {
+            // Nếu tiền tụt xuống dưới mức quy định -> Không giảm giá nữa
+            setDiscountAmount(0);
+            return; 
+        }
+        
         let discount = 0;
         if (appliedVoucher.type === "PERCENT") {
           discount = subTotal * (appliedVoucher.discount / 100);
@@ -103,37 +109,32 @@ const ShopCart = () => {
 
   
   const handleApplyVoucher = async () => {
-    if (!voucherCode) return toast.error("Please enter the code!");
+    if (!voucherCode) return toast.error("Vui lòng nhập mã!");
 
     try {
-      const res = await axios.post("http://localhost:3000/voucher/check", { code: voucherCode });
+
+      const res = await axios.post("/voucher/check", { 
+        code: voucherCode,
+        total_price: subTotal 
+      });
       
       if (res.data.success) {
         const voucher = res.data.voucher;
-        setAppliedVoucher(voucher); // Lưu voucher lại
+        setAppliedVoucher(voucher);
         
-        // TÍNH TIỀN GIẢM
-        let discount = 0;
-        if (voucher.type === "PERCENT") {
-          discount = subTotal * (voucher.discount / 100);
-        } else {
-          discount = voucher.discount;
+        let msg = `Áp dụng thành công! Giảm ${voucher.discount}${voucher.type === "PERCENT" ? "%" : "đ"}`;
+        if (voucher.min_order_value > 0) {
+            msg += ` (Cho đơn từ ${formatPrice(voucher.min_order_value)}đ)`;
         }
-        
-        // Không giảm quá tổng tiền
-        if (discount > subTotal) discount = subTotal;
-        
-        setDiscountAmount(discount);
-        toast.success("Code applied successfully!");
+        toast.success(msg);
       } else {
-        // Reset nếu mã sai
         setAppliedVoucher(null);
         setDiscountAmount(0);
         toast.error(res.data.message);
       }
     } catch (err) {
       console.error(err);
-      toast.error("Code check error");
+      toast.error("Lỗi khi kiểm tra mã");
     }
   };
 
@@ -305,7 +306,7 @@ const ShopCart = () => {
             <h1 className="text-4xl font-semibold">Coupon Code</h1>
             <div className="bg-white shadow-gray px-6 py-5 flex flex-col gap-6 h-[20vh] ">
               <p className="lg:max-w-[30vw] text-gray-900/70">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum
+                Enter your coupon code if you have one.              
               </p>
               <div className="flex ">
                 <input
@@ -323,6 +324,34 @@ const ShopCart = () => {
                   Apply
                 </button>
               </div>
+              {appliedVoucher && (
+                <div className={`mt-2 text-sm p-3 border rounded-lg ${
+                    (appliedVoucher.min_order_value && subTotal < appliedVoucher.min_order_value)
+                      ? "bg-red-50 text-red-700 border-red-200" 
+                      : "bg-green-50 text-green-700 border-green-200"
+                }`}>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="font-bold">Mã: {appliedVoucher.code}</p>
+                      <p className="text-xs mt-1">
+                        Giảm: {appliedVoucher.discount}{appliedVoucher.type === "PERCENT" ? "%" : "đ"}
+                        {appliedVoucher.min_order_value > 0 && ` • Đơn từ ${formatPrice(appliedVoucher.min_order_value)}đ`}
+                      </p>
+                            
+                      {/* Cảnh báo nếu chưa đủ tiền */}
+                      {(appliedVoucher.min_order_value && subTotal < appliedVoucher.min_order_value) && (
+                        <p className="text-xs font-bold mt-1">⚠️ Mua thêm {formatPrice(appliedVoucher.min_order_value - subTotal)}đ để dùng mã</p>
+                      )}
+                    </div>
+                      <button 
+                        onClick={() => { setAppliedVoucher(null); setDiscountAmount(0); setVoucherCode("") }}
+                        className="text-gray-500 hover:text-red-500 p-1"
+                      >
+                            <IconX size={16} />
+                        </button>
+                    </div>
+                  </div>
+                )}
             </div>
           </div>
           <div className="lg:w-[50%] space-y-8">

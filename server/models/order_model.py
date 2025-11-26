@@ -4,6 +4,7 @@ from typing import List, Optional
 class OrderItemRequest(BaseModel):
     menu: str
     quantity: int
+    restaurant: str
 
 class CreateOrderRequest(BaseModel):
     items: List[OrderItemRequest]

@@ -22,28 +22,32 @@ import { useDispatch, useSelector } from "react-redux";
 // import { getUserMenu } from "../contexts/MenuRedux";
 import { getUserRestaurant } from "../contexts/ResRedux";
 import { getUserMenu } from "../contexts/MenuRedux";
+import OrderTable from "./OrderTable";
+import { getOrderByRestaurant } from "../contexts/CartRedux";
 
 const MyRestaurant = ({ activeTab }) => {
   // const [isExpanded, setIsExpanded] = useState(false);
   // const [showReply, setShowReply] = useState(false);
 
   const { userRestaurant } = useSelector((state) => state.restaurant);
-  console.log(userRestaurant);
   const { usermenu } = useSelector((state) => state.menu);
+  const { orderItems } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
   useEffect(() => {
     if (
       activeTab === "restaurant"
       // && userRestaurant?._id
     ) {
-      console.log("🔄 Tab changed, reloading menu...");
+      console.log("Tab changed, reloading menu...");
+      console.log(userRestaurant[0]?._id);
       dispatch(getUserMenu());
       dispatch(getUserRestaurant());
+      dispatch(getOrderByRestaurant(userRestaurant[0]?._id));
     }
   }, [activeTab, dispatch]);
   // const { username } = useSelector((state) => state.auth);
   const initialState = {
-    name: userRestaurant[0].name || "lmaoáda",
+    name: userRestaurant[0].name || "",
     owner: userRestaurant[0].owner || "",
     phone: userRestaurant[0].phone || "",
     medium_price: userRestaurant[0].medium_price || 0,
@@ -69,25 +73,15 @@ const MyRestaurant = ({ activeTab }) => {
     <>
       <div className="p-6">
         <div className="flex justify-between">
-          <h1 className="text-4xl font-playfair">{userRestaurant?.name}</h1>
+          <h1 className="text-4xl font-playfair">{formData.name}</h1>
           <button className="px-3 py-2 bg-green-600 hover:bg-green-600/80 rounded-3xl text-white">
             Đang mở
           </button>
         </div>
-        <div className="grid grid-cols-3 gap-4 mt-4">
-          <div className="bg-green-100 p-4 rounded-lg text-center shadow">
-            <h2 className="text-2xl font-bold text-green-600">100</h2>
-            <p>Đơn đã giao</p>
-          </div>
-          <div className="bg-yellow-100 p-4 rounded-lg text-center shadow">
-            <h2 className="text-2xl font-bold text-yellow-600">20</h2>
-            <p>Đơn đang xử lý</p>
-          </div>
-          <div className="bg-red-100 p-4 rounded-lg text-center shadow">
-            <h2 className="text-2xl font-bold text-red-600">10</h2>
-            <p>Đơn đã hủy</p>
-          </div>
-        </div>
+        <OrderTable
+          orderItems={orderItems}
+          restaurantId={userRestaurant[0]?._id}
+        />
         <form onSubmit={handleSubmit}>
           <div className="mt-4">
             <div className="flex justify-between">

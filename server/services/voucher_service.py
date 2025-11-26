@@ -1,5 +1,7 @@
 import random
 import string
+from datetime import datetime
+from beanie import PydanticObjectId
 from entities.voucher_entity import VoucherEntity
 
 class VoucherService:
@@ -18,7 +20,13 @@ class VoucherService:
     # 1. CREATE VOUCHER
     # =========================================================================
     @staticmethod
-    async def create_voucher(discount: float, type: str, limit: int, code: str = None):
+    async def create_voucher(
+        discount: float, type: str, limit: int, 
+        start_date: datetime, end_date: datetime, 
+        min_order_value: float = 0,
+        code: str = None, 
+        restaurant_id: str = None
+    ):
         try:
             final_code = code
             
@@ -45,7 +53,11 @@ class VoucherService:
                 code=final_code,
                 discount=discount,
                 type=type,
-                limit=limit
+                limit=limit,
+                start_date=start_date,
+                end_date=end_date,          
+                min_order_value=min_order_value, 
+                restaurant_id=PydanticObjectId(restaurant_id) if restaurant_id else None
             )
             await new_voucher.insert()
 
@@ -63,15 +75,31 @@ class VoucherService:
     # 2. CHECK VOUCHER (Giữ nguyên)
     # =========================================================================
     @staticmethod
-    async def check_voucher(code: str):
+    async def check_voucher(code: str, order_total: float = 0):
         try:
             voucher = await VoucherEntity.find_one(VoucherEntity.code == code.upper())
             
             if not voucher:
                 return {"success": False, "message": "Voucher not found!"}
 
+            # 1. Check limit
             if voucher.limit <= 0:
-                return {"success": False, "message": "Voucher has expired (limit 0)!"}
+                return {"success": False, "message": "Voucher has expired (Out of stock)!"}
+
+            # 2. Check time
+            now = datetime.now() # Lưu ý: server dùng giờ UTC hoặc Local tùy cấu hình
+            # Nếu muốn so sánh chính xác, nên dùng datetime.utcnow() hoặc convert timezone
+            if now < voucher.start_date:
+                 return {"success": False, "message": "Voucher is not active yet!"}
+            if now > voucher.end_date:
+                 return {"success": False, "message": "Voucher has expired (Time up)!"}
+
+            # 3. Check total money of order
+            if order_total > 0 and order_total < voucher.min_order_value:
+                 return {
+                     "success": False, 
+                     "message": f"Order value must be at least {voucher.min_order_value} to use this voucher!"
+                 }
 
             return {
                 "success": True, 
@@ -79,7 +107,9 @@ class VoucherService:
                 "voucher": {
                     "code": voucher.code,
                     "discount": voucher.discount,
-                    "type": voucher.type
+                    "type": voucher.type,
+                    "min_order_value": voucher.min_order_value,
+                    "restaurant_id": str(voucher.restaurant_id) if voucher.restaurant_id else None
                 }
             }
 
@@ -89,7 +119,7 @@ class VoucherService:
         
 # =========================================================================
     # 3. CREATE BATCH (Tạo hàng loạt)
-    # =========================================================================
+# =========================================================================
     @staticmethod
     async def create_batch(quantity: int, discount: float, type: str, limit: int):
         created_list = []
