@@ -46,7 +46,7 @@ async def get_current_user(authorization: Optional[str] = Header(None)):
                 status_code=401,
                 detail="User not found"
             )
-        print(user)
+        # print(user)
         return user
 
     except Exception as e:

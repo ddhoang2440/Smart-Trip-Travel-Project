@@ -34,10 +34,10 @@ async def get_orders_by_restaurant(
     return await OrderService.get_orders_by_restaurant(restaurant_id)
 @router.get("/user")
 async def get_user_orders(current_user: UserEntity = Depends(get_current_user)):
-    print( str(current_user.id))
+    # print( str(current_user.id))
     if not current_user:
          return {"success": False, "message": "Auth not Found!"}
-    return await OrderService.get_user_orders(str(current_user.id))
+    return await OrderService.get_user_orders(current_user.id)
 @router.put("/update-status/{order_item_id}")
 async def update_order_item_status(
     order_item_id: str,

@@ -23,7 +23,6 @@ class OrderService:
                 total_price += line_price
                 
                 order_items.append(OrderItem(
-                    id=str(uuid.uuid4()),             # <-- tạo id riêng cho item
                     menu_id=menu.id,
                     restaurant_id=PydanticObjectId(item.restaurant),
                     name=menu.name,
@@ -143,6 +142,8 @@ class OrderService:
     @staticmethod
     async def get_user_orders(user_id: PydanticObjectId):
         try:
+            print("user_id =", user_id, type(user_id))
+
             orders = await OrderEntity.find(
                 OrderEntity.user == user_id
             ).sort(
@@ -183,6 +184,7 @@ class OrderService:
             }
 
         except Exception as e:
+            print("user_id =", user_id, type(user_id))
             print(f"Get user orders error: {e}")
             return {"success": False, "message": "Get user orders failed!"}
     @staticmethod

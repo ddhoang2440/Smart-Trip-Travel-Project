@@ -6,7 +6,6 @@ from datetime import datetime
 
 # Class con để lưu chi tiết từng món (nhúng trong Order)
 class OrderItem(BaseModel):
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     menu_id: PydanticObjectId
     restaurant_id:PydanticObjectId
     name: str
