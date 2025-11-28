@@ -10,5 +10,3 @@ python-jose
 python-multipart
 cloudinary
 email-validator
-google-generativeai
-fastapi-mail
