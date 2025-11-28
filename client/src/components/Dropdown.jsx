@@ -34,19 +34,10 @@ const Dropdown = ({ showDropdown, setShowDropdown, logout }) => {
                 className="dropdown-item border-gray-500 border-b pb-2 pt-3 active:scale-95 hover:scale-95 group"
                 onClick={() => setShowDropdown(false)}
               >
-                <a href="/profile" className="flex gap-2">
-                  <IconUser />
-                  <span className="text-sm flex-1">Profile</span>
-                  <span className="text-xs text-gray-500 group-hover:text-white">
-                    <IconChevronCompactRight />
-                  </span>
-                </a>
-              </div>
-              <div
-                className="dropdown-item border-gray-500 border-b py-2 hover:scale-95 group"
-                onClick={() => setShowDropdown(false)}
-              >
-                <div onClick={() => navigate("setting")} className="flex gap-2 p">
+                <div
+                  onClick={() => navigate("setting")}
+                  className="flex gap-2 p"
+                >
                   <IconSettings />
                   <span className="text-sm flex-1">Settings</span>
                   <span className="text-xs text-gray-500 group-hover:text-white">
@@ -75,12 +66,12 @@ const Dropdown = ({ showDropdown, setShowDropdown, logout }) => {
               >
                 <button className="flex items-center flex-1 cursor-pointer">
                   <IconHomeDollar />
-                 <div className="flex flex-row justify-between items-center">
-                   <span className="text-sm px-1 flex-1">My Business</span>
-                   <span className="text-xs text-gray-500 group-hover:text-white">
-                     <IconChevronCompactRight />
-                   </span>
-                 </div>
+                  <div className="flex flex-row justify-between items-center">
+                    <span className="text-sm px-1 flex-1">My Business</span>
+                    <span className="text-xs text-gray-500 group-hover:text-white">
+                      <IconChevronCompactRight />
+                    </span>
+                  </div>
                 </button>
               </div>
               <div className="dropdown-divider"></div>
