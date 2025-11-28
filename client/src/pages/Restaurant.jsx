@@ -252,7 +252,7 @@ const Restaurant = () => {
             onClick={() => setOpenCart(false)}
           ></div>
 
-          <div className="relative bg-white p-6 rounded-xl shadow-2xl z-[1000] w-[80vw] h-[80vh] overflow-auto fade-in">
+          <div className="relative bg-white p-6 rounded-xl shadow-2xl z-[1000] w-[80vw] h-[90vh] overflow-auto fade-in">
             <button
               className="ml-[65vw] bg-gray-500/40 rounded-full p-1"
               onClick={() => setOpenCart(false)}
