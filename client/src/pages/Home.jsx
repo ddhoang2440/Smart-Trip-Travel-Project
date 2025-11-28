@@ -22,11 +22,11 @@ import PhoneSearch from "../components/PhoneSearch";
 import RestaurantCard from "../components/RestaurantCard";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import SearchBar from "../components/SearchBar";
 
 const Home = () => {
-
   const navigate = useNavigate();
-  const {popularRestaurant} = useSelector((state) => state.restaurant);
+  const { popularRestaurant } = useSelector((state) => state.restaurant);
   return (
     <>
       <div className="absolute w-full h-screen bg-linear-to-r from-black/40 to-black/0"></div>
@@ -39,69 +39,75 @@ const Home = () => {
           </p>
           <h1 className="label relative z-30 font-ro font-playfair lg:text-[8vh] text-6xl max-w-[70vw] text-white lg:max-w-[50vw] text-wrap">
             Discover Your Perfect Restaurants and Foods
-          </h1> 
+          </h1>
           <p className="text-[2vh] relative z-30 text-white mt-[2vh] ml-2">
             Nhanh chóng, tiện lợi - khám phá các món ăn gần bạn chỉ trong vài
             giây
           </p>
-          <div className="bg-white  relative z-30 lg:flex hidden flex-row items-center w-fit py-5 px-12 rounded-2xl lg:gap-14 gap-8 mt-[4vh]">
-            <div className="flex flex-col gap-2">
-              <div className="flex gap-1">
-                <IconMichelinStar />
-                Type
-              </div>
+          <div className="bg-white  relative z-30 lg:flex hidden flex-row items-end w-fit py-5 px-12 rounded-2xl lg:gap-10 gap-8 mt-[4vh]">
+            <div className="flex flex-col">
+              <div className="flex lg:gap-10 gap-8">
+                <div className="flex flex-col gap-2">
+                  <div className="flex gap-1">
+                    <IconMichelinStar />
+                    Type
+                  </div>
 
-              <select defaultValue={"Choose Type"} className="select">
-                <option value={"Choose Type"} disabled>
-                  Choose Type
-                </option>
-                <option className="">Normal</option>
-                <option className="">Luxury</option>
-              </select>
-            </div>
-            <div className="flex flex-col gap-2">
-              <div className="flex gap-1">
-                <IconChefHat />
-                Food
-              </div>
-              <select defaultChecked="Food Region" className="select">
-                <option value={"Food Region"} disabled>
-                  Food Region
-                </option>
-                <option>Eastern</option>
-                <option>Western</option>
-              </select>
-            </div>
-            <div className="flex gap-2 flex-col">
-              <div className="flex gap-1">
-                <IconMapPin />
-                City
-              </div>
-              <div>
-                <select defaultValue="Your City" className="select">
-                  <option value="Your City" disabled>
-                    Your City
-                  </option>
-                </select>
-              </div>
-            </div>
-            <div className="flex flex-col gap-3">
-              <div className="flex gap-1">
-                <IconCurrencyDollar />
-                <p>PriceRange</p>
-              </div>
-              <div>
-                <div className="flex gap-2 items-center">
-                  <input
-                    type="number"
-                    className="input w-[6vw]"
-                    step="1"
-                  />
-                  <p>$</p>
+                  <select defaultValue={"Choose Type"} className="select">
+                    <option value={"Choose Type"} disabled>
+                      Choose Type
+                    </option>
+                    <option className="">Normal</option>
+                    <option className="">Luxury</option>
+                  </select>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <div className="flex gap-1">
+                    <IconChefHat />
+                    Food
+                  </div>
+                  <select defaultChecked="Food Region" className="select">
+                    <option value={"Food Region"} disabled>
+                      Food Region
+                    </option>
+                    <option>Eastern</option>
+                    <option>Western</option>
+                  </select>
+                </div>
+                <div className="flex gap-2 flex-col">
+                  <div className="flex gap-1">
+                    <IconMapPin />
+                    City
+                  </div>
+                  <div>
+                    <select defaultValue="Your City" className="select">
+                      <option value="Your City" disabled>
+                        Your City
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-3">
+                  <div className="flex gap-1">
+                    <IconCurrencyDollar />
+                    <p>PriceRange</p>
+                  </div>
+                  <div>
+                    <div className="flex gap-2 items-center">
+                      <input type="number" className="input w-[6vw]" step="1" />
+                      <p>$</p>
+                    </div>
+                  </div>
                 </div>
               </div>
+              <div className="mt-4">
+                <SearchBar />
+              </div>
             </div>
-            <button onClick={() => navigate("/restaurant")} className="flex btn btn-neutral btn-lg">
+            <button
+              onClick={() => navigate("/restaurant")}
+              className="flex btn btn-neutral btn-lg"
+            >
               <IconSearch />
               Search
             </button>
@@ -151,11 +157,11 @@ const Home = () => {
             </button>
           </div>
           <AvatarCard />
-        <div className="flex justify-center">
+          <div className="flex justify-center">
             <button className="btn btn-wide lg:hidden flex btn-neutral text-white btn-lg">
               View All
             </button>
-        </div>
+          </div>
         </div>
         <div className="px-[14vw] py-[16vh] bg-linear-to-b from-white to-warning flex flex-col items-center justify-center gap-[8vh]">
           <h1 className="text-warning lg:text-6xl text-4xl font-bold ">
@@ -171,7 +177,9 @@ const Home = () => {
             </div>
             <div className="flex flex-col gap-4 items-center">
               <IconBellFilled size={108} color="orange" />
-              <b className="lg:text-2xl text-lg text-center  max-w-[20vw] lg:max-w-[100vw]">Choose Order</b>
+              <b className="lg:text-2xl text-lg text-center  max-w-[20vw] lg:max-w-[100vw]">
+                Choose Order
+              </b>
               <p className="max-w-[30vw] lg:max-w-[12vw] text-center text-white text-sm lg:text-xl">
                 Check over hundreds of menus to pick your favourite food
               </p>
@@ -185,7 +193,9 @@ const Home = () => {
             </div>
             <div className="flex flex-col gap-4 items-center">
               <IconChartDonutFilled size={108} color="orange" />
-              <b className="text-lg lg:text-2xl max-w-[20vw] lg:max-w-[100vw]  text-center">Enjoys Meal</b>
+              <b className="text-lg lg:text-2xl max-w-[20vw] lg:max-w-[100vw]  text-center">
+                Enjoys Meal
+              </b>
               <p className="max-w-[30vw] lg:max-w-[12vw] text-center text-white text-sm lg:text-xl">
                 Food is made and delivery directly to your home
               </p>
@@ -209,7 +219,11 @@ const Home = () => {
                 PROCESS TO ORDER <IconArrowRightBar color="white" />
               </button>
             </div>
-            <img className="lg:w-3/5 w-full rounded-box" src="/sandwitch.jpg" alt="" />
+            <img
+              className="lg:w-3/5 w-full rounded-box"
+              src="/sandwitch.jpg"
+              alt=""
+            />
           </div>
           <div className="bg-white shadow-gray rounded-box w-full max-h-[60vh] flex flex-row mb-[10vh]">
             <img

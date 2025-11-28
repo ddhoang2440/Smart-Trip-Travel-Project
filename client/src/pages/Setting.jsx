@@ -6,14 +6,14 @@ import {
   IconTrash,
   IconX,
 } from "@tabler/icons-react";
-import React, { useState , useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Restaurants } from "../assets/assets";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteAccount, profile } from "../contexts/AuthRedux";
 import RestaurantAdd from "../components/RestaurantAdd";
 import MenuAdd from "../components/MenuAdd";
 import MyRestaurant from "../components/MyRestaurant";
-import axios from "axios"
+import axios from "axios";
 
 const Setting = () => {
   const [activeTab, setActiveTab] = useState("profile");
@@ -56,8 +56,8 @@ const Setting = () => {
     try {
       const res = await axios.get("/order/user", {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        }
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       });
       if (res.data.success) {
         setOrderHistory(res.data.orders);
@@ -215,22 +215,36 @@ const Setting = () => {
             ) : (
               <ul className="divide-y divide-gray-200">
                 {orderHistory.map((order) => (
-                  <li key={order._id} className="py-4 flex justify-between items-start">
+                  <li
+                    key={order._id}
+                    className="py-4 flex justify-between items-start"
+                  >
                     <div>
                       {/* Hiển thị tóm tắt món ăn */}
                       <p className="font-medium text-lg">
-                        {order.items.map(item => `${item.name} (x${item.quantity})`).join(", ")}
+                        {order.items
+                          .map((item) => `${item.name} (x${item.quantity})`)
+                          .join(", ")}
                       </p>
-                      <p className="text-sm text-gray-500">Ngày đặt: {order.created_at}</p>
-                      
+                      <p className="text-sm text-gray-500">
+                        Ngày đặt: {order.created_at}
+                      </p>
+
                       {/* Hiển thị trạng thái */}
-                      <span className={`text-xs px-2 py-1 rounded-full mt-1 inline-block 
-                        ${order.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' : 
-                          order.status === 'COMPLETED' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                      <span
+                        className={`text-xs px-2 py-1 rounded-full mt-1 inline-block 
+                        ${
+                          order.status === "PENDING"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : order.status === "COMPLETED"
+                            ? "bg-green-100 text-green-800"
+                            : "bg-gray-100 text-gray-800"
+                        }`}
+                      >
                         {order.status}
                       </span>
                     </div>
-                    
+
                     <div className="text-right">
                       {/* Giá tiền */}
                       <p className="font-semibold text-blue-600 text-lg">
@@ -241,7 +255,9 @@ const Setting = () => {
                           (Đã giảm: {order.discount_amount.toLocaleString()}đ)
                         </p>
                       )}
-                      <p className="text-xs text-gray-400 mt-1">#{order._id.slice(-6).toUpperCase()}</p>
+                      <p className="text-xs text-gray-400 mt-1">
+                        #{order._id.slice(-6).toUpperCase()}
+                      </p>
                     </div>
                   </li>
                 ))}

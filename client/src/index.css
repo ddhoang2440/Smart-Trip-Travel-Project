@@ -37,8 +37,8 @@
   opacity: 0;
 }
 
-fade-in {
-  animation: fade-in 0.5s ease-in;
+.fade-in {
+  animation: fade-in 0.25s ease-in;
 }
 
 @keyframes fade-in {
@@ -49,13 +49,13 @@ fade-in {
     opacity: 1;
   }
 }
-input[type=number]::-webkit-outer-spin-button,
-input[type=number]::-webkit-inner-spin-button {
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
 /* Ẩn trong Firefox */
-input[type=number] {
+input[type="number"] {
   -moz-appearance: textfield;
 }

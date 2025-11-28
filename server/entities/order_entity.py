@@ -1,5 +1,4 @@
 from typing import List, Optional
-import uuid
 from beanie import Document, PydanticObjectId
 from pydantic import BaseModel, Field
 from datetime import datetime
@@ -8,14 +7,13 @@ from datetime import datetime
 class OrderItem(BaseModel):
     item_id: PydanticObjectId
     menu_id: PydanticObjectId
-    restaurant_id:PydanticObjectId
     name: str
     price: float
     quantity: int
-    status: str = "PENDING"
 
 class OrderEntity(Document):
     user: PydanticObjectId      # Khách hàng
+    restaurant_id: PydanticObjectId  # Nhà hàng (chung cho tất cả món)
     items: List[OrderItem]      # Danh sách món
     total_price: float          # Tổng tiền gốc
     voucher_code: Optional[str] = None # Mã giảm giá (nếu có)

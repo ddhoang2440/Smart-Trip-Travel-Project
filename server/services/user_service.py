@@ -1,12 +1,23 @@
+import uuid
+from datetime import datetime, timedelta
 import cloudinary
 import cloudinary.uploader
 from fastapi import UploadFile
 from email_validator import validate_email, EmailNotValidError
+from fastapi_mail import FastMail, MessageSchema, MessageType
 from entities.user_entity import UserEntity
 from config.security import hash_password, verify_password, create_access_token
 from config.settings import settings
+from config.mail_config import conf
 from models.user_model import SignUpRequest, SignInRequest
-
+from entities.reset_token_entity import ResetTokenEntity
+from entities.user_entity import UserEntity
+from entities.restaurant_entity import RestaurantEntity
+from entities.menu_entity import MenuEntity
+from entities.comment_entity import CommentEntity
+# from entities.booking_entity import BookingEntity
+from entities.voucher_entity import VoucherEntity
+from entities.order_entity import OrderEntity
 # Cấu hình Cloudinary
 cloudinary.config(
     cloud_name=settings.CLOUDINARY_CLOUD_NAME,
@@ -98,7 +109,7 @@ class UserService:
 
         print(f"Create accout {new_user.username} successfully!")
 
-        # 4. Trả về (Giữ nguyên lỗi chính tả 'accout' để khớp Frontend cũ)
+        # 4. Trả về 
         return {
             "success": True, 
             "message": "Create accout successfully!", 
@@ -212,15 +223,108 @@ class UserService:
             if current_user.image_url:
                 await cloudinary.uploader.destroy(current_user.image_url, invalidate=True)
             
-            # Xóa User
+            # Tìm tất cả nhà hàng của user
+            user_restaurants = await RestaurantEntity.find(RestaurantEntity.owner == current_user.id)
+
+            for restaurant in user_restaurants:
+                res_id = restaurant.id
+                # Xóa ảnh quán (nếu muốn kỹ hơn thì loop qua list images để xóa trên Cloudinary)
+
+                # Xóa Menu của quán
+                await MenuEntity.find(MenuEntity.restaurant == res_id).delete()
+                
+                # Xóa voucher riêng của quán
+                await VoucherEntity.find(VoucherEntity.restaurant_id == res_id).delete()
+
+                # # Xóa Booking liên quan đến quán (hoặc chuyển trạng thái sang CANCELLED)
+                # await BookingEntity.find(BookingEntity.restaurant == res_id).delete()
+
+                # Xóa comment của khách hàng
+                await CommentEntity.find(CommentEntity.restaurant_id == res_id).delete()
+                # Xóa quán
+                await restaurant.delete()
+            # Xóa comment của user là chủ nhà hàng
+            await CommentEntity.find(CommentEntity.user_id == current_user.id).delete()
+            # Xóa đơn đặt hàng của chủ nhà hàng
+            
+            await OrderEntity.find(OrderEntity.user == current_user.id).delete()
+            # # Xóa đơn đặt bàn của chủ nhà hàng
+            # await BookingEntiry.find(BookingEntity.user == current_user.id).delete()
+
             email = current_user.email
-            await current_user.delete()
-            
-            print(f"Delete Account {email} Successfully")
-            print("End Route")
-            
+            current_user.delete()
+            print(f"Delete Account {email} and all related data Successfully")
             return {"success": True, "message": "Delete Account Successfully !"}
         except Exception as e:
             print(f"AuthDelete error message: {str(e)}")
             print("End Route! ")
             return {"success": False, "message": "Error while Delete Account !"}
+        
+    
+    # =========================================================================
+    # 5. AUTH DELETE
+    # =========================================================================
+    @staticmethod
+    async def forget_password(email: str):
+        user = await UserEntity.find_one(UserEntity.email == email)
+        if not user:
+            return {"success": False, "message": "Email not found"}
+        
+        token = str(uuid.uuid4())
+        reset_entry = ResetTokenEntity(
+            email = email,
+            token = token,
+            expires_at = datetime.now() + timedelta(minutes = 10)
+        )
+
+        await reset_entry.insert()
+
+        # 4. Gửi Email
+        # Giả sử Frontend chạy ở localhost:5173
+        reset_link = f"http://localhost:5173/reset-password?token={token}"
+        
+        html = f"""
+        <p>Xin chào {user.username},</p>
+        <p>Bạn đã yêu cầu đặt lại mật khẩu. Vui lòng bấm vào link dưới đây:</p>
+        <p><a href="{reset_link}">Click vào đây để đặt lại mật khẩu</a></p>
+        <p>Link này sẽ hết hạn sau 15 phút.</p>
+        """
+
+        message = MessageSchema(
+            subject="Yêu cầu đặt lại mật khẩu - Food Travel",
+            recipients=[email],
+            body=html,
+            subtype=MessageType.html
+        )
+
+        fm = FastMail(conf)
+        await fm.send_message(message)
+
+        return {"success": True, "message": "Email sent! Please check your inbox."}
+# =========================================================================
+    # 7. RESET PASSWORD (Đổi mật khẩu từ token)
+# =========================================================================
+    @staticmethod
+    async def reset_password(token: str, password: str):
+        #Tìm token trong DB
+        reset_entry = await ResetTokenEntity.find_one(ResetTokenEntity.token == token)
+
+        if not reset_entry:
+            return {"success": False, "message": "Invalid or expired token"}
+        
+        #Check thử token có hết hạn chưa
+        if datetime.now() > reset_entry.expires_at:
+            await reset_entry.delete()
+
+        # 3. Tìm user và đổi mật khẩu
+        user = await UserEntity.find_one(UserEntity.email == reset_entry.email)
+        if not user:
+            return {"success": False, "message": "User not found!"}
+        
+        user.password = hash_password(password)
+        await user.save()
+
+        # 4. Xóa token sau khi dùng xong
+        await reset_entry.delete()
+
+        return {"success": True, "message": "Password reset successfully!"}

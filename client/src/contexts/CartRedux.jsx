@@ -43,7 +43,8 @@ const cartslice = createSlice({
   name: "cart",
   initialState: {
     usercart: [],
-    orderItems: [],
+    restaurantId: null,
+    orders: [],
   },
   reducers: {
     removeProduct: (state, action) => {
@@ -79,6 +80,10 @@ const cartslice = createSlice({
       }
       state.usercart.push(restitem);
     },
+    resetCart: (state) => {
+      state.usercart = [];
+      state.restaurantId = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -87,8 +92,8 @@ const cartslice = createSlice({
       })
       .addCase(getOrderByRestaurant.fulfilled, (state, action) => {
         state.status = "succeed";
-        state.orderItems = action.payload.items;
-        console.log(action.payload.items);
+        state.orders = action.payload.orders;
+        console.log(action.payload.orders);
         toast.success(action.payload.message);
       })
       .addCase(getOrderByRestaurant.rejected, (state, action) => {
@@ -99,6 +104,7 @@ const cartslice = createSlice({
 
 export const {
   addToCart,
+  resetCart,
   removeProduct,
   decreaseQuantity,
   increaseQuantity,
