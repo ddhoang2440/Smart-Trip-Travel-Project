@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from config.database import init_db
-from routes import user_route, restaurant_route, menu_route, comment_route, voucher_route, order_route, contact_route
+from routes import user_route, restaurant_route, menu_route, comment_route, voucher_route, order_route, contact_route, bookingTable_route
 import uvicorn
 
 app = FastAPI()
@@ -33,6 +33,7 @@ app.include_router(comment_route.router)
 app.include_router(voucher_route.router)
 app.include_router(order_route.router)
 app.include_router(contact_route.router)
+app.include_router(bookingTable_route.router)
 
 if __name__ == "__main__":
     # Chạy server tại port 3000

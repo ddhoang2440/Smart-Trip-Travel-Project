@@ -1,6 +1,9 @@
+from beanie import PydanticObjectId
 from pydantic import BaseModel, Field, validator
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, timezone
+
+import pydantic
 from entities.bookingTable_entity import PaymentMethod
 
 # =========================================================================
@@ -18,10 +21,14 @@ class BookingCreate(BaseModel):
     # mot ham custom validate trong pydantic, dam bao dat ban phai trong future 
     @validator('date_time')
     def validate_date_time(cls, v):
-        if v < datetime.utcnow():
+        # Nếu datetime là naive (không có timezone) → convert sang UTC
+        if v.tzinfo is None:
+            v = v.replace(tzinfo=timezone.utc)
+
+        if v < datetime.now(timezone.utc):
             raise ValueError('Không thể đặt bàn trong quá khứ')
+
         return v
-    
     # muc dich, serve for document api and concrete is swagger ui (trang /docs của FastAPI)
     class Config:
         schema_extra = {
