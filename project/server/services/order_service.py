@@ -4,6 +4,7 @@ from typing import List
 from entities.order_entity import OrderEntity, OrderItem
 from entities.menu_entity import MenuEntity
 from entities.voucher_entity import VoucherEntity
+from services.history_service import HistoryService
 
 class OrderService:
     @staticmethod
@@ -70,7 +71,19 @@ class OrderService:
                 contact=contact
             )
             await new_order.insert()
-
+            # tai chua co ham dat xong don hang nen de day cung duoc 
+            await HistoryService.record_order(
+                user_id=new_order.user,
+                # restaurant_id=new_order.restaurant_id,
+                # order_id=new_order.id,
+                details={
+                    "items": [
+                        {"name": item.name, "quantity": item.quantity, "price": item.price}
+                        for item in new_order.items
+                    ],
+                },
+                total_amount=final_price
+            )
             return {
                 "success": True, 
                 "message": "Order created successfully!", 

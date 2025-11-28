@@ -5,7 +5,7 @@ from bson import ObjectId
 
 from entities.bookingTable_entity import BookingEntity, BookingStatus
 from entities.restaurant_entity import RestaurantEntity
-from entities.user_entity import UserEntity
+from services.history_service import HistoryService
 from entities.voucher_entity import VoucherEntity
 from models.bookingTable_model import BookingCreate, BookingUpdate
 
@@ -284,15 +284,16 @@ class BookingService:
     # 4. COMPLETE BOOKING (Chủ nhà hàng đánh dấu hoàn thành + ÁP DỤNG VOUCHER)
     # =========================================================================
     @staticmethod
+    # Chỉ cần sửa hàm complete_booking() trong bookingTable_service.py
+
+    @staticmethod
     async def complete_booking(
         booking_id: str, 
         owner_id: PydanticObjectId,
-        total_bill: float  # Tổng tiền hóa đơn SAU KHI ĂN
+        total_bill: float
     ) -> Dict[str, Any]:
         """
         Đánh dấu khách đã ăn xong và TÍNH TIỀN CUỐI CÙNG
-        - Áp dụng voucher (nếu có) lên total_bill
-        - Trừ lượt voucher tại thời điểm này
         """
         try:
             if not ObjectId.is_valid(booking_id):
@@ -319,39 +320,32 @@ class BookingService:
             discount_amount = 0
             voucher_applied = None
             
-            # Kiểm tra voucher (nếu có)
             if booking.promotion_applied:
                 voucher = await VoucherEntity.find_one(
                     VoucherEntity.code == booking.promotion_applied
                 )
                 
                 if voucher and voucher.limit > 0:
-                    # Tính tiền giảm
                     if voucher.type == "PERCENT":
                         discount_amount = total_bill * (voucher.discount / 100)
-                    else:  # AMOUNT
+                    else:
                         discount_amount = voucher.discount
                     
-                    # Không giảm quá tổng bill
                     if discount_amount > total_bill:
                         discount_amount = total_bill
                     
-                    # TRỪ LƯỢT VOUCHER (Tại thời điểm này mới trừ)
                     voucher.limit -= 1
                     await voucher.save()
                     
                     voucher_applied = booking.promotion_applied
                 else:
-                    # Voucher hết lượt hoặc không tồn tại → Thông báo nhưng vẫn hoàn thành đơn
                     booking.notes = "Voucher không áp dụng được (hết lượt hoặc không hợp lệ)"
 
             final_price = total_bill - discount_amount
 
-            # Cập nhật booking
             booking.status = BookingStatus.COMPLETED
             booking.updated_at = datetime.utcnow()
             
-            # Lưu thông tin thanh toán (Có thể thêm field mới vào Entity)
             if not booking.notes:
                 booking.notes = f"Tổng bill: {total_bill:,.0f}đ"
             if voucher_applied:
@@ -360,6 +354,21 @@ class BookingService:
             await booking.save()
 
             formatted_booking = await BookingService._format_booking(booking)
+            
+            # ✅ GHI LỊCH SỬ - ĐÃ SỬA
+            await HistoryService.record_booking(
+                user_id=booking.user_id,
+                restaurant_id=booking.restaurant_id,
+                booking_id=booking.id,
+                details={
+                    "guests": booking.num_people,
+                    "booking_time": booking.date_time.isoformat(),  # ✅ Sửa từ booking_time
+                    "special_requests": booking.special_requests,    # ✅ Sửa từ special_request
+                    "status": booking.status.value,
+                    "bill": final_price,
+                    "completed_at": datetime.utcnow().isoformat()
+                }
+            )
             
             return {
                 "success": True,
@@ -499,6 +508,7 @@ class BookingService:
     # =========================================================================
     # 7. GET USER BOOKINGS
     # =========================================================================
+    # User có quyền xem tất cả đơn của chính mình.
     @staticmethod
     async def get_user_bookings(user_id: PydanticObjectId) -> Dict[str, Any]:
         """Lấy danh sách đơn đặt bàn của user"""
@@ -525,6 +535,7 @@ class BookingService:
     # =========================================================================
     # 8. GET BOOKING BY ID
     # =========================================================================
+    # User có thể xem đơn của mình, hoặc chủ nhà hàng xem đơn của nhà hàng mình.
     @staticmethod
     async def get_booking_by_id(booking_id: str, user_id: PydanticObjectId) -> Dict[str, Any]:
         """Lấy chi tiết đơn đặt bàn"""
@@ -561,6 +572,7 @@ class BookingService:
     # =========================================================================
     # 9. GET RESTAURANT BOOKINGS
     # =========================================================================
+    # chu nha hang xem don cua minh
     @staticmethod
     async def get_restaurant_bookings(restaurant_id: str, owner_id: PydanticObjectId) -> Dict[str, Any]:
         """Lấy danh sách đơn đặt bàn của nhà hàng"""
@@ -593,3 +605,5 @@ class BookingService:
         except Exception as e:
             print(f"Get restaurant bookings error: {e}")
             return {"success": False, "message": "Lấy danh sách thất bại!"}
+        
+        
