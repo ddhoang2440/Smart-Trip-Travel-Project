@@ -16,18 +16,16 @@ import Dropdown from "./Dropdown";
 import { useDispatch, useSelector } from "react-redux";
 import { signout } from "../contexts/AuthRedux";
 
-
 const Navbar = () => {
   const navigate = useNavigate();
-  const [search, setSearch] = useState(false);
+  // const [search, setSearch] = useState(false);
   const [scroll, setScroll] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
 
   const dispatch = useDispatch();
-   const { islogin, username, image} = useSelector((state) => state.auth);
+  const { islogin, username, image } = useSelector((state) => state.auth);
 
   const location = useLocation();
-
 
   useEffect(() => {
     const handleScroll = () => {
@@ -44,8 +42,6 @@ const Navbar = () => {
 
   return (
     <>
-      <SearchBar search={search} setSearch={setSearch} />
-
       <div
         className={`flex items-center fixed z-50 flex-row lg:w-full w-screen text-white lg:justify-around justify-between px-6 lg:px-0 py-6 
       ${scroll ? "bg-neutral-800" : "bg-transparent"}`}
@@ -65,15 +61,10 @@ const Navbar = () => {
         </div>
 
         <div className="flex flex-row gap-6 items-center">
-          <IconShoppingBag
-            onClick={() => navigate("/cart")}
-            className="hidden lg:block p"
-            color="white"
-          />
-          <IconSearch
+          {/* <IconSearch
             className="p hidden lg:block"
             onClick={() => setSearch(true)}
-          />
+          /> */}
           {!islogin ? (
             <button className="btn w-32" onClick={() => navigate("/login")}>
               <IconUser color="black" />
@@ -87,7 +78,10 @@ const Navbar = () => {
                 onClick={() => setShowDropdown(!showDropdown)}
               >
                 <img
-                  src={ image || "https://cdn-icons-png.freepik.com/512/6858/6858504.png" }
+                  src={
+                    image ||
+                    "https://cdn-icons-png.freepik.com/512/6858/6858504.png"
+                  }
                   alt="Avatar"
                   className="lg:size-[2.25vw] size-[3vh] rounded-full"
                 />

@@ -1,8 +1,10 @@
 import {
   IconHeart,
   IconMapPin,
+  IconShoppingBag,
   IconStar,
   IconStarFilled,
+  IconX,
 } from "@tabler/icons-react";
 import React from "react";
 import Title from "../components/Title";
@@ -19,6 +21,8 @@ import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
 import { getRestaurantMenu } from "../contexts/MenuRedux";
 import { useParams } from "react-router-dom";
+import ShopCart from "./ShopCart";
+import { resetCart } from "../contexts/CartRedux";
 const Restaurant = () => {
   const { restaurantId } = useParams();
   const [content, setContent] = useState("");
@@ -26,6 +30,8 @@ const Restaurant = () => {
   const { comment } = useSelector((state) => state.comment);
   const { image } = useSelector((state) => state.auth);
   const { restaurantmenu } = useSelector((state) => state.menu);
+  const [openCart, setOpenCart] = useState(false);
+  const { usercart } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -41,9 +47,9 @@ const Restaurant = () => {
       restaurant_id: restaurantId,
     });
     dispatch(getRestaurantMenu(restaurantId));
-    console.log(restaurantmenu);
+    dispatch(resetCart());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, currentRestaurant, restaurantId]);
+  }, [dispatch, currentRestaurant, restaurantId, location.pathname]);
 
   return (
     <div>
@@ -227,6 +233,36 @@ const Restaurant = () => {
           })}
         </div>
       </div>
+      <button
+        className="fixed bottom-35 right-2 bg-green-600 text-white p-4 rounded-full shadow-xl z-50 hover:bg-green-700 transition"
+        onClick={() => setOpenCart((prev) => !prev)}
+      >
+        <IconShoppingBag size={24} />
+        {usercart.length > 0 && (
+          <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full shadow">
+            {usercart.length}
+          </span>
+        )}
+      </button>
+
+      {openCart && (
+        <div className="fixed inset-0 z-[999] flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-gray-800/40 bg-opacity-50 fade-in"
+            onClick={() => setOpenCart(false)}
+          ></div>
+
+          <div className="relative bg-white p-6 rounded-xl shadow-2xl z-[1000] w-[80vw] h-[80vh] overflow-auto fade-in">
+            <button
+              className="ml-[65vw] bg-gray-500/40 rounded-full p-1"
+              onClick={() => setOpenCart(false)}
+            >
+              <IconX className="cursor-pointer size-8" />
+            </button>
+            <ShopCart />
+          </div>
+        </div>
+      )}
       <Footer />
     </div>
   );

@@ -20,7 +20,7 @@ export const CheckOut = ({
   return (
     check && (
       <div
-        className="w-full h-screen fixed z-99 flex items-center justify-center bg-gray-800/40  "
+        className="w-full h-screen fixed top-0 left-0 z-99 flex items-center justify-center bg-black  "
         onClick={() => setCheck(false)}
       >
         <form

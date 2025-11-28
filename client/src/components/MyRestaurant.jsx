@@ -31,7 +31,7 @@ const MyRestaurant = ({ activeTab }) => {
 
   const { userRestaurant } = useSelector((state) => state.restaurant);
   const { usermenu } = useSelector((state) => state.menu);
-  const { orderItems } = useSelector((state) => state.cart);
+  const { orders } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
   useEffect(() => {
     if (
@@ -47,7 +47,7 @@ const MyRestaurant = ({ activeTab }) => {
   }, [activeTab, dispatch]);
   // const { username } = useSelector((state) => state.auth);
   const initialState = {
-    name: userRestaurant[0].name || "lmaoáda",
+    name: userRestaurant[0].name || "",
     owner: userRestaurant[0].owner || "",
     phone: userRestaurant[0].phone || "",
     medium_price: userRestaurant[0].medium_price || 0,
@@ -78,10 +78,7 @@ const MyRestaurant = ({ activeTab }) => {
             Đang mở
           </button>
         </div>
-        <OrderTable
-          orderItems={orderItems}
-          restaurantId={userRestaurant[0]?._id}
-        />
+        <OrderTable orders={orders} restaurantId={userRestaurant[0]?._id} />
         <form onSubmit={handleSubmit}>
           <div className="mt-4">
             <div className="flex justify-between">

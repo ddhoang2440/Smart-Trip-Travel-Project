@@ -89,7 +89,7 @@ export const resSlice = createSlice({
         state.status = "succeed";
         state.restaurants = action.payload.restaurants;
         state.popularRestaurant = state.restaurants.slice(0, 4);
-        // console.log(action.payload.restaurants);
+        console.log(action.payload.restaurants);
         toast.success(action.payload.message);
       })
       .addCase(getAllRestaurant.rejected, (state, action) => {
@@ -102,7 +102,7 @@ export const resSlice = createSlice({
       .addCase(getUserRestaurant.fulfilled, (state, action) => {
         state.status = "succeed";
         state.userRestaurant = action.payload.restaurant;
-        // console.log(action.payload.restaurant);
+        console.log(action.payload.restaurant);
         toast.success(action.payload.message);
       })
       .addCase(getUserRestaurant.rejected, (state, action) => {

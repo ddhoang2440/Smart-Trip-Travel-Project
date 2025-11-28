@@ -6,7 +6,7 @@ import {
   IconTrash,
   IconX,
 } from "@tabler/icons-react";
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Restaurants } from "../assets/assets";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteAccount, profile } from "../contexts/AuthRedux";
@@ -24,7 +24,6 @@ const Setting = () => {
   const [_allergy, set_Allergy] = useState([]);
   const [_image, set_Image] = useState([]);
   const [orderHistory, setOrderHistory] = useState([]);
-
   const dispatch = useDispatch();
 
   const { username, email, allergy, image } = useSelector(
@@ -52,6 +51,7 @@ const Setting = () => {
     ProfileForm.append("image", _image[0]);
     dispatch(profile(ProfileForm));
   };
+
   const fetchOrderHistory = async () => {
     try {
       const res = await axios.get("/order/user", {
@@ -62,7 +62,6 @@ const Setting = () => {
       if (res.data.success) {
         setOrderHistory(res.data.orders);
       }
-      console.log(res.data.orders);
     } catch (error) {
       console.error("Lỗi lấy lịch sử đơn hàng:", error);
     }
@@ -73,6 +72,7 @@ const Setting = () => {
       fetchOrderHistory();
     }
   }, [activeTab]);
+
   const renderContent = () => {
     switch (activeTab) {
       case "profile":

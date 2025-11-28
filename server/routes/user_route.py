@@ -1,8 +1,6 @@
 from fastapi import APIRouter, Depends, File, UploadFile, Form, Header
 from typing import Optional
 from bson import ObjectId
-from fastapi import Header, HTTPException, status
-from bson import ObjectId
 
 from models.user_model import SignUpRequest, SignInRequest
 from services.user_service import UserService
@@ -15,46 +13,31 @@ router = APIRouter(prefix="/auth", tags=["User"])
 # MIDDLEWARE: Lấy User từ Token
 # =========================================================================
 async def get_current_user(authorization: Optional[str] = Header(None)):
+    """
+    Hàm này sẽ tự động chạy trước các route cần bảo vệ.
+    Nó lấy token từ Header 'Authorization', giải mã và tìm User trong DB.
+    """
     if not authorization:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Authorization header missing"
-        )
+        return None
     
     try:
-        # Format: "Bearer <token>"
+        # Format chuẩn: "Bearer <token>"
         if not authorization.startswith("Bearer "):
-            raise HTTPException(
-                status_code=401,
-                detail="Invalid token format"
-            )
-        
+            return None
+            
         token = authorization.split(" ")[1]
         payload = verify_token(token)
-
-        if not payload:
-            raise HTTPException(
-                status_code=401,
-                detail="Invalid token"
-            )
-
+        
+        if not payload: 
+            return None
+        
         user_id = payload.get("sub")
+        # Tìm user trong DB bằng ID
         user = await UserEntity.get(ObjectId(user_id))
-
-        if not user:
-            raise HTTPException(
-                status_code=401,
-                detail="User not found"
-            )
-        # print(user)
         return user
-
     except Exception as e:
-        print("Auth Middleware Error:", e)
-        raise HTTPException(
-            status_code=401,
-            detail="Authentication failed"
-        )
+        print(f"Auth Middleware Error: {e}")
+        return None
 
 # =========================================================================
 # ROUTES
