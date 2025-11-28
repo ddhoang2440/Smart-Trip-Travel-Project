@@ -1,12 +1,8 @@
 from fastapi import APIRouter, Depends, File, UploadFile, Form, Header
 from typing import Optional
 from bson import ObjectId
-<<<<<<< HEAD
 
 from models.user_model import ForgotPasswordRequest, ResetPasswordRequest, SignUpRequest, SignInRequest
-=======
-from models.user_model import SignUpRequest, SignInRequest, ForgotPasswordRequest, ResetPasswordRequest
->>>>>>> 4bb877554ff17d3fbe459efe0f5af2e6fef8c74e
 from services.user_service import UserService
 from config.security import verify_token
 from entities.user_entity import UserEntity
@@ -95,24 +91,12 @@ async def delete(current_user: UserEntity = Depends(get_current_user)):
          return {"success": False, "message": "Auth not Found!"}
          
     return await UserService.auth_delete(current_user)
-<<<<<<< HEAD
 # 6. Quên mật khẩu (POST /auth/forgot-password)
-=======
-
-# 5. Quên mật khẩu (POST /auth/forgot-password)
->>>>>>> 4bb877554ff17d3fbe459efe0f5af2e6fef8c74e
 @router.post("/forgot-password")
 async def forgetPassword(data: ForgotPasswordRequest):
     return await UserService.forget_password(data.email)
 
-<<<<<<< HEAD
 # 7. Reset mật khẩu (POST /auth/reset-password)
 @router.post("/reset-password")
 async def resetPassword(data: ResetPasswordRequest):
     return await UserService.reset_password(data.token, data.new_password)
-=======
-# 5. Reset mật khẩu (POST /auth/reset-password)
-@router.post("/reset-password")
-async def resetPassword(data: ResetPasswordRequest):
-    return await UserService.reset_password(data.token, data.new_password)
->>>>>>> 4bb877554ff17d3fbe459efe0f5af2e6fef8c74e

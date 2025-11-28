@@ -4,7 +4,6 @@ import resreducer from './ResRedux'
 import menureducer from './MenuRedux'
 import commentreducer from './CommentRedux'
 import cartreducer from './CartRedux'
-// import chatReducer from "./ChatRedux";
 
 export const store = configureStore({
     reducer:  {
@@ -13,7 +12,6 @@ export const store = configureStore({
         menu: menureducer,
         comment: commentreducer,
         cart:  cartreducer,
-        // chat: chatReducer
     }
 })
 

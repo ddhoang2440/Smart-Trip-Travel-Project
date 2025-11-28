@@ -11,10 +11,7 @@ from entities.voucher_entity import VoucherEntity
 from entities.order_entity import OrderEntity
 from entities.contact_entity import ContactEntity
 from entities.reset_token_entity import ResetTokenEntity
-<<<<<<< HEAD
 
-=======
->>>>>>> 4bb877554ff17d3fbe459efe0f5af2e6fef8c74e
 async def init_db():
     client = AsyncIOMotorClient(settings.MONGOOSE_URL)
     

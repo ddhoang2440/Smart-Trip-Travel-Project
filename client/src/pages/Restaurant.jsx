@@ -33,30 +33,7 @@ const Restaurant = () => {
   const [openCart, setOpenCart] = useState(false);
   const { usercart } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
-  const checkIsOpen = (from, to) => {
-    if (!from || !to) return false;
-    
-    const now = new Date();
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
-  
-    // Chuyển giờ "08:00" thành số phút (8*60 + 0 = 480)
-    const parseTime = (timeStr) => {
-      const [hours, minutes] = timeStr.split(':').map(Number);
-      return hours * 60 + minutes;
-    };
-  
-    const start = parseTime(from);
-    const end = parseTime(to);
-  
-    // Xử lý trường hợp quán mở qua đêm (VD: 22:00 - 02:00)
-    if (end < start) {
-      return currentMinutes >= start || currentMinutes <= end;
-    }
-    
-    return currentMinutes >= start && currentMinutes <= end;
-  };
-  
-  const isOpenNow = checkIsOpen(currentRestaurant.from, currentRestaurant.to);
+
   useEffect(() => {
     console.log("Current Restaurant ID:", restaurantId);
     console.log("Sending request with restaurant_id:", {
@@ -115,7 +92,7 @@ const Restaurant = () => {
             </label>
           </div>
           <div className="flex flex-col items-center gap-4">
-            {isOpenNow ? (
+            {!currentRestaurant.open ? (
               <>
                 <p className="btn btn-wide text-white btn-success">Opened</p>
               </>
@@ -275,11 +252,7 @@ const Restaurant = () => {
             onClick={() => setOpenCart(false)}
           ></div>
 
-<<<<<<< HEAD
           <div className="relative bg-white p-6 rounded-xl shadow-2xl z-[1000] w-[80vw] h-[90vh] overflow-auto fade-in">
-=======
-          <div className="relative bg-white p-6 rounded-xl shadow-2xl z-[1000] w-[80vw] h-[80vh] overflow-auto fade-in">
->>>>>>> 4bb877554ff17d3fbe459efe0f5af2e6fef8c74e
             <button
               className="ml-[65vw] bg-gray-500/40 rounded-full p-1"
               onClick={() => setOpenCart(false)}
