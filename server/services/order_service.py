@@ -323,7 +323,7 @@ class OrderService:
             orders = await OrderEntity.find(
                 OrderEntity.user == user_id
             ).sort("-created_at").to_list()
-            
+            # print(orders)
             # Trả về danh sách rỗng nếu không có đơn, thay vì báo lỗi
             if not orders:
                 return {"success": True, "message": "No orders found", "orders": []}

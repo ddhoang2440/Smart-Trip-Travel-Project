@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, File, UploadFile, Form, Header
 from typing import Optional
 from bson import ObjectId
 
-from models.user_model import SignUpRequest, SignInRequest
+from models.user_model import ForgotPasswordRequest, ResetPasswordRequest, SignUpRequest, SignInRequest
 from services.user_service import UserService
 from config.security import verify_token
 from entities.user_entity import UserEntity
@@ -91,3 +91,12 @@ async def delete(current_user: UserEntity = Depends(get_current_user)):
          return {"success": False, "message": "Auth not Found!"}
          
     return await UserService.auth_delete(current_user)
+# 6. Quên mật khẩu (POST /auth/forgot-password)
+@router.post("/forgot-password")
+async def forgetPassword(data: ForgotPasswordRequest):
+    return await UserService.forget_password(data.email)
+
+# 7. Reset mật khẩu (POST /auth/reset-password)
+@router.post("/reset-password")
+async def resetPassword(data: ResetPasswordRequest):
+    return await UserService.reset_password(data.token, data.new_password)
