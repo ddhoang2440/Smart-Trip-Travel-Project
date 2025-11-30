@@ -76,6 +76,8 @@ INTENT SCHEMAS
 ### search
 fields: {
   "query": slot,
+  "food_name": slot,
+  "dietary_preferences": slot,
   "res_name": slot,
   "cuisine": slot,
   "location": slot,

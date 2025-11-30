@@ -1,6 +1,9 @@
 from typing import List, Dict, Any
 from datetime import datetime
 
+from entities.restaurant_entity import RestaurantEntity
+from entities.menu_entity import MenuEntity
+
 OPERATOR_MAP = {
     "<": "$lt",
     "<=": "$lte",
@@ -8,7 +11,8 @@ OPERATOR_MAP = {
     ">=": "$gte",
     "=": "$eq",
     "!=": "$ne",
-    "range": "range"
+    "range": "range",
+    "in": "$in"
 }
 
 class FilterSpec:
@@ -23,8 +27,8 @@ class FilterSpec:
             current = datetime.now().strftime("%H:%M")
             return {
                 "$and": [
-                    {"open_hour": {"$gte": current}},
-                    {"close_hour": {"$lte": current}}
+                    {"open_hour": {"$lte": current}},
+                    {"close_hour": {"$gte": current}}
                 ]
             }
 
@@ -62,14 +66,14 @@ def build_filter(filters: List[FilterSpec], logic: str = "AND") -> Dict:
         return {"$or": conds}
     return {"$and": conds}
 
-def build_filterspec_from_ai_json(fields: Dict) -> List[FilterSpec]:
+def build_restaurant_filterspec_from_json(fields: Dict) -> List[FilterSpec]:
     """
     Convert AI JSON (intent: search) directly to list of FilterSpec
     """
-    filters: List[FilterSpec] = []
+    res_filters: List[FilterSpec] = []
     # --- res_name ---
     if fields.get("res_name") and fields["res_name"].get("value"):
-        filters.append(FilterSpec("name", "=", fields["res_name"]["value"]))
+        res_filters.append(FilterSpec("name", "=", fields["res_name"]["value"]))
 
     # --- cuisine / tags / utils ---
     tags = []
@@ -78,31 +82,31 @@ def build_filterspec_from_ai_json(fields: Dict) -> List[FilterSpec]:
             val = fields[key]["value"]
             tags.extend(val if isinstance(val, list) else [val])
     for t in tags:
-        filters.append(FilterSpec("type", "=", t))
+        res_filters.append(FilterSpec("type", "=", t))
 
     # --- open_now ---
     if fields.get("open_now") and fields["open_now"].get("value") is True:
-        filters.append(FilterSpec("open_now", "=", True))
+        res_filters.append(FilterSpec("open_now", "=", True))
 
     # --- price_range ---
     if fields.get("price_range") and fields["price_range"].get("value"):
         pr = fields["price_range"]["value"]
         if pr.get("min") is not None or pr.get("max") is not None:
-            filters.append(FilterSpec("price", "range", {"min": pr.get("min"), "max": pr.get("max")}))
+            res_filters.append(FilterSpec("price", "range", {"min": pr.get("min"), "max": pr.get("max")}))
 
     # --- rating_min ---
     if fields.get("rating") and fields["rating"].get("value") is not None:
-        filters.append(FilterSpec("rating", fields["rating"]["operator"], float(fields["rating"]["value"])))
+        res_filters.append(FilterSpec("rating", fields["rating"]["operator"], float(fields["rating"]["value"])))
 
     # --- distance_km ---
     if fields.get("distance_km") and fields["distance_km"].get("value") is not None:
-        filters.append(FilterSpec("distance_km", "<=", fields["distance_km"]["value"]))
+        res_filters.append(FilterSpec("distance_km", "<=", fields["distance_km"]["value"]))
 
     # --- location ---
     if fields.get("location") and fields["location"].get("canonical"):
         loc = fields["location"]["canonical"]
         if loc.get("district"):
-            filters.append(FilterSpec("district", "=", loc["district"]))
+            res_filters.append(FilterSpec("district", "=", loc["district"]))
 
     # --- extra filters ---
     if fields.get("filters"):
@@ -110,7 +114,60 @@ def build_filterspec_from_ai_json(fields: Dict) -> List[FilterSpec]:
             if v is None:
                 continue
             if isinstance(v, dict) and "operator" in v and "value" in v:
-                filters.append(FilterSpec(k, v["operator"], v["value"]))
+                res_filters.append(FilterSpec(k, v["operator"], v["value"]))
             else:
-                filters.append(FilterSpec(k, "=", v))
-    return filters
+                res_filters.append(FilterSpec(k, "=", v))
+    return res_filters
+
+async def build_food_filter_from_json(fields: Dict) -> List[FilterSpec]:
+    """
+    Convert AI JSON (intent: search) directly to list of FilterSpec
+    """
+    food_filters: List[FilterSpec] = []
+    # CHECK RESTAURANT FIELDS
+
+    restaurant_fields = [
+        "res_name",
+        "cuisine",
+        "tags",
+        "open_now",
+        "rating",
+        "distance_km",
+        "location",
+    ]
+    res_field = any(fields.get(f) for f in restaurant_fields)
+    if res_field:
+        res_filters = build_restaurant_filterspec_from_json(fields)
+        mongo_res_filter = build_filter(res_filters, logic="AND")
+
+        cursor = RestaurantEntity.find(mongo_res_filter)
+        restaurants = await cursor.to_list()
+
+        res_ids = [str(r.id) for r in restaurants]
+
+        if res_ids:
+            food_filters.append(FilterSpec("restaurant", "in", res_ids))
+        else:
+            return []  # No matching restaurants, so no food results
+
+
+    # FOOD FILTERS"
+
+    # --- food_name ---
+    if fields.get("food_name") and fields["food_name"].get("value"):
+        food_filters.append(FilterSpec("name", "=", fields["food_name"]["value"]))
+
+    # --- price_range ---
+    if fields.get("price_range") and fields["price_range"].get("value"):
+        pr = fields["price_range"]["value"]
+        if pr.get("min") is not None or pr.get("max") is not None:
+            food_filters.append(FilterSpec("price", "range", {"min": pr.get("min"), "max": pr.get("max")}))
+
+    # --- dietary_preferences filters ---
+    if fields.get("dietary_preferences") and fields["dietary_preferences"].get("value"):
+        prefs = fields["dietary_preferences"]["value"]
+        prefs_list = prefs if isinstance(prefs, list) else [prefs]
+        for pref in prefs_list:
+            food_filters.append(FilterSpec("dietary_tags", "=", pref))
+    return food_filters
+
