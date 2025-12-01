@@ -3,7 +3,6 @@ import json
 from .client import call_gemini
 from .entities import MessageRequest
 from .prompts.newIntent import intent
-from .testfilter import build_filterspec_from_ai_json
 
 from .handlers.suggestHandler import SuggestHandler
 from .handlers.searchHandler import SearchHandler
@@ -56,7 +55,7 @@ async def process_ai_response(json_list):
     for obj in json_list:
         intent_name = obj.get("intent")
         type_ = obj.get("type")
-        entities = obj.get("entities")
+        entity = obj.get("entity")
         params = obj.get("fields", {}) or {}
 
         handler = INTENT_HANDLERS.get(intent_name)
@@ -64,7 +63,7 @@ async def process_ai_response(json_list):
             results.append({"error": f"Unknown intent: {intent_name}"})
             continue
 
-        result = await handler.handle(type_, entities, params)
+        result = await handler.handle(type_, entity, params)
         results.append(result)
 
     return results

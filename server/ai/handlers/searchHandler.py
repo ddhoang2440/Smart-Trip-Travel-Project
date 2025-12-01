@@ -1,42 +1,54 @@
 from .base import IntentHandler
 from ai.testfilter import build_filter, build_food_filter_from_json, build_restaurant_filterspec_from_json
 from ai.entitiesMap import ENTITY_MAP
+from ai.testfilter import FilterSpec
 
 class SearchHandler(IntentHandler):
-    async def handle(self, type_: str, entities: str, params: dict):
-        entity = ENTITY_MAP.get(entities)
+    async def handle(self, type_: str, entity: str, params: dict):
+        ent = ENTITY_MAP.get(entity)
         if type_ == "reply":
-            return await self.search_text(entity, params)
+            return await self.search_text(ent, params)
         elif type_ == "ui_action":
-            return self.search_ui(entity, params)
+            return self.search_ui(ent, params)
         return None
 
     async def search_text(self, entity, params):
-        if entity == "restaurant":
+        filters: list[FilterSpec] = []
+        Restaurant = ENTITY_MAP.get("restaurant")
+        Menu = ENTITY_MAP.get("menu")
+        Food = ENTITY_MAP.get("food")
+
+        # Build filters based on entity type
+        if entity == Restaurant:
+            print("Building restaurant filters")
             filters = build_restaurant_filterspec_from_json(params)
-        elif entity == "menu" or entity == "food":
+
+        if entity in (Menu, Food):
+            print("Building food filters")
             filters = await build_food_filter_from_json(params)
-        
+
+        # Convert to MongoDB filter
         mongo_filter = build_filter(filters, logic="AND")
         print("Mongo Filter:", mongo_filter)
 
+        # Query database
         cursor = entity.find(mongo_filter)
         print("Cursor:", cursor)
         results = await cursor.to_list()
 
         # Get res_name from menuEntity
-        if entity == "menu" or entity == "food":
+        if entity in (Menu, Food) and results:
             res_map = {}
-            ids = list({item["restaurant"]} for item in results)
+            # Lấy danh sách restaurant_id duy nhất
+            ids = list({item.restaurant for item in results if item.restaurant is not None})
 
             if ids:
-                res_cursor = ENTITY_MAP["restaurant"].find({"_id": {"$in": ids}})
-                res_list = await res_cursor.to_list()
-                res_map = {str(r.id): r["name"] for r in res_list}
+                res_list = await Restaurant.find({"_id": {"$in": ids}}).to_list()
+                res_map = {r.id: r.name for r in res_list}
 
+            # Gán tên nhà hàng vào kết quả
             for item in results:
-                res_id = str(item.get("restaurant"))
-                item["restaurant_name"] = res_map.get(res_id, "Unknown")
+                item.restaurant_name = res_map.get(item.restaurant, "Unknown")
 
         return results
 

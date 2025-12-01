@@ -88,11 +88,11 @@ def build_restaurant_filterspec_from_json(fields: Dict) -> List[FilterSpec]:
     if fields.get("open_now") and fields["open_now"].get("value") is True:
         res_filters.append(FilterSpec("open_now", "=", True))
 
-    # --- price_range ---
-    if fields.get("price_range") and fields["price_range"].get("value"):
-        pr = fields["price_range"]["value"]
+    # --- res_price ---
+    if fields.get("res_price") and fields["res_price"].get("value"):
+        pr = fields["res_price"]["value"]
         if pr.get("min") is not None or pr.get("max") is not None:
-            res_filters.append(FilterSpec("price", "range", {"min": pr.get("min"), "max": pr.get("max")}))
+            res_filters.append(FilterSpec("medium_price", "range", {"min": pr.get("min"), "max": pr.get("max")}))
 
     # --- rating_min ---
     if fields.get("rating") and fields["rating"].get("value") is not None:
@@ -140,14 +140,16 @@ async def build_food_filter_from_json(fields: Dict) -> List[FilterSpec]:
         res_filters = build_restaurant_filterspec_from_json(fields)
         mongo_res_filter = build_filter(res_filters, logic="AND")
 
+        print("Mongo Restaurant Filter:", mongo_res_filter)
         cursor = RestaurantEntity.find(mongo_res_filter)
         restaurants = await cursor.to_list()
 
-        res_ids = [str(r.id) for r in restaurants]
+        res_ids = [r.id for r in restaurants]
 
         if res_ids:
             food_filters.append(FilterSpec("restaurant", "in", res_ids))
         else:
+            print("Hello")
             return []  # No matching restaurants, so no food results
 
 
@@ -157,9 +159,9 @@ async def build_food_filter_from_json(fields: Dict) -> List[FilterSpec]:
     if fields.get("food_name") and fields["food_name"].get("value"):
         food_filters.append(FilterSpec("name", "=", fields["food_name"]["value"]))
 
-    # --- price_range ---
-    if fields.get("price_range") and fields["price_range"].get("value"):
-        pr = fields["price_range"]["value"]
+    # --- food_price ---
+    if fields.get("food_price") and fields["food_price"].get("value"):
+        pr = fields["food_price"]["value"]
         if pr.get("min") is not None or pr.get("max") is not None:
             food_filters.append(FilterSpec("price", "range", {"min": pr.get("min"), "max": pr.get("max")}))
 
