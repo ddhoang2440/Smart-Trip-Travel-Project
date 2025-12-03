@@ -1,15 +1,27 @@
 from .base import IntentHandler
 
 class CompareHandler(IntentHandler):
-    def handle(self, type_: str, entities: str, params: dict):
+    async def handle(self, type_: str, entities: str, params: dict):
         if type_ == "reply":
-            return self.compare_text(entities, params)
+            return await self.compare_text(entities, params)
         elif type_ == "ui_action":
-            return self.compare_ui(entities, params)
+            return await self.compare_ui(entities, params)
         return None
 
-    def compare_text(self, entities, params):
-        return "Compare text"
+    async def compare_text(self, entities, params):
+        return {
+            "type": "comparison",
+            "message": "Kết quả so sánh",
+            "data": {
+                "compared_items": [],
+                "criteria": params
+            }
+        }
 
-    def compare_ui(self, entities, params):
-        return "Compare ui"
+    async def compare_ui(self, entities, params):
+        return {
+            "type": "ui-action",
+            "action": "compare",
+            "entities": entities,
+            "params": params
+        }

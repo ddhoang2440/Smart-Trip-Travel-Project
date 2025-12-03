@@ -9,7 +9,7 @@ class SearchHandler(IntentHandler):
         if type_ == "reply":
             return await self.search_text(ent, params)
         elif type_ == "ui_action":
-            return self.search_ui(ent, params)
+            return await self.search_ui(ent, params)
         return None
 
     async def search_text(self, entity, params):
@@ -36,8 +36,37 @@ class SearchHandler(IntentHandler):
         print("Cursor:", cursor)
         results = await cursor.to_list()
 
+        # Format response based on entity type
+        if entity == Restaurant:
+            formatted_restaurants = []
+            for item in results:
+                formatted_restaurants.append({
+                    "id": str(item.id),
+                    "name": item.name,
+                    "review":item.review,
+                    "address": item.address,
+                    "rating": item.rating,
+                    "medium_price": item.medium_price,
+                    "open_hour": item.from_time,
+                    "close_hour": item.to_time,
+                    "cuisine_type": item.type,
+                    "images": item.images if hasattr(item, 'images') else [],
+                    "description": getattr(item, 'description', ''),
+                    "distance_km": getattr(item, 'distance_km', None)
+                })
+            # Return restaurant-list format
+            return {
+                "type": "restaurant-list",
+                "restaurants": formatted_restaurants,
+                "message": f"Tìm thấy {len(formatted_restaurants)} nhà hàng phù hợp",
+                "metadata": {
+                    "count": len(formatted_restaurants),
+                    "filters": params,
+                    "entity": "restaurant"
+                }
+            }
         # Get res_name from menuEntity
-        if entity in (Menu, Food) and results:
+        elif entity in (Menu, Food) and results:
             res_map = {}
             # Lấy danh sách restaurant_id duy nhất
             ids = list({item.restaurant for item in results if item.restaurant is not None})
@@ -46,11 +75,42 @@ class SearchHandler(IntentHandler):
                 res_list = await Restaurant.find({"_id": {"$in": ids}}).to_list()
                 res_map = {r.id: r.name for r in res_list}
 
-            # Gán tên nhà hàng vào kết quả
+            # Format food/menu results
+            formatted_food = []
             for item in results:
-                item.restaurant_name = res_map.get(item.restaurant, "Unknown")
+                formatted_item = {
+                    "id": str(item.id),
+                    "name": item.name,
+                    "price": getattr(item, 'price', None),
+                    "description": getattr(item, 'description', ''),
+                    "restaurant_id": str(item.restaurant) if item.restaurant else None,
+                    "restaurant_name": res_map.get(item.restaurant, "Unknown"),
+                    "dietary_tags": getattr(item, 'dietary_tags', [])
+                }
+                formatted_food.append(formatted_item)
+            
+            return {
+                "type": "food-list",
+                "food": formatted_food,
+                "message": f"Tìm thấy {len(formatted_food)} món ăn phù hợp",
+                "metadata": {
+                    "count": len(formatted_food),
+                    "entity": "food" if entity == Food else "menu"
+                }
+            }
 
-        return results
+        # No results found
+        return {
+            "type": "no-results",
+            "message": "Không tìm thấy kết quả phù hợp",
+            "restaurants": [] if entity == Restaurant else None,
+            "items": [] if entity in (Menu, Food) else None
+        }
 
-    def search_ui(self, entity, params):
-        return "Search ui"
+    async def search_ui(self, entity, params):
+        return {
+            "type": "ui-action",
+            "action": "search",
+            "entity": entity,
+            "params": params
+        }
