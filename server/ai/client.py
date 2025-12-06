@@ -29,5 +29,26 @@ def get_model():
 def call_gemini(prompt):
     model = get_model()
     ai = genai.GenerativeModel(model)
-    response = ai.generate_content(prompt)
-    return response.text
+    
+    try:
+        response = ai.generate_content(prompt)
+
+        # 1️⃣ Kiểm tra xem có candidate không
+        if not response.candidates:
+            print("Gemini: No candidates returned")
+            return None
+
+        candidate = response.candidates[0]
+
+        # 2️⃣ Kiểm tra xem candidate có parts không
+        if not candidate.content.parts:
+            print("Gemini: No content parts (safety block?)", candidate.finish_reason)
+            return None
+
+        # 3️⃣ Trả về text bình thường
+        return candidate.content.parts[0].text
+
+    except Exception as e:
+        print("Gemini API Error:", e)
+        return None
+

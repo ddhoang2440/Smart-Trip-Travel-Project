@@ -11,7 +11,7 @@ HIGH-LEVEL RULES
 -------------------------
 1) OUTPUT FORMAT: Return a JSON array of one or more objects. Each object MUST include:
    - "intent": string
-   - "type": "ui_action" | "reply" | "no_response"
+   - "type": "reply" | "no_response"
    - "entity": "restaurant" | "menu" | "food" | null
    - "fields": object
    - "intent_confidence": number (0.0 - 1.0)
@@ -103,13 +103,13 @@ fields: {
 ### booking
 fields: {
   "restaurant": slot,
-  "restaurant_id": slot|null,
   "time": { "from": string|null, "to": string|null },
   "date": { "day": int|null, "month": int|null, "year": int|null },
-  "people": slot,
+  "num_people": slot,
   "contact_name": slot,
   "contact_phone": slot,
   "special_request": slot,
+  "promotion_code": slot,
   "slots": object
 }
 

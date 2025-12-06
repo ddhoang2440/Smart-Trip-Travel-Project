@@ -3,7 +3,7 @@ from fastapi.security import OAuth2PasswordBearer
 from asyncio.log import logger
 from datetime import datetime
 
-from .intentService import extract_user_intent, process_ai_response
+from .intentService import extract_user_intent, handle_session_message
 from ai.entities import MessageRequest
 from entities.user_entity import UserEntity
 from routes.user_route import get_current_user
@@ -28,15 +28,15 @@ async def analyze_message(request: dict, current_user: UserEntity = Depends(get_
             timestamp=timestamp or datetime.utcnow().isoformat()
         )
 
-        intents = await extract_user_intent(msg_request)
-        if not intents:
-            return {
-                "success": False,
-                "message": "Không thể xác định ý định từ tin nhắn",
-                "type": "error"
-            }
+        # intents = await extract_user_intent(msg_request)
+        # if not intents:
+        #     return {
+        #         "success": False,
+        #         "message": "Không thể xác định ý định từ tin nhắn",
+        #         "type": "error"
+        #     }
         
-        result = await process_ai_response(intents, current_user)
+        result = await handle_session_message(msg_request, current_user)
         if isinstance(result, dict):
             response_type = result.get("type", "reply")
             

@@ -54,11 +54,15 @@ async def build_user_session(message: str, session: dict):
     output = call_gemini(prompt)
     try:
         result = json.loads(output)
-        return result
+        return {
+            "action": result.get("action"),
+            "updated_session": result.get("updated_session"),
+            "reply": result.get("reply")
+        }
     except:
         return {
             "action": "no_action",
-            "updated_session": session,
+            "session": output,
             "reply": "Xin lỗi, tôi không hiểu yêu cầu của bạn."
         }
 
@@ -68,14 +72,13 @@ def get_slot_value(fields: dict, slot_name: str, default=None):
         return slot.get("value", default)
     return default
 
-async def process_ai_response(json_list, current_user=None):
+async def handle_intents(json_list: dict, current_user=None):
     results = []
 
-    for obj in json_list:
-        intent_name = obj.get("intent")
-        type_ = obj.get("type")
-        entity = obj.get("entity")
-        params = obj.get("fields", {}) or {}
+    for payload in json_list:
+        intent_name = payload.get("intent")
+
+        params = payload.get("fields", {}) or {}
 
         # Thêm thông tin user vào params nếu có
         if current_user:
@@ -92,7 +95,7 @@ async def process_ai_response(json_list, current_user=None):
             continue
 
         try:
-            result = await handler.handle(type_, entity, params)
+            result = await handler.run(payload)
             results.append(result)
         except Exception as e:
             print(f"Handler error for intent {intent_name}: {str(e)}")
@@ -101,49 +104,66 @@ async def process_ai_response(json_list, current_user=None):
                 "message": "Đã có lỗi xảy ra khi xử lý yêu cầu",
                 "error": str(e)
             })
-        return results[0] if len(results) == 1 else results
+    return results[0] if len(results) == 1 else results
     
-async def handle_chat_message(request, current_user=None):
-    user_id = current_user.id
-    message = request.message.strip()
+async def handle_session_message(request: MessageRequest, current_user=None):
+    user_id = str(current_user.id)
+    message = request.message
 
     # 1️⃣ Kiểm tra session Redis
     session = await SessionManager.get(user_id)
 
-    if session and session.get("flow") == "booking.create":
-        session = await build_user_session(message, session)
+    if session:
+        log = await SessionManager.show_all()
+        print("Log:",log)
+        session = await build_user_session(message, session) # Cập nhật session dựa trên message mới
 
         action = session["action"]
         updated = session["updated_session"]
         reply = session["reply"]
+        print("Session:", session)
 
         if action == "update_booking":
             await SessionManager.set(user_id, updated)
             return {
-                "type": "booking.preview",
+                "type": "booking-preview",  # Hiển thị thông tin hiện tại cho người dùng
                 "message": reply,
-                "session": updated
+                "booking_info": updated  # Trả về thông tin booking đã cập nhật
             }
 
         if action == "confirm_booking":
-            handler = INTENT_HANDLERS["booking"]
-            result = await handler.confirm(updated)
+            handler = INTENT_HANDLERS.get("booking")
+            result = await handler.handle("confirm", None, updated)
+            print(result)
             await SessionManager.delete(user_id)
-            return result
+            return {
+                "type": "booking-confirmed",
+                "message": "Đặt bàn thành công!",
+                "booking_info": result
+            }
 
         if action == "cancel_booking":
             await SessionManager.delete(user_id)
-            return {"message": "Đã hủy yêu cầu."}
+            return {
+                "type": "booking-canceled",
+                "message": "Đã hủy đặt bàn."
+            }
+
+        if action == "no_action":
+            return {
+                "type": "booking-form",
+                "message": "Mình không lấy được thông tin của bạn, vui lòng điền form"
+            }
 
         return {"message": reply}
 
     # 2️⃣ Nếu không có session → xử lý intent bình thường
     intents = await extract_user_intent(request)
-    response = await process_ai_response(intents, current_user)
+    response = await handle_intents(intents, current_user)
 
     # 3️⃣ Nếu intent là booking → tạo session trong Redis
-    if response.get("type") == "booking.preview":
-        session_obj = response.get("session")
+    if response.get("action") == "create_booking":
+        session_obj = response.get("updated_session")
         await SessionManager.set(user_id, session_obj)
 
     return response
