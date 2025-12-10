@@ -137,8 +137,8 @@ export const resSlice = createSlice({
       total_pages: 1,
     },
     //
-    total_dishes: Number,
-    total_restaurants: Number,
+    total_dishes: 0,
+    total_restaurants: 0,
     sort_by: "rating",
     currentSort: "rating",
     hasMore: true,

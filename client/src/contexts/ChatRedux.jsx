@@ -51,6 +51,20 @@ export const sendMessageToAI = createAsyncThunk(
               `Tìm thấy ${data.restaurants.length} nhà hàng phù hợp`,
           };
         }
+        if (data.type === "food-list") {
+          console.log("Food list data received:", data);
+          return {
+            type: "food-list",
+            data: data.data || [], // Mảng các món ăn
+            groupedData: data.groupedData || [], // Dữ liệu nhóm theo nhà hàng
+            stats: data.stats || {}, // Thống kê
+            metadata: data.metadata || {}, // Metadata
+            text:
+              data.text ||
+              data.message ||
+              `Tìm thấy ${data.data?.length || 0} món ăn phù hợp`,
+          };
+        }
         return {
           type: "text",
           text: data.reply || data.message || "Đã xử lý yêu cầu của bạn",
@@ -118,6 +132,19 @@ const chatSlice = createSlice({
         timestamp: new Date().toISOString(),
       });
     },
+    addFoodList: (state, action) => {
+      state.messages.push({
+        sender: "ai",
+        type: "food-list",
+        data: action.payload.data || [],
+        groupedData: action.payload.groupedData || [],
+        stats: action.payload.stats || {},
+        metadata: action.payload.metadata || {},
+        text:
+          action.payload.message || action.payload.text || "Danh sách món ăn",
+        timestamp: new Date().toISOString(),
+      });
+    },
 
     clearChat: (state) => {
       state.messages = [
@@ -164,7 +191,6 @@ const chatSlice = createSlice({
 
         state.messages.push(newMessage);
 
-
         state.context.conversationHistory.push({
           role: "assistant",
           content: action.payload.text || "",
@@ -197,6 +223,7 @@ const chatSlice = createSlice({
 export const {
   addUserMessage,
   addRestaurantList,
+  addFoodList,
   clearChat,
   setError,
   updateContext,

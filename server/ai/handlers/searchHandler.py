@@ -54,10 +54,12 @@
 
 #     def search_ui(self, entity, params):
 #         return "Search ui"
+# handlers/searchHandler.py
 from .base import IntentHandler
 from ai.testfilter import build_filter, build_food_filter_from_json, build_restaurant_filterspec_from_json
 from ai.entitiesMap import ENTITY_MAP
 from ai.testfilter import FilterSpec
+from ai.mongo_formatter import MongoFormatter  # Add this import
 
 class SearchHandler(IntentHandler):
     async def handle(self, type_: str, entity: str, params: dict):
@@ -73,7 +75,9 @@ class SearchHandler(IntentHandler):
         Restaurant = ENTITY_MAP.get("restaurant")
         Menu = ENTITY_MAP.get("menu")
         Food = ENTITY_MAP.get("food")
-
+        print("Entity:", entity)
+        print("Params:", params)
+        
         # Build filters based on entity type
         if entity == Restaurant:
             print("Building restaurant filters")
@@ -89,8 +93,9 @@ class SearchHandler(IntentHandler):
 
         # Query database
         cursor = entity.find(mongo_filter)
-        print("Cursor:", cursor)
         results = await cursor.to_list()
+        print(f"Found {len(results)} results")
+        print("Cursor:", cursor)
 
         # Format response based on entity type
         if entity == Restaurant:
@@ -100,23 +105,29 @@ class SearchHandler(IntentHandler):
                 formatted_restaurants.append({
                     "id": str(item.id),
                     "name": item.name,
-                    "review":item.review,
+                    "review": item.review,
+                    "open":item.open,
                     "address": item.address,
                     "rating": item.rating,
                     "medium_price": item.medium_price,
-                    "open_hour": item.from_time,
-                    "close_hour": item.to_time,
+                    "open_hour": getattr(item, 'from_time', ''),
+                    "close_hour": getattr(item, 'to_time', ''),
                     "cuisine_type": item.type,
                     "images": item.images if hasattr(item, 'images') else [],
                     "description": getattr(item, 'description', ''),
-                    "distance_km": getattr(item, 'distance_km', None)
+                    "distance_km": getattr(item, 'distance_km', None),
+                    "district": getattr(item, 'district', ''),
+                    "phone": getattr(item, 'phone', ''),
+                    "website": getattr(item, 'website', ''),
+                    "booking_available": getattr(item, 'booking_available', False)
                 })
             
             # Return restaurant-list format
             return {
                 "type": "restaurant-list",
-                "restaurants": formatted_restaurants,
+                "text": f"Tìm thấy {len(formatted_restaurants)} nhà hàng phù hợp",
                 "message": f"Tìm thấy {len(formatted_restaurants)} nhà hàng phù hợp",
+                "restaurants": formatted_restaurants,
                 "metadata": {
                     "count": len(formatted_restaurants),
                     "filters": params,
@@ -125,44 +136,55 @@ class SearchHandler(IntentHandler):
             }
         
         # For Menu/Food items, get restaurant names
-        elif entity in (Menu, Food) and results:
+        if entity in (Menu, Food):
+            if not results:
+                return {
+                    "type": "no-results",
+                    "message": "Không tìm thấy món ăn nào phù hợp",
+                    "text": "Không tìm thấy món ăn nào phù hợp"
+                }
+            
             res_map = {}
             ids = list({item.restaurant for item in results if item.restaurant is not None})
 
             if ids:
                 res_list = await Restaurant.find({"_id": {"$in": ids}}).to_list()
-                res_map = {r.id: r.name for r in res_list}
+                res_map = {}
+                for r in res_list:
+                    res_map[str(r.id)] = {
+                        "name": r.name,
+                        "rating": r.rating,
+                        "address": r.address,
+                        "delivery_fee": getattr(r, 'delivery_fee', 0),
+                        "phone": getattr(r, 'phone', ''),
+                        "district": getattr(r, 'district', '')
+                    }
 
-            # Format food/menu results
-            formatted_items = []
-            for item in results:
-                formatted_item = {
-                    "id": str(item.id),
-                    "name": item.name,
-                    "price": getattr(item, 'price', None),
-                    "description": getattr(item, 'description', ''),
-                    "restaurant_id": str(item.restaurant) if item.restaurant else None,
-                    "restaurant_name": res_map.get(item.restaurant, "Unknown"),
-                    "dietary_tags": getattr(item, 'dietary_tags', [])
-                }
-                formatted_items.append(formatted_item)
+            # Transform food data using MongoFormatter
+            transformed_foods = MongoFormatter.transform_food_list(results, res_map)
+            grouped_data = MongoFormatter.group_by_restaurant(results, res_map)
+            stats = MongoFormatter.calculate_stats(results, res_map)
             
+            # Return data in proper format
             return {
                 "type": "food-list",
-                "items": formatted_items,
-                "message": f"Tìm thấy {len(formatted_items)} món ăn phù hợp",
+                "text": f"Tìm thấy {len(transformed_foods)} món ăn phù hợp",
+                "message": f"Tìm thấy {len(transformed_foods)} món ăn phù hợp",
+                "data": transformed_foods,
+                "groupedData": grouped_data,
+                "stats": stats,
                 "metadata": {
-                    "count": len(formatted_items),
-                    "entity": "food" if entity == Food else "menu"
+                    "count": len(transformed_foods),
+                    "entity": "food" if entity == Food else "menu",
+                    "filters": params
                 }
             }
-
+        
         # No results found
         return {
             "type": "no-results",
             "message": "Không tìm thấy kết quả phù hợp",
-            "restaurants": [] if entity == Restaurant else None,
-            "items": [] if entity in (Menu, Food) else None
+            "text": "Không tìm thấy kết quả phù hợp"
         }
 
     def search_ui(self, entity, params):

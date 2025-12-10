@@ -293,6 +293,8 @@ import {
 import RestaurantCardChat from "./RestaurantCardChat";
 import { transformRestaurants } from "../utils/mongoFormatter.js";
 import { useNavigate } from "react-router-dom";
+import { FoodCardChat, FoodListChat } from "./FoodCardChat.jsx";
+// import { handleAddToCart, handleFoodSelect } from "../utils/foodHandlers.js";
 
 const ChatBox = () => {
   const [chat, setChat] = useState(false);
@@ -356,7 +358,7 @@ const ChatBox = () => {
             </div>
             <div className="text-xs text-gray-500">{time}</div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ml-11 mt-3 w-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ml-11 mt-3">
             {msg.data.map((restaurant, idx) => (
               <RestaurantCardChat
                 key={idx}
@@ -367,6 +369,63 @@ const ChatBox = () => {
               />
             ))}
           </div>
+        </div>
+      );
+    }
+    // ChatMessage.jsx
+    if (msg.type === "food-list" && msg.data) {
+      const foodData = Array.isArray(msg.data) ? msg.data : [];
+      const foodCount = foodData.length;
+      console.log("=== FOOD LIST DEBUG ===");
+      console.log("Food data:", foodData);
+      console.log("Food count:", foodCount);
+      console.log("Grouped data:", msg.groupedData);
+      console.log("Type of FoodListChat:", typeof FoodListChat);
+
+      // Kiểm tra các trường cần thiết cho FoodListChat
+      const groupedData = msg.groupedData || [];
+      const stats = msg.stats || {};
+      const metadata = msg.metadata || {};
+      console.log("grouped Data: ", groupedData);
+      return (
+        <div key={index} className="mb-6">
+          <div className="flex items-start gap-3 mb-3 w-full">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
+              <IconRobot className="w-5 h-5 text-white" />
+            </div>
+            <div className="flex-1">
+              <div className="font-medium text-gray-700">Trợ lý ẩm thực</div>
+
+              <div className="text-xs text-gray-500 mt-1">
+                {foodCount < 0 && "Không tìm thấy kết quả nào"}
+              </div>
+            </div>
+            {time && (
+              <div className="text-xs text-gray-500 whitespace-nowrap">
+                {time}
+              </div>
+            )}
+          </div>
+
+          {foodCount > 0 ? (
+            <div className="ml-11 mt-3">
+              <FoodListChat
+                message={msg.text || msg.message || "Món ăn phù hợp"}
+                data={foodData}
+                groupedData={groupedData}
+                stats={stats}
+                metadata={metadata}
+                onFoodSelect={() => {}}
+                onAddToCart={() => {}}
+              />
+            </div>
+          ) : (
+            <div className="ml-11 mt-3 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <p className="text-yellow-800">
+                Không tìm thấy món ăn nào phù hợp với yêu cầu của bạn.
+              </p>
+            </div>
+          )}
         </div>
       );
     }
@@ -466,7 +525,7 @@ const ChatBox = () => {
       </div>
 
       {chat && (
-        <div className="fixed right-6 bottom-24 z-50 w-[95vw] sm:w-[600px] h-[70vh] max-h-[700px] bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col border border-gray-200">
+        <div className="fixed right-6 bottom-24 z-50 w-[95vw] sm:w-[700px] h-[70vh] max-h-[700px] bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col border border-gray-200">
           <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-3">

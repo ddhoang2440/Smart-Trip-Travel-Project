@@ -59,12 +59,12 @@ const RestaurantCard = ({
 
           <div
             className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 ${
-              restaurant.isOpen
+              restaurant.open
                 ? "bg-green-500 text-white"
                 : "bg-red-500 text-white"
             }`}
           >
-            {restaurant.isOpen ? (
+            {restaurant.open ? (
               <>
                 <IconCheck size={14} />
                 <span>Đang mở</span>

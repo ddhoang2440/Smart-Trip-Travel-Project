@@ -96,6 +96,13 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 #     except Exception as e:
 #         logger.error(f"Chatbot error: {str(e)}", exc_info=True)
 #         raise HTTPException(status_code=500, detail="Internal server error")
+# routes/chat_route.py
+from fastapi import APIRouter, Depends, HTTPException
+from datetime import datetime
+import logging
+
+logger = logging.getLogger(__name__)
+
 @router.post("/analyze")
 async def analyze_message(
     request_data: dict,
@@ -140,9 +147,30 @@ async def analyze_message(
                 return {
                     "success": True,
                     "type": "restaurant-list",
+                    "text": result.get("text", result.get("message", "")),
+                    "message": result.get("message", ""),
+                    "data": result.get("restaurants", []),
                     "restaurants": result.get("restaurants", []),
-                    "message": result.get("message", f"Tìm thấy {len(result.get('restaurants', []))} nhà hàng"),
                     "metadata": result.get("metadata", {})
+                }
+            elif response_type == "food-list":
+                return {
+                    "success": True,
+                    "type": "food-list",
+                    "text": result.get("text", result.get("message", "")),
+                    "message": result.get("message", ""),
+                    "data": result.get("data", []),
+                    "groupedData": result.get("groupedData", []),
+                    "stats": result.get("stats", {}),
+                    "metadata": result.get("metadata", {})
+                }
+            elif response_type == "no-results":
+                return {
+                    "success": True,
+                    "type": "no-results",
+                    "text": result.get("text", result.get("message", "")),
+                    "message": result.get("message", ""),
+                    "data": []
                 }
             elif response_type == "error":
                 return {
@@ -156,7 +184,8 @@ async def analyze_message(
                 return {
                     "success": True,
                     "type": "reply",
-                    "reply": result.get("message", str(result)),
+                    "text": result.get("text", result.get("message", str(result))),
+                    "message": result.get("message", str(result)),
                     "metadata": result.get("metadata", {})
                 }
         
@@ -164,7 +193,8 @@ async def analyze_message(
         return {
             "success": True,
             "type": "reply", 
-            "reply": str(result) if result else "Đã xử lý yêu cầu"
+            "text": str(result) if result else "Đã xử lý yêu cầu",
+            "message": str(result) if result else "Đã xử lý yêu cầu"
         }
         
     except HTTPException:

@@ -77,7 +77,7 @@ async def process_ai_response(json_list, current_user=None):
     for obj in json_list:
         intent_name = obj.get("intent")
         type_ = obj.get("type")
-        entities = obj.get("entities")
+        entity = obj.get("entity")
         params = obj.get("fields", {}) or {}
         
         # Thêm thông tin user vào params nếu có
@@ -95,7 +95,7 @@ async def process_ai_response(json_list, current_user=None):
             continue
         
         try:
-            result = await handler.handle(type_, entities, params)
+            result = await handler.handle(type_, entity, params)
             results.append(result)
         except Exception as e:
             print(f"Handler error for intent {intent_name}: {str(e)}")
