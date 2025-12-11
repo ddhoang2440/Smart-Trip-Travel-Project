@@ -1,0 +1,17 @@
+{
+  "name": "aijs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "ioredis": "^5.8.2",
+    "mongoose": "^9.0.1"
+  }
+}
