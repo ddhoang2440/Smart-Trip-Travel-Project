@@ -105,7 +105,7 @@ export const handleIntents = async (jsonList, currentUser = null) => {
 //     HANDLE SESSION MESSAGE
 // =====================================================
 export const handleSessionMessage = async (request, currentUser) => {
-  const userId = String(currentUser.id);
+  const userId = String(currentUser.sub);
   const message = request.message;
 
   // 1️⃣ Check Redis session
@@ -131,7 +131,11 @@ export const handleSessionMessage = async (request, currentUser) => {
 
     if (action === "confirm_booking") {
       const handler = INTENT_HANDLERS["booking"];
-      const result = await handler.handle("confirm", null, newSession);
+      const params = {
+        ...newSession,
+        userId,
+      };
+      const result = await handler.handle("confirm", null, params);
 
       await SessionManager.delete(userId);
 

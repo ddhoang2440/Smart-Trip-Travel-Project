@@ -72,7 +72,8 @@ export const intentPrompt = (message) => {
     "address": slot,
     "res_price": { "value": {min,max}, "canonical": string|null },
     "food_price": { "value": {min,max}, "canonical": string|null },
-    "open_now": slot
+    "open_now": slot,
+    "time_range": {from,to}
     }
 
     ### booking
@@ -116,14 +117,6 @@ export const intentPrompt = (message) => {
     "people": slot,
     "reminder_text": slot,
     "occasion": slot
-    }
-
-    ### compare
-    {
-    "res_name": slot,
-    "res_ids": slot,
-    "criteria": slot,
-    "location": slot
     }
 
     ### modify

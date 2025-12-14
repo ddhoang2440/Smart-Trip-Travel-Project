@@ -29,26 +29,25 @@ export function sessionPrompt(message, session = {}) {
             "from": number | null,
             "to": number | null
         }
-        "booking_date": {
-            "day": number | null,
-            "month": number | null,
-            "year": number | null
-        },
+        "booking_date": string | null, // ISO date string
         "restaurant": string | null,
-        "table": number | null,
-        "contact_name": string | null,
-        "contact_phone": string | null,
-        "special_request": string | null
+        "table": 2 | 4 | 8 | null,
     },
     "reply": "..."
     }
 
-    RULES:
-    - If a field is not mentioned → leave it unchanged if it exists in CURRENT_SESSION.
-    - If unknown and not provided → set it to null.
-    - Do NOT add new fields outside the schema.
-    - Do NOT output anything except the JSON object.
+     RULES:
+    - Always return 'booking_date' as a valid ISO 8601 date string, e.g., "2025-12-14T00:00:00.000Z".
+    - Identify all required fields that are missing: restaurant, booking_date, booking_time, table, contact_name, contact_phone.
+    - Your reply must ask for ALL missing fields at once in a single friendly message.
+    - If a field exists in CURRENT_SESSION, leave it unchanged unless updated by the user.
+    - Do NOT add any fields outside the schema.
     - JSON must be valid.
+    - Once all required fields are filled, reply with a summary or confirmation of the booking.
+
+    IMPORTANT:
+    - Even if the user types a date in any format (e.g., "14/12/2025", "Dec 14, 2025"), always convert it to ISO 8601 format.
+    - Do not output anything outside the JSON object.
 
     NOW produce the JSON result.
     `;

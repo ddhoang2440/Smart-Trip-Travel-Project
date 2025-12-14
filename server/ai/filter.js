@@ -14,6 +14,15 @@ export class FilterSpec {
       return { open: true };
     }
 
+    // TIME RANGE (for restaurant from-to)
+    if (this.field === "time_range" && typeof this.value === "object") {
+      const { from, to } = this.value;
+      const time = {};
+      if (from) time.from = { $lte: from };
+      if (to) time.to = { $gte: to };
+      return time;
+    }
+
     // LIST → $in
     if (Array.isArray(this.value)) {
       return { [this.field]: { $in: this.value } };
@@ -97,7 +106,7 @@ export const buildRestaurantFilterSpecFromJson = (fields) => {
 
   // distance
   if (fields.distance_km?.value !== undefined) {
-    filters.push(new FilterSpec("distance_km", "<=", fields.distance_km.value));
+    filters.push(new FilterSpec("distance", "<=", fields.distance_km.value));
   }
 
   // address
@@ -105,6 +114,15 @@ export const buildRestaurantFilterSpecFromJson = (fields) => {
     filters.push(new FilterSpec("address", "=", fields.address.canonical));
   }
 
+  // time
+  if (fields.time?.from || fields.time?.to) {
+    filters.push(
+      new FilterSpec("time_range", "range", {
+        from: fields.time?.from,
+        to: fields.time?.to,
+      })
+    );
+  }
   return filters;
 };
 
