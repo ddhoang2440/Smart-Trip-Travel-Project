@@ -1,14 +1,25 @@
-import express from 'express'
+import express from "express";
 
 const restaurantRoute = express.Router();
-import multer from 'multer';
-import { protect } from '../middlewares/Protect.js';
-import { CreateRestaurant, getAllRestaurants, getUserRestaurant } from '../controllers/restaurantcontroller.js';
+import multer from "multer";
+import { protect } from "../middlewares/Protect.js";
+import {
+  CreateRestaurant,
+  getAllRestaurants,
+  getUserRestaurant,
+  searchRestaurant,
+} from "../controllers/restaurantcontroller.js";
 
-const upload = multer({dest: "uploads/"});
+const upload = multer({ dest: "uploads/" });
 
-restaurantRoute.post("/create", protect, upload.array("images", 4), CreateRestaurant);
+restaurantRoute.post(
+  "/create",
+  protect,
+  upload.array("images", 4),
+  CreateRestaurant
+);
 restaurantRoute.get("/getall", getAllRestaurants);
 restaurantRoute.get("/user", protect, getUserRestaurant);
+restaurantRoute.post("/search", protect, searchRestaurant);
 
 export default restaurantRoute;

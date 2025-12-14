@@ -51,13 +51,18 @@ export const resSlice = createSlice({
     initialState: {
         userRestaurant: [],
         restaurants: [],
-        currentRestaurant: {},
+        currentRestaurant: null,
         status: "idle",
         popularRestaurant: []
     },
     reducers: {
         setCurrent : (state, action) => {
             state.currentRestaurant = action.payload;
+            if (typeof action.payload === 'object') {
+                localStorage.setItem("currentRestaurant", JSON.stringify(action.payload))
+                return
+            }
+            localStorage.setItem('currentRestaurant', action.payload)
         } 
     },
     extraReducers: (builder) => {
@@ -77,7 +82,7 @@ export const resSlice = createSlice({
         .addCase(getAllRestaurant.fulfilled, (state, action) => {
             state.status = "succeed";   
             state.restaurants = action.payload.restaurants;
-            state.popularRestaurant = state.restaurants.slice(0,4);
+            state.popularRestaurant = state.restaurants.slice(0,20);
             console.log(action.payload.restaurants);
             toast.success(action.payload.message);
         })

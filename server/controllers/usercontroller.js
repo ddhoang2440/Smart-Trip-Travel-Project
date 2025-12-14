@@ -6,7 +6,7 @@ import {v2 as cloudinary} from 'cloudinary';
 import validator from 'validator'
 import Restaurant from "../model/restaurant.js";
 import Menu from "../model/food.js";
-
+import axios from 'axios'
 const log = console.log;
 
 // sign in
@@ -54,6 +54,39 @@ export const signin = async (req,res) => {
     }
 }
 
+export const signinGoogle = async (req, res) => {
+    try {
+        const { accessToken } = req.body
+        if (!accessToken) {
+          return res
+            .status(400)
+            .json({ success: false, message: "Missing Google Access Token." })
+        }
+        const googleRes = await axios.get(
+          `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${accessToken}`
+        );
+        const { email, name, picture } = googleRes.data;
+        let _user = await user.findOne({email})
+        if (!_user) {
+          _user = await user.create({
+            email,
+            username: name,
+              image: picture,
+            auth_provider: "google",
+          });
+        }
+        else {
+            _user.username = name;
+            _user.image = picture;
+            await _user.save()
+        }
+        const token = await createToken(_user)
+        res.json({ success: true, message: "Login By Google Successfully !", user: _user, token,})
+    } catch (error) {
+        console.log(error.message)
+        res.json({ success: false, message: "Signin failed!" });
+    }
+}
 // sign up
 export const signup = async (req,res) => {
     const routelog = [];

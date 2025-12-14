@@ -1,274 +1,240 @@
 import {
   IconBox,
+  IconChairDirector,
   IconCheckbox,
   IconCurrency,
   IconCurrencyDollar,
   IconHome,
+  IconImageInPicture,
   IconMap,
   IconMapPin,
   IconMinus,
   IconNumber,
+  IconPhoto,
   IconPlus,
   IconStar,
   IconStarFilled,
+  IconTable,
   IconToolsKitchen2,
   IconTrash,
   IconX,
 } from "@tabler/icons-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Restaurants } from "../assets/assets";
 import Footer from "../components/Footer";
 import { CheckOut } from "../components/CheckOut";
 import { useDispatch, useSelector } from "react-redux";
-import { changeQuantity, createOrder, decreaseQuantity, increaseQuantity, removeProduct } from "../contexts/CartRedux";
-import { formatPrice } from "../components/ultil";
+import { getBooking } from "../contexts/Booking";
+import { Virtuoso } from "react-virtuoso";
+import { createComment } from "../contexts/CommentRedux";
 
 const ShopCart = () => {
   const dispatch = useDispatch();
+  const { bookings } = useSelector((state) => state.booking);
+  const { email, image } = useSelector((state) => state.auth);
 
-  const [check, setCheck] = useState(false);
-  const { usercart } = useSelector((state) => state.cart);
-  const { username, email, contact} = useSelector((state) => state.auth )
+  const [comment, setComment] = useState(false);
+  const [rating, setRating] = useState(1);
+  const [content, setContent] = useState('')
+  const [images, setImages] = useState(null)
+  const [restaurant_id, setRestaurant_id] = useState("")
 
-  const [address, setAddress] = useState("");
-  const [_user, set_User] = useState(username);
-  const [_email, set_Email] = useState(email);
-  const [_contact, set_Contact] = useState(contact);
+  const handleComment = (e) => {
+    e.preventDefault()
+    const formdata = new FormData()
 
 
-
-
-  const handleShipping = () => {
-    let total_price = 0;
-    const _cart = usercart.map((item) => {
-      const newItem = {
-        menu: item._id,
-        restaurant: item.restaurant._id,
-        quantity: item.quantity,
-        price: item.price,
-      }
-      total_price += item.price * item.quantity || 0;
-      return newItem;
-    })
-    const ship = {
-      items: _cart,
-      user: _user,
-      email: _email,
-      contact: _contact,
-      address: address,
-      total_price,
+    formdata.append("rating", rating)
+    formdata.append("restaurant_id", restaurant_id);
+    formdata.append("content", content);
+    if (images && images.length > 0) {
+       images.forEach((item) => {
+         formdata.append("images", item);
+       });
     }
-    dispatch(createOrder(ship));
+   
+    dispatch(createComment(formdata))
   }
 
-  
-
+  useEffect(() => {
+    dispatch(getBooking());
+    console.log(bookings);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [email]);
+const BookingItemCard = ({ card, onCommentClick, setRestaurant_id }) => {
   return (
     <>
-      <CheckOut check={check} setCheck={setCheck} email={_email} user={_user} address={address} contact={_contact} setAddress={setAddress}
-      setContact={set_Contact} setEmail={set_Email} setUser={set_User}/>
-      <div className="py-[18vh] px-[6vw] lg:px-[10vw]">
-        <h1 className="font-bold font-playfair text-5xl">Shopping Cart</h1>
-        <p className="text-gray-600/80 py-4 lg:max-w-[30vw]">
-          Easily manage your past, current, and upcoming hotel reservations in
-          one place. Plan your trips seamlessly with just a few clicks
+      <div
+        key={card._id}
+        className="hidden lg:flex flex-row py-[3vh] border-b border-gray-400/50 "
+      >
+        <div className="flex flex-row w-[30vw] items-center gap-6">
+          <img
+            src={card?.restaurant_id?.images[0]}
+            alt=""
+            className="w-[10vw]"
+          />
+          <div className="flex flex-col gap-1">
+            <h1 className="font-playfair text-xl font-bold">
+              {card?.restaurant_id?.name}
+            </h1>
+            <div className="flex flex-row gap-1  items-center text-gray-700">
+              <IconMapPin size={16} />
+              <p>{card?.restaurant_id?.address}</p>
+            </div>
+            <div className="flex flex-row gap-1 items-center text-gray-700">
+              <IconChairDirector size={16} />
+              <p>bàn {card?.table} chỗ</p>
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center justify-center w-[17vw] ">
+          {card?.booking_date.split("T")[0]}
+        </div>
+        <div className="flex items-center justify-center w-[17vw] ">
+          {card?.quantity}
+        </div>
+        {!card?.status === "Confirmed" ? (
+          <div className="text-green-700 flex items-center justify-center w-[16vw]">
+            Đặt Bàn Thành Công !
+          </div>
+        ) : (
+          <div className="text-green-700 flex flex-col items-center justify-center w-[16vw] gap-4 relative ">
+            Đơn Đặt Đã Hoàn Thành !
+            <button
+              onClick={() => {
+                setRestaurant_id(card?.restaurant_id?._id);
+                onCommentClick(true);
+              }}
+              className="py-2 px-4 rounded-full hover:cursor-pointer hover:bg-black/90 transition-all duration-200 bg-gray-600/50 text-white"
+            >
+              Để Lại Đánh Giá
+            </button>
+          </div>
+        )}
+      </div>
+      <div className="flex flex-col gap-2 lg:hidden">
+        <div className="flex gap-2 items-center">
+          <img
+            className="w-[40vw]"
+            src={card.restaurant_id?.images[0]}
+            alt=""
+          />
+          <div className="flex flex-col gap-1 ">
+            <p>{card.restaurant_id.name}</p>
+            <p className="flex flex-row gap-2">
+              <IconChairDirector /> Bàn {card.table} chỗ !
+            </p>
+            <button
+              onClick={() => {
+                setRestaurant_id(card?.restaurant_id?._id);
+                onCommentClick(true);
+              }}
+              className="py-1 px-2 rounded-full hover:cursor-pointer hover:bg-black/90 transition-all duration-200 bg-gray-600/50 text-white"
+            >
+              Để Lại Đánh Giá
+            </button>
+          </div>
+        </div>
+        <div className="flex gap-2 justify-between">
+          <div className="flex flex-col items-center">
+            <p>Ngày Hẹn</p>
+            <p>{card.booking_date.split("T")[0]}</p>
+          </div>
+          <div className="flex flex-col items-center">
+            <p>Số Bàn</p>
+            <p>{card.table}</p>
+          </div>
+          <div className="flex flex-col items-center">
+            <p>Giờ</p>
+            <p>{card.slot_id.time}</p>
+          </div>
+          <div className="text-green-700 flex flex-col items-center justify-center w-[16vw] gap-4 relative ">
+            Hoàn Thành !
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+  const CartCard = (idx, card) => {
+    return (
+      <BookingItemCard
+        key={card._id}
+        card={card}
+        onCommentClick={setComment} 
+        setRestaurant_id={setRestaurant_id}
+      />
+    );
+  };
+  return (
+    
+    <>
+      {comment && <div className="flex w-full items-center h-full absolute z-10 justify-center" onClick={() => { if(comment) setComment(false)}}>
+        <div className="flex  gap-3 text-sm  h-[30vh]" onClick={(e) => e.stopPropagation()}>
+              <div className="bg-white flex flex-col w-[24vw] justify-between shadow-xl focus-within:border-indigo-500 transition border border-gray-500/30 rounded-md">
+            <div className="flex py-2 px-2">
+               <img
+                className="w-9 h-9 rounded-full"
+                src={image ||  "https://cdn-icons-png.freepik.com/512/6858/6858504.png"  }
+                alt="userImage1"
+              />
+                  <textarea
+                    className="rounded-md rounded-b-none p-2.5 text-xl pb-0 w-80 h-28 outline-none resize-none"
+                placeholder="Để Lại Bình Luận Nếu Thích..."
+                onChange={(e) => setContent(e.target.value)}
+                  ></textarea>
+                </div>
+                  <div className="flex items-center justify-between px-2.5 pb-2">
+                    <div className="flex gap-4">
+                      <label className="hover:cursor-pointer" >
+                        <IconPhoto />
+                        <input name="file" type="file" className="hidden" onChange={(e) => setImages(Array.from(e.target.files))} />
+                      </label>
+                      <div className="rating">
+                  <input type="radio" name="rating-2" value={1} onChange={(e) => setRating(e.target.value)}
+                    className="mask mask-star-2 bg-orange-400" aria-label="1 star" />
+                        <input type="radio" name="rating-2" value={2}   onChange={(e) => setRating(e.target.value)} className="mask mask-star-2 bg-orange-400" aria-label="2 star" />
+                        <input type="radio" name="rating-2" value={3}  onChange={(e) => setRating(e.target.value)} className="mask mask-star-2 bg-orange-400" aria-label="3 star" />
+                        <input type="radio" name="rating-2" value={4}  onChange={(e) => setRating(e.target.value)} className="mask mask-star-2 bg-orange-400" aria-label="4 star" />
+                        <input type="radio" name="rating-2" value={5}  onChange={(e) => setRating(e.target.value)} className="mask mask-star-2 bg-orange-400" aria-label="5 star" />
+                      </div>
+                    </div>
+                  <button onClick={(e) => handleComment(e)} className="bg-indigo-500 hover:cursor-pointer hover:bg-indigo-600 active:scale-95 transition-all text-white font-medium px-5 py-2 rounded">
+                    Post
+                  </button>
+                </div>
+        </div>
+        </div>
+            </div>}
+      <div className="py-[18vh] px-[10vw] bg-indigo-50/40" >
+        <h1 className="font-bold font-playfair text-5xl">Lịch Sử Đặt Bàn</h1>
+        <p className="text-gray-600/80 py-4 lg:max-w-[30vw] text-lg">
+          Dễ dàng quản lý các đặt chỗ nhà hàng trước đây, hiện tại và sắp tới
+          của bạn tại đây
         </p>
-        <div className="flex flex-col gap-4 lg:px-[4vw] mt-[4vh]">
-          {usercart.map((data, idx) => {
-            return (
-              <React.Fragment key={data._id}>
-                {idx === 0 && (
-                  <div className="lg:grid hidden grid-cols-[1fr_auto_auto_auto_auto] gap-4 w-full border-b border-gray-600/70 px-4 py-2 items-center">
-                    <h1 className="text-left flex gap-2 items-center">
-                      <IconToolsKitchen2 />
-                      Product
-                    </h1>
-                    <h1 className="flex w-[10vw] items-center justify-center">
-                      <IconCurrencyDollar />
-                      Price
-                    </h1>
-                    <h1 className="flex w-[10vw] items-center justify-center gap-1">
-                      <IconBox />
-                      Quantity
-                    </h1>
-                    <h1 className="flex w-[10vw] items-center justify-center">
-                      <IconCurrencyDollar />
-                      Total
-                    </h1>
-                    <h1 className="flex w-[8vw] items-center justify-center gap-1">
-                      <IconTrash />
-                      Remove
-                    </h1>
-                  </div>
-                )}
-                <div className="lg:grid grid-cols-3 lg:grid-cols-[1fr_auto_auto_auto_auto] gap-4 w-full border-b border-gray-500/40 py-4 px-2 items-center">
-                  <div className="flex gap-4 items-center min-w-0">
-                    {" "}
-                    <img
-                      className="lg:w-[10vw] lg:h-[7vw] size-[30vw] object-cover rounded-lg shrink-0"
-                      src={data.image}
-                      alt=""
-                    />
-                    <div className="flex flex-col gap-1 py-2 lg:min-w-[5vw] min-w-[50vw] flex-1">
-                      <p className="text-lg font-semibold truncate flex gap-1">
-                        <IconToolsKitchen2 className="shrink-0" />
-                        {data.name}
-                      </p>
-                      <div className="flex items-center gap-1">
-                        <IconMap className="shrink-0" />
-                        <p className="text-sm text-gray-600 truncate">
-                          {data.restaurant.address}
-                        </p>
-                      </div>
-                      <div className="flex gap-1 items-center">
-                        <IconHome className="shrink-0" />
-                        <p className="text-sm text-gray-600 truncate">
-                          {data.restaurant.name}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="lg:block hidden text-lg text-center w-[10vw]">
-                    {formatPrice(data.price)}đ
-                  </div>
-                  <div className="lg:flex hidden justify-center w-[10vw]">
-                    <div className="bg-gray-300/40 flex items-center gap-4 py-2 px-4 rounded-full">
-                      <IconMinus
-                        onClick={() => dispatch(decreaseQuantity(idx))}
-                        className="cursor-pointer"
-                        size={16}
-                      />
-                      <input
-                        type="number"
-                        className="border-x-2 border-gray-300 appearance-none w-[2vw] text-center"
-                        onChange={(e) =>
-                          dispatch(
-                            changeQuantity({
-                              idx,
-                              value: parseInt(e.target.value),
-                            })
-                          )
-                        }
-                        value={data.quantity}
-                      />
-                      <IconPlus
-                        onClick={() => dispatch(increaseQuantity(idx))}
-                        className="cursor-pointer"
-                        size={16}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="text-lg lg:block hidden text-center w-[10vw]">
-                    {formatPrice(data.price * data.quantity)}đ
-                  </div>
-                  <div
-                    className=" justify-center w-[8vw] lg:flex hidden"
-                    onClick={() => dispatch(removeProduct(idx))}
-                  >
-                    <IconX className="cursor-pointer" />
-                  </div>
-
-                  {/* */}
-                  <div className="lg:hidden flex flex-row justify-between lg:w-auto py-[2vh] items-center">
-                    <div className="flex flex-col gap-2 items-center">
-                      <p className="flex flex-row text-sm items-center">
-                        <IconCurrencyDollar /> Price
-                      </p>
-                      <div className="lg:text-lg font-semibold text-center w-[10vw]">
-                        {formatPrice(data.price)}đ
-                      </div>
-                    </div>
-                    <div className="flex justify-center w-[10vw]">
-                      <div className="flex text-sm flex-col items-center gap-2">
-                        <p className="flex items-center">
-                          <IconBox /> Quantity
-                        </p>
-                        <div className="bg-gray-300/40 flex items-center gap-3 py-1 px-2 rounded-full">
-                          <IconMinus className="cursor-pointer" size={10} />
-                          <input
-                            type="number"
-                            className="border-x-2 border-gray-300 appearance-none w-[4vw] text-center"
-                            onChange={(e) =>
-                              dispatch(
-                                changeQuantity({
-                                  idx,
-                                  value: parseInt(e.target.value),
-                                })
-                              )
-                            }
-                            value={data.quantity}
-                          />
-                          <IconPlus className="cursor-pointer" size={10} />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex flex-col gap-2 items-center">
-                      <p className="flex flex-row text-sm items-center">
-                        <IconCurrencyDollar /> Total
-                      </p>
-                      <div className="lg:text-lg font-semibold text-center w-[10vw]">
-                        {formatPrice(data.price * data.quantity)}đ
-                      </div>
-                    </div>
-                    <div className="flex   text-sm flex-col items-center gap-2">
-                      <p className="flex flex-row text-sm items-center">
-                        <IconTrash />
-                        Remove
-                      </p>
-                      <IconX onClick={() => dispatch(removeProduct(idx))} />
-                    </div>
-                  </div>
-                </div>
-              </React.Fragment>
-            );
-          })}
-        </div>
-        <div className="flex flex-col  lg:flex-row gap-16 lg:gap-4 justify-between mt-[8vh] ">
-          <div className="space-y-8 w-[90vw]  lg:w-[45%]  ">
-            <h1 className="text-4xl font-semibold">Coupon Code</h1>
-            <div className="bg-white shadow-gray px-6 py-5 flex flex-col gap-6 h-[20vh] ">
-              <p className="lg:max-w-[30vw] text-gray-900/70">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum
-              </p>
-              <div className="flex ">
-                <input
-                  type="text"
-                  className="input input-lg w-full"
-                  placeholder="Enter Here Code"
-                />
-                <label className="label bg-warning px-4 text-white">
-                  Apply
-                </label>
-              </div>
-            </div>
+        <div className="flex flex-col gap-4 mt-[2vh] pb-[2vh] h-full ">
+          <div className="flex flex-row gap-4 lg:text-lg text-sm  border-b border-gray-400 pb-[2vh]">
+            <p className="lg:w-[36vw]">Nhà Hàng</p>
+            <p className="lg:w-[20vw]  flex items-center justify-center">
+              Ngày Hẹn
+            </p>
+            <p className="lg:w-[20vw]  flex items-center justify-center">
+              Số Lượng Bàn
+            </p>
+            <p className="lg:w-[20vw]  flex items-center justify-center">
+              Trạng Thái
+            </p>
           </div>
-          <div className="lg:w-[50%] space-y-8">
-            <h1 className="text-4xl font-semibold ">Total Bill</h1>
-            <div className="bg-white shadow-gray flex flex-col justify-between gap-2 px-6 py-3 h-[20vh]">
-              <div className="flex flex-row justify-between border-b-2 border-gray-500/20 pb-4">
-                <div className="flex flex-col gap-4">
-                  <b className="text-lg">Cart Subtotal</b>
-                  <p>Shipping Charge</p>
-                </div>
-                <div className="flex flex-col gap-4">
-                  <b>$120.00</b>
-                  <p>$00.00</p>
-                </div>
-              </div>
-              <div className="flex justify-between">
-                <b className="text-2xl">Total Amount</b>
-                <b className="text-2xl">$205.00</b>
-              </div>
-            </div>
-          </div>
+          <Virtuoso
+            className=""
+            style={{ height: "55vh", width: "100%" }}
+            data={bookings || []}
+            itemContent={CartCard}
+            overscan={200}
+          />
         </div>
-        <button
-          onClick={() => setCheck(true)}
-          className="btn w-full bg-linear-to-r from-warning/30 to-warning/80 text-white mt-[6vh] btn-lg"
-        >
-          Process to Checkout <IconCheckbox />
-        </button>
+        
       </div>
       <Footer />
     </>

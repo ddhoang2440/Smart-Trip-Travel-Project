@@ -8,47 +8,84 @@ import {
 import React from "react";
 import Title from "../components/Title";
 import Footer from "../components/Footer";
-
-import { Restaurants } from "../assets/assets";
 import Menu from "../components/Menu";
 import { useDispatch, useSelector } from "react-redux";
-import FoodFilter from "../components/FoodFilter";
 import { useEffect } from "react";
-import { createComment, getComment } from "../contexts/CommentRedux";
+import { getComment } from "../contexts/CommentRedux";
 import { useState } from "react";
-import { formatDistanceToNow } from 'date-fns';
-import { vi } from 'date-fns/locale'; 
 import { getRestaurantMenu } from "../contexts/MenuRedux";
-
+import { MapContainer, Marker, Popup, TileLayer  } from "react-leaflet";
+import SimpleMap from "../components/simpleMap";
+import { formatPrice } from "../components/ultil";
+import { createBooking } from "../contexts/Booking";
+import { setCurrent } from "../contexts/ResRedux";
 
 
 
 const Restaurant = () => {
-  const [content, setContent] = useState("");
+
+  const [idx, setIdx] = useState(0)
+
+
   const { currentRestaurant } = useSelector((state) => state.restaurant);
   const { comment } = useSelector((state) => state.comment );
-  const { image } = useSelector((state) => state.auth);
-    const { restaurantmenu } = useSelector((state) => state.menu);
-  const dispatch = useDispatch();
+  const { restaurantmenu, menu } = useSelector((state) => state.menu);
+    const dispatch = useDispatch();
+
+     useEffect(() => {
+        const data = JSON.parse(localStorage.getItem("currentRestaurant"));
+       dispatch(setCurrent(data));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, []);
 
   useEffect(() => {
-      dispatch(getComment({restaurant_id : currentRestaurant._id}));
+      dispatch(getComment({restaurant_id : currentRestaurant?._id}));
   },[dispatch,currentRestaurant]);
     useEffect(() => {
-      dispatch(getRestaurantMenu({ restaurant_id: currentRestaurant._id }));
+      dispatch(getRestaurantMenu({ restaurant_id: currentRestaurant?._id }));
       console.log(restaurantmenu);
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+  useEffect(() => {
+    if (currentRestaurant && currentRestaurant._id) {
+      setFormData((prev) => ({
+        ...prev,
+        restaurant_id: currentRestaurant._id,
+        slot_id: currentRestaurant.bookingslots?.[0]?._id || "",
+      }));
+    }
+  }, [currentRestaurant]);
+   
 
+const [formdata, setFormData] = useState({
+  booking_date: "",
+  restaurant_id: currentRestaurant?._id,
+  slot_id:  currentRestaurant?.bookingslots[0]._id,
+  quantity: 1,
+  table: 2,
+});
 
+const handlechange = ({ key, value }) => {
+  setFormData((prev) => ({
+    ...prev,
+    [key]: value,
+  }));
+  console.log(formdata);
+};
 
+  if (!currentRestaurant) {
+    return <div>loading...</div>;
+  }
+ 
   return (
     <div>
       <div className=" pt-[20vh] pb-[10vh] px-[10vw] bg-indigo-50/40">
         <div className="flex flex-row justify-between">
           <div className="flex flex-col gap-3">
             <div className="flex items-end gap-4">
-              <h1 className="font-playfair font-bold  text-2xl lg:text-4xl">{currentRestaurant.name}</h1>
+              <h1 className="font-playfair font-bold  text-2xl lg:text-4xl">
+                {currentRestaurant.name}
+              </h1>
               <p>{currentRestaurant.type}</p>
               <p className="bg-orange-400 text-white px-2 py-1 rounded-xl">
                 20% OFF
@@ -70,142 +107,185 @@ const Restaurant = () => {
                     </React.Fragment>
                   );
                 })}
-              <p>{currentRestaurant.review}+ reviews</p>
+              <p>{currentRestaurant.review}+ reviews </p>
             </div>
             <span className="flex gap-2 lg-max-w-full max-w-[40vw]">
               <IconMapPin />
               <p>{currentRestaurant.address}</p>
             </span>
-            <label className="label">
-              Add to Wishlist <IconHeart className="hover:cursor-pointer" />
-            </label>
           </div>
           <div className="flex flex-col items-center gap-4">
-            {!currentRestaurant.open ? (
+            {currentRestaurant.open ? (
               <>
-                <p className="btn btn-wide text-white btn-success">Opened</p>
+                <p className="btn btn-wide text-white btn-success">
+                  Đang Mở Cửa
+                </p>
               </>
             ) : (
               <>
-                <p className="btn btn-wide btn-error text-white">Closed</p>
+                <p className="btn btn-wide btn-error text-white">Đóng Cửa</p>
               </>
             )}
             <p className="badge badge-accent text-white badge-xl">
-              Open: {currentRestaurant.from} -{" "}
-              {currentRestaurant.to}
+              Mở cửa từ: {currentRestaurant.from} - {currentRestaurant.to}
             </p>
           </div>
         </div>
 
         <div className="flex flex-row gap-8 py-8">
           <img
-            className="w-[45%] hidden lg:block rounded-2xl fade-in"
-            src="/bg.jpg"
+            className="w-[55%] max-h-[54vh] hidden lg:block rounded-2xl fade-in"
+            src={currentRestaurant.images[idx]}
             alt=""
           />
-          <div className="lg:w-[55%] grid grid-cols-2 gap-6">
-            <img className="rounded-2xl p shadow-xl" src={"bg.jpg"} alt="" />
-            <img className="rounded-2xl p shadow-xl" src={"bg.jpg"} alt="" />
-            <img className="rounded-2xl p shadow-xl" src="/bg.jpg" alt="" />
-            <img className="rounded-2xl p shadow-xl" src="/bg.jpg" alt="" />
+          <div className="lg:w-[55%]  grid grid-cols-2 gap-6">
+            <img
+              className="rounded-2xl p shadow-xl h-[25vh]"
+              src={currentRestaurant.images[0]}
+              alt=""
+              onClick={() => setIdx(0)}
+            />
+            <img
+              className="rounded-2xl p shadow-xl h-[25vh]"
+              src={currentRestaurant.images[1]}
+              alt=""
+              onClick={() => setIdx(1)}
+            />
+            <img
+              className="rounded-2xl p shadow-xl h-[25vh] w-full"
+              src={currentRestaurant.images[2]}
+              alt=""
+              onClick={() => setIdx(2)}
+            />
+            <img
+              className="rounded-2xl p shadow-xl h-[25vh] w-full"
+              src={currentRestaurant.images[3]}
+              alt=""
+              onClick={() => setIdx(3)}
+            />
           </div>
         </div>
         <div className="lg:flex justify-between  py-4 border-b border-gray-300">
           <div className="gap-4">
             <p className="text-3xl font-playfair font-semibold">
-              Experience Luxury Like Never Before
+              Mang Đến Những Trải Nghiệm Bất Ngờ
             </p>
           </div>
-          <p className="text-3xl font-bold p">Average {currentRestaurant.medium_price}$/ Meal</p>
+          <p className="text-3xl font-bold p">
+            Average {formatPrice(currentRestaurant.medium_price)}đ/ Meal
+          </p>
         </div>
         <div className="flex lg:flex-row flex-col gap-4 lg:gap-0 justify-between bg-white rounded-xl shadow-gray px-8 py-8 my-12">
           <div className="flex lg:flex-row flex-col lg:gap-12 gap-6 justify-center lg:items-center">
             <span className="lg:border-r border-gray-400 lg:px-12">
-              <p>Check-in</p>
-              <input type="date" />
+              <p>Ngày Đặt Bàn</p>
+              <input
+                type="date"
+                value={formdata.booking_date}
+                onChange={(e) =>
+                  handlechange({ key: "booking_date", value: e.target.value })
+                }
+              />
             </span>
-            <span className="lg:border-r border-gray-400 lg:px-12">
-              <p>Check-out</p>
-              <input type="date" />
+            <span className="lg:border-r flex flex-row gap-4 items-center border-gray-400 lg:px-12">
+              <p>Giờ</p>
+              <select
+                onChange={(e) =>
+                  handlechange({ key: "slot_id", value: e.target.value })
+                }
+                className="select lg:w-auto w-[50vw]"
+              >
+                {currentRestaurant.bookingslots.map((item) => (
+                  <option key={item._id} value={item._id}>
+                    {item.time}
+                  </option>
+                ))}
+              </select>
             </span>
-            <span className="lg:px-12">
-              <p>Guests</p>
-              <p>guest</p>
+            <span className="px-4 flex flex-row items-center gap-4">
+              <p className="lg:w-[6vw] w-[20vw]">Loại Bàn</p>
+              <select
+                onChange={(e) =>
+                  handlechange({ key: "table", value: e.target.value })
+                }
+                className="select"
+                name=""
+                id=""
+              >
+                <option value={2}>2 người</option>
+                <option value={4}>4 người</option>
+                <option value={8}>8 người</option>
+              </select>
             </span>
-            <div className="lg:flex gap-2 px-6 hidden">
-              <button className="text-xl border px-2 p">-</button>
-              <button className="text-xl border px-2 p">+</button>
+            <div className="lg:flex px-6 flex flex-row items-center gap-4 ">
+              <p>Số Bàn</p>
+              <input
+                value={formdata.quantity}
+                onChange={(e) =>
+                  handlechange({ key: "quantity", value: e.target.value })
+                }
+                type="number"
+                className="border border-gray-300 rounded-lg py-2 px-2 max-w-[2vw]"
+              />
             </div>
           </div>
-          <button className="btn btn-primary text-white btn-lg btn-wide">
-            Check Availability
+          <button
+            className="btn btn-primary text-white btn-lg btn-wide"
+            onClick={() => dispatch(createBooking(formdata))}
+          >
+            Kiểm Tra Đặt Bàn
           </button>
         </div>
       </div>
+      <div className="px-[10vw] py-[6vh] w-full flex justify-center relative z-0">
+        <SimpleMap center={[currentRestaurant.lat, currentRestaurant.lon]} />
+      </div>
       <div className="lg:px-[10vw] px-[4vw] py-[12vh]">
-        <Title
-          Title="Menu"
-          Decription={"Found my restaurant food here"}
-          align={"center"}
-        />
-        <div className="flex flex-row justify-between relative">
-          <Menu data={restaurantmenu || []} />
-          <FoodFilter />
-        </div>
-        <div className="flex justify-center">
-          <button className="btn lg:w-[16vw] btn-warning text-white btn-lg ">
-            View More
-          </button>
-        </div>
+        <Title Title="Menu" Decription={""} align={"center"} />
+        <Menu data={menu}/>
       </div>
       <div className="px-[12vw] pb-[8vh] pt-[4vh] flex flex-col gap-4">
         <h1 className="text-4xl font-bold font-playfair">
-          View customer Commnent
+          Bình Luận Và Đánh Giá
         </h1>
-        <p>Comment Count</p>
-        <div className="flex flex-row gap-2 items-center">
-          <img
-            className="w-[3vw] h-[3vw] rounded-full"
-            src={image || null}
-            alt=""
-          />
-          <input
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="Add a comment ..."
-            className="focus:border-black border-b border-gray-300 focus:border-b-2 focus:outline-0  text-lg transition-all duration-100 w-full px-4 py-2"
-          ></input>
-        </div>
-          <div className="flex justify-end gap-4 ">
-            <button onClick={() => dispatch(createComment({restaurant_id: currentRestaurant._id, content}))} className="btn btn-primary rounded-lg p">Comment</button>
-          </div>
-        <div className="flex px-[2vw] flex-col gap-8 mt-[1vh]">
-          {comment.map((cmt, idx) => {
-            return (
-              <div
-                key={cmt._id + idx}
-                className="flex flex-row gap-4 items-center"
-              >
-                <img
-                  className="w-[3vw] h-[3vw] rounded-full"
-                  src={image || null}
-                  alt=""
-                />
-                <div className="flex flex-col gap-1">
-                  <div className="flex gap-2">
-                    <h1 className="font-bold">@{cmt.user_id.username}</h1>
-                    <p>{formatDistanceToNow(new Date(cmt.createdAt), {
-                      addSuffix:true,
-                      locale: vi,
-                    })}</p>
-                  </div>
-                  <p className="text-xl border-b-2 border-dotted">
-                    {cmt.content}
-                  </p>
+        <div className="px-[4vw] py-[2vh] flex flex-col gap-[3vh] ">
+          {comment.map((item, idx) => (
+            <div key={item._id} className="flex flex-row gap-4 ">
+              <img
+                className="rounded-full w-[4vw] h-[4vw]"
+                src={
+                  item?.user_id?.image ||
+                  "https://cdn-icons-png.freepik.com/512/6858/6858504.png"
+                }
+                alt=""
+              />
+              <div className="flex flex-col gap-2 pt-4 ">
+                <p>@{item?.user_id?.username}</p>
+                <div className="flex gap-1">
+                  {Array(5)
+                    .fill(1)
+                    .map((data, idx) => {
+                      return (
+                        <React.Fragment key={item._id + "rating" + idx}>
+                          {idx > item.rating - 1 ? (
+                            <IconStar size={16} color="orange" />
+                          ) : (
+                            <IconStarFilled size={16}  color="orange" />
+                          )}
+                        </React.Fragment>
+                      );
+                    })}
+                </div>
+                <p>{item?.createdAt.split('T')[0]}</p>
+                <p>{item?.content}</p>
+                <div className="flex flex-row gap-2">
+                  {item?.images.map((img) => (
+                    <img className="max-w-[16vw] " key={"images" + item?._id} src={img} alt=""/>
+                  ))}
                 </div>
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
       </div>
       <Footer />

@@ -6,7 +6,7 @@ axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 
 export const createComment = createAsyncThunk("/comment/create", async (_data, thunkAPI) => {
          try {
-           const { data } = await axios.post("/comment/create", _data,{
+           const { data } = await axios.post("/comment/create", _data, {
              headers: {
                Authorization: `Bearer ${localStorage.getItem("token")}`,
              },
@@ -65,6 +65,7 @@ export const commentSlice = createSlice({
             state.loading = false;
             state.comment = action.payload.data;
             toast.success(action.payload.message);
+            console.log(action.payload.data)
           })
           .addCase(getComment.rejected, (state, action) => {
             toast.error(action.payload);

@@ -7,7 +7,6 @@ import {
   IconClipboard,
   IconClockDown,
   IconClockUp,
-  IconCurrencyDollar,
   IconDeviceMobile,
   IconMapPin,
   IconShoppingCartDollar,

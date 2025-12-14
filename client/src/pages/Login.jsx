@@ -3,10 +3,10 @@ import { IconBowlChopsticks, IconBrandGoogle } from "@tabler/icons-react";
 import React, { useState } from "react";
 import Footer from "../components/Footer";
 import { useDispatch, useSelector} from 'react-redux'
-import { signin, signup } from "../contexts/AuthRedux";
+import { loginWithGoogle, signin, signup } from "../contexts/AuthRedux";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-
+import { useGoogleLogin } from "@react-oauth/google";
 const Login = () => {
   const [stage, setStage] = useState("login");
   const [username, setUsername] = useState("");
@@ -29,6 +29,18 @@ const Login = () => {
     dispatch(signup({ username, email, password }));
   };
 
+  const handleGoogleSuccess = async (googleResponse) => {
+  
+    const accessToken = googleResponse.access_token
+    dispatch(loginWithGoogle({ accessToken }));
+  };
+
+  const login = useGoogleLogin({
+      onSuccess: handleGoogleSuccess,
+      onError: (error) => console.error('Google Login Failed:', error),
+      flow: 'implicit', 
+      scope: 'email profile',
+  });
 
   useEffect(() => {
     if(islogin === true) {
@@ -61,7 +73,7 @@ const Login = () => {
               <p className="text-gray-500">
                 See what is going on in world of Food
               </p>
-              <button className="btn btn-accent text-white">
+              <button className="btn btn-accent text-white" onClick={() => login()}>
                 <IconBrandGoogle color="white" /> Continue with Google
               </button>
               {stage === "login" && (

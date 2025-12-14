@@ -9,17 +9,13 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 const Products = () => {
-  const { menu }  = useSelector((state) => state.menu);
   const { restaurants } =useSelector((state) => state.restaurant);
   const [seachtext, setSearchText] = useState("");
   const [filtertype, setFilterType] = useState("");
-    const [seachmenu, setSearchMenu] = useState("");
-    const [filtermenu, setFilterMenu] = useState("");
-  const [stage, setStage] = useState(false);
 
   const filterRestaurant = restaurants.filter((item) => {
     const keyword = seachtext.toLowerCase();
-        return item.name?.toLowerCase().includes(keyword);
+        return item.name?.toLowerCase().includes(keyword) || item.address?.toLowerCase().includes(keyword);
   })
   const finalRestaurant = [...filterRestaurant].sort((a,b) => {
     switch (filtertype) {
@@ -31,45 +27,17 @@ const Products = () => {
         return 1;
     }
   })
-    const filterMenu = menu.filter((item) => {
-    const keyword = seachmenu.toLowerCase();
-        return item.name?.toLowerCase().includes(keyword);
-  })
-  const finalMenu = [...filterMenu].sort((a,b) => {
-    switch (filtermenu) {
-      case "lowtohigh":
-        return (a.price || 0) - (b.price || 0);
-      case "hightolow":
-        return (b.price || 0) - (a.price || 0);
-      default:
-        return 1;
-    }})
 
   return (
     <>
-      <div className="lg:px-[10vw] px-[5vw] pt-[20vh] pb-[10vh]">
-        <h1 className="text-6xl font-bold font-playfair">Products</h1>
+      <div className="lg:px-[10vw] px-[5vw] pt-[14vh] pb-[20vh] bg-indigo-50/10">
+        <h1 className="text-6xl font-bold font-playfair">Nhà Hàng</h1>
         <p className="text-xl text-gray-800/60">
-          Find all luxury restaurant and food here
+          Tìm Kiếm Những Nhà Hàng Tuyệt Đẹp Và Đặt Bàn Trải Nghiệm
         </p>
         <div className="flex flex-row justify-between w-screen lg:w-[80vw] gap-4 ">
-          <div className="flex flex-col gap-4 lg:w-[60vw] w-[90vw] py-[4vh]">
-            <div className="flex-row flex ">
-              <button
-                className=" py-3 lg:w-full w-[50vw] px-6 p transition-all duration-300 hover:bg-warning border-r border-gray-800/40 rounded-l-xl bg-gray-400/20"
-                onClick={() => setStage(false)}
-              >
-                Restaurants
-              </button>
-              <button
-                className=" py-3 lg:w-full  w-[50vw] px-6 p transition-all duration-300 hover:bg-warning bg-gray-400/20 rounded-r-xl "
-                onClick={() => setStage(true)}
-              >
-                Foods
-              </button>
-            </div>
-            {!stage ? (
-              <div className="flex justify-between lg:w-[80vw] w-[90vw] gap-[4vw] lg:gap-0">
+          <div className="flex flex-col gap-4 lg:w-[60vw] w-[90vw] py-[2vh]">
+              <div className="flex justify-between lg:w-[80vw] w-[90vw] h-full gap-[4vw] lg:gap-[2vw]">
                 <RestaurantCard data={finalRestaurant} />
                 <RestaurantFilter
                   setFilterType={setFilterType}
@@ -77,16 +45,6 @@ const Products = () => {
                   seachtext={seachtext}
                 />
               </div>
-            ) : (
-              <div className="flex lg:gap-0 gap-9 justify-between lg:w-[80vw] w-[90vw]">
-                <Menu data={finalMenu} />
-                <FoodFilter
-                  setFilterMenu={setFilterMenu}
-                  setSearchMenu={setSearchMenu}
-                  seachmenu={seachmenu}
-                />
-              </div>
-            )}
           </div>
         </div>
       </div>

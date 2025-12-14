@@ -12,7 +12,7 @@ export const protect = async (req,res,next) => {
         console.log("Protect route run successfully!")
         next();
    } catch (error) {
-        console.log("Protect route run successfully!", error.message);
+        console.log(error.message);
         return res.json({message: "Token Invalid!"});
    }
 }

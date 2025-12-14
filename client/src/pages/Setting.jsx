@@ -134,7 +134,7 @@ const Setting = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                {/* <label className="block text-sm font-medium text-gray-700 mb-1">
                   Các món dị ứng *
                 </label>
                 <textarea
@@ -145,7 +145,7 @@ const Setting = () => {
                   }}
                   className="w-full px-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 resize-none"
                   placeholder="Vui lòng ghi theo dạng: món,món,món ..."
-                />
+                /> */}
                 <div className="mt-4 flex flex-col gap-2">
                   <label>Change your Avatar</label>
                   <div className="flex items-center gap-4">

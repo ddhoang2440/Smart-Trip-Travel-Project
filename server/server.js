@@ -8,7 +8,7 @@ import configCloudinary from './utils/cloudinary.js';
 import restaurantRoute from './routes/restaurantRoute.js';
 import menuRoute from './routes/menuRoute.js';
 import commentRoute from './routes/commentRoute.js';
-
+import bookingRouter from './routes/booking.js';
 const app = express();
 
 configDotenv();
@@ -33,9 +33,7 @@ app.use("/auth", userRoute);
 app.use("/restaurant", restaurantRoute);
 app.use("/menu", menuRoute);
 app.use("/comment", commentRoute);
-
-
-
+app.use("/booking", bookingRouter)
 
 app.listen(PORT, () => {
     console.log(chalk.green(`Server is runing at port: ${PORT}`));

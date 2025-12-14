@@ -3,7 +3,7 @@ import authreducer from './AuthRedux'
 import resreducer from './ResRedux'
 import menureducer from './MenuRedux'
 import commentreducer from './CommentRedux'
-import cartreducer from './CartRedux'
+import bookingreducer from './Booking'
 
 export const store = configureStore({
     reducer:  {
@@ -11,7 +11,7 @@ export const store = configureStore({
         restaurant: resreducer,
         menu: menureducer,
         comment: commentreducer,
-        cart:  cartreducer,
+        booking: bookingreducer,
     }
 })
 

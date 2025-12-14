@@ -2,11 +2,24 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from 'axios'
 import toast from 'react-hot-toast';
 
+
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 
 export const signin = createAsyncThunk("/auth/signin" , async ({email, password}, thunkAPI) =>{
     try {
         const {data} = await axios.post("/auth/signin", {email,password});
+
+        if(!data.success) {
+            return thunkAPI.rejectWithValue(data.message);
+        }
+        return data;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(error.message);
+    }
+});
+export const loginWithGoogle = createAsyncThunk("/auth/google" , async ({accessToken}, thunkAPI) =>{
+    try {
+        const {data} = await axios.post("/auth/google", {accessToken});
 
         if(!data.success) {
             return thunkAPI.rejectWithValue(data.message);
@@ -85,6 +98,7 @@ const AuthSlice = createSlice({
         error: null,
         image: "",
         contact: "",
+        location: null,
     },
     reducers: {
         signout: (state) => {
@@ -94,15 +108,19 @@ const AuthSlice = createSlice({
             state.allergy = [];
             localStorage.removeItem("token");
             toast.success("SignOut successfully !")
+        },
+        setLocation: (state, action) => {
+            state.location = action.payload
+            console.log(action.payload)
         }
     },
     extraReducers: (builder) => {
         builder
-        .addCase(signin.pending, (state) => {
+          .addCase(signin.pending, (state) => {
             state.status = "loading";
             state.error = "";
-        })
-        .addCase(signin.fulfilled, (state, action) => {
+          })
+          .addCase(signin.fulfilled, (state, action) => {
             state.status = "succeed";
             state.islogin = true;
             state.username = action.payload.user.username;
@@ -112,53 +130,51 @@ const AuthSlice = createSlice({
             state.image = action.payload.user.image;
             localStorage.setItem("token", action.payload.token);
             toast.success(action.payload.message);
-        })
-        .addCase(signin.rejected, (state, action) => {
-            state.status = "failed" 
-            state.error = action.payload;
-            toast.error(action.payload);
-        })
-        .addCase(signup.pending, (state) => {
-            state.status = "loading";
-            state.error = "";
-        })
-        .addCase(signup.fulfilled, (state, action) => {
-            state.status = "succeed";
-            state.islogin = true;
-            state.username = action.payload.user.username;
-            state.email = action.payload.user.email;
-            state.contact = action.payload.contact;
-            state.allergy = action.payload.user.allergy;
-            localStorage.setItem("token", action.payload.token);
-            state.image = action.payload.user.image;
-            toast.success(action.payload.message);
-        })
-        .addCase(signup.rejected, (state, action) => {
+          })
+          .addCase(signin.rejected, (state, action) => {
             state.status = "failed";
             state.error = action.payload;
             toast.error(action.payload);
-        })
-        .addCase(profile.pending, (state) => {
-            state.status = "loading",
+          })
+          .addCase(signup.pending, (state) => {
+            state.status = "loading";
             state.error = "";
-        })
-        .addCase(profile.fulfilled , (state, action) => {
+          })
+          .addCase(signup.fulfilled, (state, action) => {
+            state.status = "succeed";
+            state.islogin = true;
+            state.username = action.payload.user.username;
+            state.email = action.payload.user.email;
+            state.contact = action.payload.contact;
+            state.allergy = action.payload.user.allergy;
+            localStorage.setItem("token", action.payload.token);
+            state.image = action.payload.user.image;
+            toast.success(action.payload.message);
+          })
+          .addCase(signup.rejected, (state, action) => {
+            state.status = "failed";
+            state.error = action.payload;
+            toast.error(action.payload);
+          })
+          .addCase(profile.pending, (state) => {
+            (state.status = "loading"), (state.error = "");
+          })
+          .addCase(profile.fulfilled, (state, action) => {
             state.username = action.payload.user.username;
             state.allergy = action.payload.user.allergy;
             state.image = action.payload.user.image;
             state.status = "succeed";
             toast.success(action.payload.message);
-        })
-        .addCase(profile.rejected, (state, action) => {
+          })
+          .addCase(profile.rejected, (state, action) => {
             state.status = "failed";
             state.error = action.payload;
             toast.error(state.error);
-        })
-        .addCase(authCheck.pending, (state) => {
-            state.status = "loading",
-            state.error = "";
-        })
-        .addCase(authCheck.fulfilled, (state, action) => {
+          })
+          .addCase(authCheck.pending, (state) => {
+            (state.status = "loading"), (state.error = "");
+          })
+          .addCase(authCheck.fulfilled, (state, action) => {
             state.status = "succeed";
             state.islogin = true;
             state.email = action.payload.user.email;
@@ -166,17 +182,16 @@ const AuthSlice = createSlice({
             state.image = action.payload.user.image;
             state.allergy = action.payload.user.allergy;
             toast.success(action.payload.message);
-        })
-        .addCase(authCheck.rejected, (state, action) => {
+          })
+          .addCase(authCheck.rejected, (state, action) => {
             state.status = "failed";
             state.error = action.payload;
             toast.error(action.payload);
-        })
-        .addCase(deleteAccount.pending, (state) => {
-            state.status = "loading",
-            state.error = "";
-        })
-        .addCase(deleteAccount.fulfilled, (state) => {
+          })
+          .addCase(deleteAccount.pending, (state) => {
+            (state.status = "loading"), (state.error = "");
+          })
+          .addCase(deleteAccount.fulfilled, (state) => {
             state.status = "succeed";
             localStorage.removeItem("token");
             state.email = "";
@@ -184,16 +199,31 @@ const AuthSlice = createSlice({
             state.allergy = [];
             state.image = "";
             state.islogin = false;
-        })
-        .addCase(deleteAccount.rejected, (state, action) => {
+          })
+          .addCase(deleteAccount.rejected, (state, action) => {
             state.status = "failed";
             state.error = action.payload;
             toast.error(action.payload);
-        })
-
+          })
+          .addCase(loginWithGoogle.fulfilled, (state, action) => {
+            state.status = "succeed";
+            state.islogin = true;
+            state.username = action.payload.user.username;
+            state.email = action.payload.user.email;
+            state.contact = action.payload.contact;
+            state.allergy = action.payload.user.allergy;
+            state.image = action.payload.user.image;
+            localStorage.setItem("token", action.payload.token);
+            toast.success(action.payload.message);
+          })
+        .addCase(loginWithGoogle.rejected, (state, action) => {
+            state.status = "failed";
+            state.error = action.payload;
+            toast.error(action.payload);
+        });
     }
 })
 
-export const  { signout } = AuthSlice.actions;
+export const  { signout, setLocation } = AuthSlice.actions;
 
 export default AuthSlice.reducer
