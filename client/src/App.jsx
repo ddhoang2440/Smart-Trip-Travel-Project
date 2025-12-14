@@ -13,25 +13,48 @@ import ChatBox from "./components/ChatBox";
 import Setting from "./pages/Setting";
 import { Toaster } from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-import { authCheck } from "./contexts/AuthRedux";
-import { getUserRestaurant } from "./contexts/ResRedux";
+import { authCheck, setLocation } from "./contexts/AuthRedux";
+import { getAllRestaurant, getUserRestaurant } from "./contexts/ResRedux";
 import { getMenu } from "./contexts/MenuRedux";
 import ScrollTop from "./components/ScrollTop";
-import BookingRestaurant from "./pages/BookingRestaurant";
 
 const App = () => {
-  const { email } = useSelector((state) => state.auth);
+  const { email, location } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(authCheck());
+    const success = (position) => {
+      dispatch(
+        setLocation({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        })
+      );
+    };
+    const error = (err) => {
+      console.error(err);
+    };
+    navigator.geolocation.getCurrentPosition(success, error, {
+      enableHighAccuracy: false,
+      timeout: 20000,
+      maximumAge: 10000,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      dispatch(authCheck());
+    }
   }, [dispatch]);
 
-  // useEffect(() => {
-  //   dispatch(getAllRestaurant());
-  // }, [dispatch]);
+  useEffect(() => {
+    dispatch(getAllRestaurant());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
-    dispatch(getUserRestaurant());
+    if (localStorage.getItem("token")) {
+      dispatch(getUserRestaurant());
+    }
   }, [dispatch, email]);
 
   useEffect(() => {
@@ -47,14 +70,12 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/restaurant" element={<Restaurant />} />
-        <Route path="/restaurant/:restaurantId" element={<Restaurant />} />
         <Route path="/login" element={<Login />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/cart" element={<ShopCart />} />
         <Route path="/product" element={<Products />} />
         <Route path="/aboutUs" element={<AboutUs />} />
         <Route path="/setting" element={<Setting />} />
-        <Route path="/booking" element={<BookingRestaurant />} />
       </Routes>
     </div>
   );

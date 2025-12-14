@@ -765,11 +765,12 @@ const FoodCardChat = ({
       {/* Image with badges */}
       <div className="relative h-56 overflow-hidden">
         <img
-          src={
-            imageError
-              ? "https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=400&h=300&fit=crop"
-              : foodImage
-          }
+          // src={
+          //   imageError
+          //     ? "https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=400&h=300&fit=crop"
+          //     : foodImage
+          // }
+          src={foodImage}
           alt={foodName}
           className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
           onError={handleImageError}

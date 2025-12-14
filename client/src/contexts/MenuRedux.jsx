@@ -19,45 +19,35 @@ export const createMenu = createAsyncThunk(
   }
 );
 
-export const getMenu = createAsyncThunk(
-  "/menu/get",
-  async (_data, thunkAPI) => {
-    try {
-      const { data } = await axios.get("/menu/get");
-      if (!data.success) {
-        return thunkAPI.rejectWithValue(data.message);
-      }
-      return data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.message);
+export const getMenu = createAsyncThunk("/menu/get", async (thunkAPI) => {
+  try {
+    const { data } = await axios.get("/menu/get");
+    if (!data.success) {
+      return thunkAPI.rejectWithValue(data.message);
     }
+    return data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.message);
   }
-);
-export const getUserMenu = createAsyncThunk(
-  "/menu/user",
-  async (_data, thunkAPI) => {
-    try {
-      const { data } = await axios.get("/menu/user", {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-      if (!data.success) {
-        return thunkAPI.rejectWithValue(data.message);
-      }
-      return data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.message);
+});
+export const getUserMenu = createAsyncThunk("/menu/user", async (thunkAPI) => {
+  try {
+    const { data } = await axios.get("/menu/user", {
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    });
+    if (!data.success) {
+      return thunkAPI.rejectWithValue(data.message);
     }
+    return data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.message);
   }
-);
+});
 export const getRestaurantMenu = createAsyncThunk(
   "/menu/restaurant",
-  async (restaurantId, thunkAPI) => {
+  async (_data, thunkAPI) => {
     try {
-      const { data } = await axios.get(`/menu/restaurant/${restaurantId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const { data } = await axios.post("/menu/restaurant", _data);
       if (!data.success) {
         return thunkAPI.rejectWithValue(data.message);
       }
@@ -67,23 +57,23 @@ export const getRestaurantMenu = createAsyncThunk(
     }
   }
 );
-// export const getRestaurantMenu = createAsyncThunk(
-//   "menu/getByRestaurant",
-//   async (restaurantId, thunkAPI) => {
-//     try {
-//       const { data } = await axios.get(`/menu/restaurants/${restaurantId}`);
-
-//       if (!data.success) {
-//         return thunkAPI.rejectWithValue(data.message);
-//       }
-
-//       return data;
-//     } catch (error) {
-//       return thunkAPI.rejectWithValue(error.message);
-//     }
-//   }
-// );
-
+export const updateRestaurantMenu = createAsyncThunk(
+  "/menu/restaurant/update",
+  async ({ id, updateData }, thunkAPI) => {
+    try {
+      const { data } = await axios.put(
+        `/menu/restaurant/update/${id}`,
+        updateData
+      );
+      if (!data.success) {
+        return thunkAPI.rejectWithValue(data.message);
+      }
+      return data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
 const menuSlice = createSlice({
   name: "menu",
   initialState: {
@@ -135,10 +125,20 @@ const menuSlice = createSlice({
       .addCase(getRestaurantMenu.fulfilled, (state, action) => {
         state.loading = false;
         state.restaurantmenu = action.payload.restaurantmenu;
-        console.log(state.restaurantmenu);
         toast.success(action.payload.message);
       })
       .addCase(getRestaurantMenu.rejected, (state, action) => {
+        toast.error(action.payload);
+      })
+      .addCase(updateRestaurantMenu.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateRestaurantMenu.fulfilled, (state, action) => {
+        state.loading = false;
+        toast.success(action.payload.message);
+      })
+      .addCase(updateRestaurantMenu.rejected, (state, action) => {
+        state.loading = false;
         toast.error(action.payload);
       });
   },

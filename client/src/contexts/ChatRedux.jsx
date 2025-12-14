@@ -26,7 +26,7 @@ export const sendMessageToAI = createAsyncThunk(
   "chat/sendMessage",
   async (message, thunkAPI) => {
     try {
-      const { data } = await api.post(
+      const { data } = await axios.post(
         "/chatbot/analyze",
         {
           message,

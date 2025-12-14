@@ -6,14 +6,15 @@ import {
   IconTrash,
   IconX,
 } from "@tabler/icons-react";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Restaurants } from "../assets/assets";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteAccount, profile } from "../contexts/AuthRedux";
 import RestaurantAdd from "../components/RestaurantAdd";
 import MenuAdd from "../components/MenuAdd";
+import { useEffect } from "react";
 import MyRestaurant from "../components/MyRestaurant";
-import axios from "axios";
+import { getUserMenu } from "../contexts/MenuRedux";
 
 const Setting = () => {
   const [activeTab, setActiveTab] = useState("profile");
@@ -21,18 +22,17 @@ const Setting = () => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [contact, setContact] = useState("");
-  const [_allergy, set_Allergy] = useState([]);
   const [_image, set_Image] = useState([]);
-  const [orderHistory, setOrderHistory] = useState([]);
+  const [menuToEdit, setMenuToEdit] = useState(null);
   const dispatch = useDispatch();
 
   const { username, email, allergy, image } = useSelector(
     (state) => state.auth
   );
 
-  // useEffect(() => {
-  //   dispatch(getUserMenu());
-  // }, [dispatch]);
+  useEffect(() => {
+    dispatch(getUserMenu());
+  }, [dispatch]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -40,38 +40,19 @@ const Setting = () => {
       setSelectedImage(URL.createObjectURL(file));
     }
   };
-
+  const handleEditMenu = (menuData) => {
+    setMenuToEdit(menuData);
+    setActiveTab("menu");
+  };
   const handleProfile = (e) => {
     e.preventDefault();
     const ProfileForm = new FormData();
     ProfileForm.append("contact", contact);
     ProfileForm.append("username", name);
     ProfileForm.append("password", password);
-    ProfileForm.append("allergy", _allergy);
     ProfileForm.append("image", _image[0]);
     dispatch(profile(ProfileForm));
   };
-
-  const fetchOrderHistory = async () => {
-    try {
-      const res = await axios.get("/order/user", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      if (res.data.success) {
-        setOrderHistory(res.data.orders);
-      }
-    } catch (error) {
-      console.error("Lỗi lấy lịch sử đơn hàng:", error);
-    }
-  };
-
-  useEffect(() => {
-    if (activeTab === "history") {
-      fetchOrderHistory();
-    }
-  }, [activeTab]);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -91,18 +72,7 @@ const Setting = () => {
               <div>
                 <p>Email: {email}</p>
                 <p>Tên: {username}</p>
-                <p>
-                  {"Dị ứng: "}
-                  {allergy ? allergy.join(" , ") : "không có"}
-                </p>
               </div>
-              <button className="py-1 px-4 border cursor-pointer rounded-3xl hover:bg-gray-100 transition">
-                Update
-              </button>
-              <button className="flex gap-2 cursor-pointer text-red-500 hover:text-red-700 transition">
-                <IconTrash />
-                Remove
-              </button>
             </div>
 
             <form onSubmit={(e) => handleProfile(e)} className="space-y-4">
@@ -150,7 +120,7 @@ const Setting = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                {/* <label className="block text-sm font-medium text-gray-700 mb-1">
                   Các món dị ứng *
                 </label>
                 <textarea
@@ -161,7 +131,7 @@ const Setting = () => {
                   }}
                   className="w-full px-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 resize-none"
                   placeholder="Vui lòng ghi theo dạng: món,món,món ..."
-                />
+                /> */}
                 <div className="mt-4 flex flex-col gap-2">
                   <label>Change your Avatar</label>
                   <div className="flex items-center gap-4">
@@ -210,59 +180,39 @@ const Setting = () => {
         return (
           <div>
             <h2 className="text-lg font-semibold mb-4">Lịch sử đơn hàng</h2>
-            {orderHistory.length === 0 ? (
-              <p className="text-gray-500">Bạn chưa có đơn hàng nào.</p>
-            ) : (
-              <ul className="divide-y divide-gray-200">
-                {orderHistory.map((order) => (
-                  <li
-                    key={order._id}
-                    className="py-4 flex justify-between items-start"
-                  >
-                    <div>
-                      {/* Hiển thị tóm tắt món ăn */}
-                      <p className="font-medium text-lg">
-                        {order.items
-                          .map((item) => `${item.name} (x${item.quantity})`)
-                          .join(", ")}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        Ngày đặt: {order.created_at}
-                      </p>
-
-                      {/* Hiển thị trạng thái */}
-                      <span
-                        className={`text-xs px-2 py-1 rounded-full mt-1 inline-block 
-                        ${
-                          order.status === "PENDING"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : order.status === "COMPLETED"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-gray-100 text-gray-800"
-                        }`}
-                      >
-                        {order.status}
-                      </span>
-                    </div>
-
-                    <div className="text-right">
-                      {/* Giá tiền */}
-                      <p className="font-semibold text-blue-600 text-lg">
-                        {order.final_price.toLocaleString()}đ
-                      </p>
-                      {order.discount_amount > 0 && (
-                        <p className="text-xs text-green-600">
-                          (Đã giảm: {order.discount_amount.toLocaleString()}đ)
-                        </p>
-                      )}
-                      <p className="text-xs text-gray-400 mt-1">
-                        #{order._id.slice(-6).toUpperCase()}
-                      </p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
+            <ul className="divide-y divide-gray-200">
+              {[
+                {
+                  id: "001",
+                  date: "10/11/2025",
+                  items: "Pizza",
+                  total: "100.000đ",
+                },
+                {
+                  id: "002",
+                  date: "28/10/2025",
+                  items: "Pho",
+                  total: "35.000đ",
+                },
+                {
+                  id: "003",
+                  date: "20/10/2025",
+                  items: "Cuc",
+                  total: "10.000đ",
+                },
+              ].map((order) => (
+                <li key={order.id} className="py-3 flex justify-between">
+                  <div>
+                    <p className="font-medium">{order.items}</p>
+                    <p className="text-xs text-gray-500">{order.date}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-semibold text-blue-600">{order.total}</p>
+                    <p className="text-xs text-gray-500">{order.id}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
           </div>
         );
       case "home":
@@ -299,11 +249,22 @@ const Setting = () => {
           </div>
         );
       case "restaurant":
-        return <MyRestaurant activeTab={activeTab} />;
+        return (
+          <MyRestaurant
+            activeTab="restaurant"
+            setActiveTab={setActiveTab}
+            handleEditMenu={handleEditMenu}
+          />
+        );
       case "business":
-        return <RestaurantAdd activeTab={activeTab} />;
+        return <RestaurantAdd />;
       case "menu":
-        return <MenuAdd activeTab={activeTab} />;
+        return (
+          <MenuAdd
+            menuToEdit={menuToEdit}
+            onCancelEdit={() => setMenuToEdit(null)}
+          />
+        );
       default:
         return null;
     }
@@ -321,8 +282,8 @@ const Setting = () => {
             { key: "history", title: "Lịch sử mua hàng" },
             { key: "home", title: "Cài đặt hệ thống" },
             { key: "business", title: "Trở Thành Chủ Nhà Hàng" },
-            { key: "restaurant", title: "Nhà hàng của tôi" },
             { key: "menu", title: "Menu Nhà Hàng" },
+            { key: "restaurant", title: "Nhà hàng của tôi" },
           ].map(({ key, title }) => (
             <button
               key={key}

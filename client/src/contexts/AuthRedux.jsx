@@ -8,10 +8,22 @@ export const signin = createAsyncThunk(
   "/auth/signin",
   async ({ email, password }, thunkAPI) => {
     try {
-      const { data } = await axios.post("/auth/signin", {
-        email,
-        password,
-      });
+      const { data } = await axios.post("/auth/signin", { email, password });
+
+      if (!data.success) {
+        return thunkAPI.rejectWithValue(data.message);
+      }
+      return data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+export const loginWithGoogle = createAsyncThunk(
+  "/auth/google",
+  async ({ accessToken }, thunkAPI) => {
+    try {
+      const { data } = await axios.post("/auth/google", { accessToken });
 
       if (!data.success) {
         return thunkAPI.rejectWithValue(data.message);
@@ -90,9 +102,23 @@ export const deleteAccount = createAsyncThunk(
   "auth/delete",
   async (thunkAPI) => {
     try {
-      const { data } = await axios.get("auth/delete", {
+      const { data } = await axios.get("/auth/delete", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
+      if (!data.success) {
+        return thunkAPI.rejectWithValue(data.message);
+      }
+      return data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+export const getUserById = createAsyncThunk(
+  "auth/get",
+  async (userId, thunkAPI) => {
+    try {
+      const { data } = await axios.get(`/auth/get/${userId}`);
       if (!data.success) {
         return thunkAPI.rejectWithValue(data.message);
       }
@@ -106,6 +132,7 @@ export const deleteAccount = createAsyncThunk(
 const AuthSlice = createSlice({
   name: "auth",
   initialState: {
+    users: {},
     islogin: false,
     username: "",
     email: "",
@@ -114,6 +141,7 @@ const AuthSlice = createSlice({
     error: null,
     image: "",
     contact: "",
+    location: null,
   },
   reducers: {
     signout: (state) => {
@@ -123,6 +151,10 @@ const AuthSlice = createSlice({
       state.allergy = [];
       localStorage.removeItem("token");
       toast.success("SignOut successfully !");
+    },
+    setLocation: (state, action) => {
+      state.location = action.payload;
+      console.log(action.payload);
     },
   },
   extraReducers: (builder) => {
@@ -215,10 +247,38 @@ const AuthSlice = createSlice({
         state.status = "failed";
         state.error = action.payload;
         toast.error(action.payload);
+      })
+      .addCase(loginWithGoogle.fulfilled, (state, action) => {
+        state.status = "succeed";
+        state.islogin = true;
+        state.username = action.payload.user.username;
+        state.email = action.payload.user.email;
+        state.contact = action.payload.contact;
+        state.allergy = action.payload.user.allergy;
+        state.image = action.payload.user.image;
+        localStorage.setItem("token", action.payload.token);
+        toast.success(action.payload.message);
+      })
+      .addCase(loginWithGoogle.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+        toast.error(action.payload);
+      })
+      .addCase(getUserById.fulfilled, (state, action) => {
+        state.status = "succeed";
+        if (action.payload.user && action.payload.user._id) {
+          state.users[action.payload.user._id] = action.payload.user;
+        }
+        toast.success(action.payload.message);
+      })
+      .addCase(getUserById.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+        toast.error(action.payload);
       });
   },
 });
 
-export const { signout } = AuthSlice.actions;
+export const { signout, setLocation } = AuthSlice.actions;
 
 export default AuthSlice.reducer;

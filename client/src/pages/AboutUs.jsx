@@ -1,5 +1,5 @@
 import React from "react";
-import Footer from "../components/Footer";
+import Footer from "../components//Footer";
 import Title from "../components/Title";
 import {
   IconBoxMultiple,
@@ -10,8 +10,8 @@ import { useEffect } from "react";
 
 const AboutUs = () => {
   useEffect(() => {
-    window.scrollTo({top:0, behavior:"smooth"});
-  },[])
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
   return (
     <>
       <div className="py-[6vh]">
@@ -88,7 +88,7 @@ const AboutUs = () => {
           <div className="flex lg:flex-row flex-col justify-center items-center gap-10">
             {Array(3)
               .fill(1)
-              .map((d,idx) => {
+              .map((d, idx) => {
                 return (
                   <React.Fragment key={"comment" + idx}>
                     <div className="flex flex-col shadow-2xl rounded-2xl bg-gray-200/80 p-4">

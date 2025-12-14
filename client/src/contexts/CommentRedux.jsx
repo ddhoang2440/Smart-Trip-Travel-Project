@@ -27,11 +27,15 @@ export const getComment = createAsyncThunk(
   "/comment/get",
   async (restaurantId, thunkAPI) => {
     try {
-      const { data } = await axios.get(`/comment/get/${restaurantId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const { data } = await axios.get(
+        "/comment/get",
+        { params: { restaurantId } },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
       if (!data.success) {
         return thunkAPI.rejectWithValue(data.message);
       }
@@ -66,10 +70,11 @@ export const commentSlice = createSlice({
       })
       .addCase(getComment.fulfilled, (state, action) => {
         state.loading = false;
-        state.comment = action.payload.data;
+        state.comment = action.payload.comment;
         toast.success(action.payload.message);
       })
       .addCase(getComment.rejected, (state, action) => {
+        state.loading = false;
         toast.error(action.payload);
       });
   },
