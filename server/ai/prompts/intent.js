@@ -44,19 +44,13 @@ export const intentPrompt = (message) => {
     SUPPORTED INTENTS
     ========================
     Return the MOST relevant intent only:
-    "search","booking","pay","suggest","schedule","compare","modify","cancel","history","other"
+    "search","booking","history","other"
 
     INTENT PRIORITY (highest → lowest):
     1) search
-    2) suggest
-    3) compare
-    4) schedule
-    5) booking
-    6) pay
-    7) modify
-    8) cancel
-    9) history
-    10) other
+    2) booking
+    3) history
+    4) other
 
     ========================
     FIELD SCHEMAS
@@ -67,25 +61,41 @@ export const intentPrompt = (message) => {
     {
     "food_name": slot,
     "res_name": slot,
-    "rating": slot,
-    "distance_km": slot,
+    "distance_m": slot,
     "address": slot,
     "res_price": { "value": {min,max}, "canonical": string|null },
     "food_price": { "value": {min,max}, "canonical": string|null },
     "open_now": slot,
-    "time_range": {from,to}
+    "time_range": {from,to},
+
+    "is_suggestion": true|false,
+    - For search: set "is_suggestion" to true **only if the user did not provide any meaningful search criteria** (res_price, food_price, distance_m, location...).
+    - Otherwise, set false.
+
+    "location": { "value": string|null, "type": "place"|"current"|"geo", "operator": null }
     }
+    - If the user mentions "near [place]" or "around [place]", extract location as:
+      "location": { "value": "[place]", "type": "place", "operator": null }
+
+    - If the user says "near me", "gần tôi", extract:
+      "location": { "value": null, "type": "current", "operator": null }
+
+    - If user provides lat/lng directly (frontend), extract:
+      "location": { "value": { "lat": ..., "lng": ... }, "type": "geo", "operator": null }
 
     ### booking
     {
-    "restaurant": slot,
-    "time": {"from": string|null, "to": string|null},
-    "date": {"day": int|null, "month": int|null, "year": int|null},
-    "num_people": slot,
-    "contact_name": slot,
-    "contact_phone": slot,
-    "special_request": slot,
-    "promotion_code": slot
+    "restaurant": string | null,
+    "time": {"from": "HH:mm"|null, "to": "HH:mm"|null},
+    "booking_date": string | null, // ISO date string
+    "quantity": number|null,
+    "table": 2|4|8|null,
+
+    "is_suggestion": true|false,
+    - For booking: set "is_suggestion" to true if the user requests recommendations or the restaurant field is missing. AI should infer from context if the user wants suggestions.
+    - Otherwise, set false.
+
+    "location": { "value": string|null, "type": "place"|"current"|"geo", "operator": null }
     }
 
     ### pay
@@ -96,44 +106,6 @@ export const intentPrompt = (message) => {
     "order_id": slot,
     "res_name": slot,
     "note": slot
-    }
-
-    ### suggest
-    {
-    "cuisine": slot,
-    "taste": slot,
-    "occasion": slot,
-    "budget_per_person": slot,
-    "location": slot,
-    "time_of_day": slot,
-    "popularity": slot,
-    "filters": object|null
-    }
-
-    ### schedule
-    {
-    "time": {"from": string|null, "to": string|null},
-    "date": {"day": int|null, "month": int|null, "year": int|null},
-    "people": slot,
-    "reminder_text": slot,
-    "occasion": slot
-    }
-
-    ### modify
-    {
-    "id": slot,
-    "res_name": slot,
-    "time": {"from": string|null, "to": string|null},
-    "date": {"day": int|null, "month": int|null, "year": int|null},
-    "changes": slot
-    }
-
-    ### cancel
-    {
-    "id": slot,
-    "res_name": slot,
-    "time": {"from": string|null, "to": string|null},
-    "date": {"day": int|null, "month": int|null, "year": int|null}
     }
 
     ### history

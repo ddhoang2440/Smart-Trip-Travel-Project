@@ -1,70 +1,32 @@
+import OpenAI from "openai";
 import "dotenv/config";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// Load KEY từ .env
-// Tạo KEY tại:
-// https://aistudio.google.com/app/apikey
-
-const genai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
-export const getModel = async () => {
-  try {
-    const result = await genai.listModels();
-
-    for (const m of result.models) {
-      if (
-        m.name.includes("flash-latest") &&
-        m.supportedGenerationMethods?.includes("generateContent")
-      ) {
-        return m.name;
-      }
-    }
-    for (const m of result.models) {
-      if (
-        m.name.includes("flash") &&
-        m.supportedGenerationMethods?.includes("generateContent")
-      ) {
-        return m.name;
-      }
-    }
-    for (const m of result.models) {
-      if (
-        m.name.includes("pro") &&
-        m.supportedGenerationMethods?.includes("generateContent")
-      ) {
-        return m.name;
-      }
-    }
-
-    return "gemini-flash-latest";
-  } catch (err) {
-    console.error("Error listing models:", err);
-    return "gemini-flash-latest";
-  }
-};
+// Khởi tạo client với API key Gemini và baseURL tương thích OpenAI
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+  baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
+});
 
 export const callGemini = async (prompt) => {
   try {
-    const modelName = await getModel();
-    const model = genai.getGenerativeModel({ model: modelName });
+    // Tạo cuộc hội thoại
+    const response = await openai.chat.completions.create({
+      model: "gemini-2.5-flash", // model Gemini
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are an assistant that analyzes and explains user intent clearly.",
+        },
+        { role: "user", content: prompt },
+      ],
+    });
 
-    const response = await model.generateContent(prompt);
-
-    if (!response.response?.candidates?.length) {
-      console.log("Gemini: No candidates returned");
-      return null;
-    }
-
-    const candidate = response.response.candidates[0];
-
-    if (!candidate.content?.parts?.length) {
-      console.log("Gemini: No content parts", candidate.finishReason);
-      return null;
-    }
-
-    return candidate.content.parts[0].text;
+    // Chọn kết quả text tốt nhất
+    const choice = response.choices[0];
+    return choice.message.content;
   } catch (err) {
-    console.error("Gemini API Error:", err);
-    return null;
+    console.error("Gemini API error:", err);
+    throw err;
   }
 };

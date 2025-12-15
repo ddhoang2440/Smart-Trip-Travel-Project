@@ -4,7 +4,7 @@ import Booking from "../../model/booking.js";
 import BookingSlot from "../../model/bookingSlot.js";
 
 export default class BookingHandler extends IntentHandler {
-  async handle(type, entity, params) {
+  async handle(type, entity, params, center) {
     if (type === "reply") {
       return await this.bookingText(params);
     } else if (type === "confirm") {

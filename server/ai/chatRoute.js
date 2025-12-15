@@ -17,7 +17,7 @@ router.post("/analyze", protect, async (req, res) => {
       });
     }
 
-    const { message, timestamp } = req.body;
+    const { message, lat, lng } = req.body;
 
     if (!message) {
       return res.status(400).json({
@@ -29,10 +29,10 @@ router.post("/analyze", protect, async (req, res) => {
     const msgRequest = new Message({
       user_id: String(user.sub),
       message,
-      timestamp: timestamp || new Date().toISOString(),
+      timestamp: new Date().toISOString(),
     });
 
-    const result = await handleSessionMessage(msgRequest, user);
+    const result = await handleSessionMessage(msgRequest, user, lat, lng);
 
     if (typeof result === "object") {
       const responseType = result.type || "reply";

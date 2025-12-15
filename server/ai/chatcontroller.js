@@ -63,7 +63,7 @@ export const buildUserSession = async (message, session) => {
 // =====================================================
 //     HANDLE INTENTS
 // =====================================================
-export const handleIntents = async (jsonList, currentUser = null) => {
+export const handleIntents = async (jsonList, currentUser = null, lat, lng) => {
   const results = [];
 
   for (const payload of jsonList) {
@@ -86,7 +86,7 @@ export const handleIntents = async (jsonList, currentUser = null) => {
     }
 
     try {
-      const result = await handler.run(payload);
+      const result = await handler.run(payload, lat, lng);
       results.push(result);
     } catch (err) {
       console.log(`Handler error for intent ${intentName}:`, err);
@@ -104,7 +104,7 @@ export const handleIntents = async (jsonList, currentUser = null) => {
 // =====================================================
 //     HANDLE SESSION MESSAGE
 // =====================================================
-export const handleSessionMessage = async (request, currentUser) => {
+export const handleSessionMessage = async (request, currentUser, lat, lng) => {
   const userId = String(currentUser.sub);
   const message = request.message;
 
@@ -166,7 +166,7 @@ export const handleSessionMessage = async (request, currentUser) => {
 
   // 2️⃣ If no session = normal intent handling
   const intents = await extractUserIntent(request);
-  const response = await handleIntents(intents, currentUser);
+  const response = await handleIntents(intents, currentUser, lat, lng);
 
   // 3️⃣ If booking → create new Redis session
   if (response?.action === "create_booking") {

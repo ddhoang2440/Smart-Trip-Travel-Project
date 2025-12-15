@@ -6,7 +6,7 @@ import {
   buildFilter,
   buildFoodFilterFromJson,
   buildRestaurantFilterSpecFromJson,
-} from "../filter.js";
+} from "../utils/filter.js";
 
 const ENTITY_MAP = {
   restaurant: Restaurant,
@@ -15,7 +15,7 @@ const ENTITY_MAP = {
 };
 
 export default class SearchHandler extends IntentHandler {
-  async handle(type, entity, params) {
+  async handle(type, entity, params, center) {
     const EntityModel = ENTITY_MAP[entity];
 
     if (!EntityModel) {
@@ -23,7 +23,7 @@ export default class SearchHandler extends IntentHandler {
     }
 
     if (type === "reply") {
-      return await this.searchText(EntityModel, params);
+      return await this.searchText(EntityModel, params, center);
     } else if (type === "ui_action") {
       return await this.searchUI(EntityModel, params);
     }
@@ -31,30 +31,34 @@ export default class SearchHandler extends IntentHandler {
     return null;
   }
 
-  async searchText(EntityModel, params) {
+  async searchText(EntityModel, params, center = null) {
     const Restaurant = ENTITY_MAP["restaurant"];
     const Menu = ENTITY_MAP["menu"];
     const Food = ENTITY_MAP["food"];
 
     let filters = [];
-
+    let geoFilter = null;
     // --- BUILD FILTERS ---
     if (EntityModel === Restaurant) {
       console.log("Building restaurant filters");
-      filters = buildRestaurantFilterSpecFromJson(params);
+      const res = await buildRestaurantFilterSpecFromJson(params, center);
+      filters = res.filters;
+      geoFilter = res.geoFilter;
     }
 
     if (EntityModel === Menu || EntityModel === Food) {
       console.log("Building food filters");
-      filters = await buildFoodFilterFromJson(params);
+      const res = await buildFoodFilterFromJson(params, center);
+      filters = res.filters;
+      geoFilter = res.geoFilter;
     }
 
     // Convert to final MongoDB filter
-    const mongoFilter = buildFilter(filters, "AND");
-    console.dir(mongoFilter, { depth: null });
+    const pipeline = buildFilter(filters, geoFilter, "AND");
+    console.dir(pipeline, { depth: null });
 
     // Query DB
-    const results = await EntityModel.find(mongoFilter).lean();
+    const results = await EntityModel.aggregate(pipeline);
     console.log("Results:", results.length);
 
     // ------------------------
@@ -66,7 +70,7 @@ export default class SearchHandler extends IntentHandler {
         name: item.name,
         review: item.review,
         address: item.address,
-        rating: item.rating,
+        ratingSum: item.ratingSum,
         medium_price: item.medium_price,
         open: item.open,
         from: item.from,

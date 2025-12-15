@@ -26,12 +26,22 @@ export function sessionPrompt(message, session = {}) {
         "flow": "booking.update" | "booking.confirm" | "booking.cancel" | null,
         "quantity": number | null,
         "booking_time":{
-            "from": number | null,
-            "to": number | null
+            "from": "HH:mm" | null,
+            "to": "HH:mm" | null
         }
         "booking_date": string | null, // ISO date string
         "restaurant": string | null,
         "table": 2 | 4 | 8 | null,
+        "is_suggestion": true|false,
+        "location": { "value": string|null, "type": "place"|"current"|"geo", "operator": null }
+        - If the user mentions "near [place]" or "around [place]", extract location as:
+            "location": { "value": "[place]", "type": "place", "operator": null }
+
+        - If the user says "near me", "gần tôi", extract:
+            "location": { "value": null, "type": "current", "operator": null }
+
+        - If user provides lat/lng directly (frontend), extract:
+            "location": { "value": { "lat": ..., "lng": ... }, "type": "geo", "operator": null }
     },
     "reply": "..."
     }
@@ -46,6 +56,8 @@ export function sessionPrompt(message, session = {}) {
     - Once all required fields are filled, reply with a summary or confirmation of the booking.
 
     IMPORTANT:
+    - If the 'restaurant' field is missing both in the USER_MESSAGE and in the CURRENT_SESSION, set "is_suggestion": true in the updated_session. This indicates the system should suggest restaurants.
+    - Otherwise, set "is_suggestion": false.
     - Even if the user types a date in any format (e.g., "14/12/2025", "Dec 14, 2025"), always convert it to ISO 8601 format.
     - Do not output anything outside the JSON object.
 
