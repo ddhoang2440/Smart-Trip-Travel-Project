@@ -1,17 +1,15 @@
 import OpenAI from "openai";
 import "dotenv/config";
 
-// Khởi tạo client với API key Gemini và baseURL tương thích OpenAI
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY, // Gemini API Key
   baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
 });
 
 export const callGemini = async (prompt) => {
   try {
-    // Tạo cuộc hội thoại
     const response = await openai.chat.completions.create({
-      model: "gemini-2.5-flash", // model Gemini
+      model: "gemini-2.5-flash",
       messages: [
         {
           role: "system",
@@ -20,13 +18,13 @@ export const callGemini = async (prompt) => {
         },
         { role: "user", content: prompt },
       ],
+      max_tokens: 512,
     });
 
-    // Chọn kết quả text tốt nhất
-    const choice = response.choices[0];
-    return choice.message.content;
+    return response.choices[0].message.content;
   } catch (err) {
-    console.error("Gemini API error:", err);
+    console.error("Gemini API error:");
+    console.error(err.response?.data || err.message);
     throw err;
   }
 };

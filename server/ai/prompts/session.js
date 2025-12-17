@@ -48,7 +48,7 @@ export function sessionPrompt(message, session = {}) {
 
      RULES:
     - Always return 'booking_date' as a valid ISO 8601 date string, e.g., "2025-12-14T00:00:00.000Z".
-    - Identify all required fields that are missing: restaurant, booking_date, booking_time, table, contact_name, contact_phone.
+    - Identify all required fields that are missing: restaurant, booking_date, booking_time, table, quantity.
     - Your reply must ask for ALL missing fields at once in a single friendly message.
     - If a field exists in CURRENT_SESSION, leave it unchanged unless updated by the user.
     - Do NOT add any fields outside the schema.

@@ -1,6 +1,5 @@
 import Restaurant from "../../model/restaurant.js";
 import Menu from "../../model/food.js";
-import getCoordinates from "./centerPlace.js";
 
 export class FilterSpec {
   constructor(field, operator, value) {
@@ -130,8 +129,8 @@ export const buildRestaurantFilterSpecFromJson = async (fields, center) => {
   }
 
   // address
-  if (fields.address?.canonical) {
-    filters.push(new FilterSpec("address", "=", fields.address.canonical));
+  if (fields.address?.value) {
+    filters.push(new FilterSpec("address", "=", fields.address.value));
   }
 
   // time

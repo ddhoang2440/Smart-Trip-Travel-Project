@@ -57,7 +57,22 @@ router.post("/analyze", protect, async (req, res) => {
             result.message || `Tìm thấy ${result.food?.length || 0} món ăn`,
         });
       }
-
+      if (responseType === "booking-preview") {
+        return res.json({
+          success: true,
+          type: "booking-preview",
+          booking: result.booking || [],
+          message: result.message,
+        });
+      }
+      if (responseType === "suggest-booking") {
+        return res.json({
+          success: true,
+          type: "suggest-booking",
+          bookings: result.bookings || [],
+          message: result.message,
+        });
+      }
       if (responseType === "error") {
         return res.json({
           success: false,

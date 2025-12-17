@@ -44,19 +44,18 @@ export const intentPrompt = (message) => {
     SUPPORTED INTENTS
     ========================
     Return the MOST relevant intent only:
-    "search","booking","history","other"
+    "search","booking","other"
 
     INTENT PRIORITY (highest → lowest):
     1) search
     2) booking
-    3) history
-    4) other
+    3) other
 
     ========================
     FIELD SCHEMAS
     ========================
 
-    ### search
+    ### search (nearly with suggest restaurant)
     fields may include:
     {
     "food_name": slot,
@@ -69,7 +68,7 @@ export const intentPrompt = (message) => {
     "time_range": {from,to},
 
     "is_suggestion": true|false,
-    - For search: set "is_suggestion" to true **only if the user did not provide any meaningful search criteria** (res_price, food_price, distance_m, location...).
+    - For search: set "is_suggestion" to true **only if the user did not provide any meaningful search criteria** (res_price, food_price, distance_m, open_now, address...).
     - Otherwise, set false.
 
     "location": { "value": string|null, "type": "place"|"current"|"geo", "operator": null }
@@ -83,36 +82,33 @@ export const intentPrompt = (message) => {
     - If user provides lat/lng directly (frontend), extract:
       "location": { "value": { "lat": ..., "lng": ... }, "type": "geo", "operator": null }
 
+    ========================
+    LOCATION VS ADDRESS RULES
+    ========================
+    - If the user mentions "near [place]", "around [place]", "gần tôi" → set as **location**:
+      "location": { "value": "[place]" | null, "type": "place"|"current", "operator": null }
+    - If the user only specifies a district, street, or exact address without "near/around" → set as **address**:
+      "address": { "value": "[address]", "canonical": null, "operator": null }
+    - If the user provides lat/lng directly → set as geo location:
+      "location": { "value": { "lat": ..., "lng": ... }, "type": "geo", "operator": null }
+
+
     ### booking
     {
     "restaurant": string | null,
-    "time": {"from": "HH:mm"|null, "to": "HH:mm"|null},
+    "booking_time": {"from": "HH:mm"|null, "to": "HH:mm"|null},
     "booking_date": string | null, // ISO date string
     "quantity": number|null,
     "table": 2|4|8|null,
 
     "is_suggestion": true|false,
-    - For booking: set "is_suggestion" to true if the user requests recommendations or the restaurant field is missing. AI should infer from context if the user wants suggestions.
-    - Otherwise, set false.
+    - Set "is_suggestion": true **only if**:
+        1. The user explicitly asks for a recommendation, suggestion, or gợi ý (e.g., "gợi ý quán ăn", "recommend a restaurant"), OR
+        2. The "restaurant" field is missing in the user's message (user does not specify a restaurant name).
+    - Otherwise, set "is_suggestion": false.
+
 
     "location": { "value": string|null, "type": "place"|"current"|"geo", "operator": null }
-    }
-
-    ### pay
-    {
-    "payment_type": slot,
-    "amount": slot,
-    "currency": slot,
-    "order_id": slot,
-    "res_name": slot,
-    "note": slot
-    }
-
-    ### history
-    {
-    "target": slot,
-    "limit": slot,
-    "time_range": {"from": string|null, "to": string|null}
     }
 
     ### other

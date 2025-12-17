@@ -3,10 +3,12 @@ import { intentPrompt } from "./prompts/intent.js";
 import { sessionPrompt } from "./prompts/session.js";
 import SessionManager from "./sessionManager.js";
 import SearchHandler from "./handlers/searchHandler.js";
+import BookingHandler from "./handlers/bookingHandler.js";
 
 // =================== HANDLER MAP ===================
 export const INTENT_HANDLERS = {
   search: new SearchHandler(),
+  booking: new BookingHandler(),
 };
 
 // =====================================================
@@ -14,27 +16,28 @@ export const INTENT_HANDLERS = {
 // =====================================================
 export const extractUserIntent = async (request) => {
   const prompt = intentPrompt(request.message);
-  const raw = await callGemini(prompt);
+  //const raw = await callGemini(prompt);
+  const raw = fake[3];
 
   if (!raw) return [];
 
   console.log("AI Output:", raw);
 
   // Lọc JSON trong []
-  const match = raw.match(/\[.*\]/s);
-  const cleaned = match ? match[0] : raw;
+  // const match = raw.match(/\[.*\]/s);
+  // const cleaned = match ? match[0] : raw;
+  return raw;
+  // try {
+  //   let result = JSON.parse(cleaned);
 
-  try {
-    let result = JSON.parse(cleaned);
+  //   if (Array.isArray(result)) return result;
+  //   if (typeof result === "object") return [result];
 
-    if (Array.isArray(result)) return result;
-    if (typeof result === "object") return [result];
-
-    return [];
-  } catch (err) {
-    console.log("JSON parse error:", err);
-    return null;
-  }
+  //   return [];
+  // } catch (err) {
+  //   console.log("JSON parse error:", err);
+  //   return null;
+  // }
 };
 
 // =====================================================
@@ -108,11 +111,21 @@ export const handleSessionMessage = async (request, currentUser, lat, lng) => {
   const userId = String(currentUser.sub);
   const message = request.message;
 
+  if (request.suggestion) {
+    const handler = INTENT_HANDLERS["booking"];
+    return await handler.handle("confirm", null, {
+      ...request.suggestion,
+      userId,
+    });
+  }
+
   // 1️⃣ Check Redis session
-  let session = await SessionManager.get(userId);
+  //let session = await SessionManager.get(userId);
+  let session = false;
 
   if (session) {
-    const updated = await buildUserSession(message, session);
+    //const updated = await buildUserSession(message, session);
+    const updated = fakeSession[2];
 
     const action = updated.action;
     const newSession = updated.updated_session;
@@ -121,11 +134,11 @@ export const handleSessionMessage = async (request, currentUser, lat, lng) => {
     console.log("Session:", updated);
 
     if (action === "update_booking") {
-      await SessionManager.set(userId, newSession);
+      //await SessionManager.set(userId, newSession);
       return {
         type: "booking-preview",
         message: reply,
-        booking_info: newSession,
+        booking: newSession,
       };
     }
 
@@ -137,17 +150,17 @@ export const handleSessionMessage = async (request, currentUser, lat, lng) => {
       };
       const result = await handler.handle("confirm", null, params);
 
-      await SessionManager.delete(userId);
+      //await SessionManager.delete(userId);
 
       return {
         type: "booking-confirmed",
         message: "Đặt bàn thành công!",
-        booking_info: result,
+        booking: result,
       };
     }
 
     if (action === "cancel_booking") {
-      await SessionManager.delete(userId);
+      //await SessionManager.delete(userId);
       return {
         type: "booking-canceled",
         message: "Đã hủy đặt bàn.",
@@ -171,7 +184,179 @@ export const handleSessionMessage = async (request, currentUser, lat, lng) => {
   // 3️⃣ If booking → create new Redis session
   if (response?.action === "create_booking") {
     await SessionManager.set(userId, response.updated_session);
+    return {
+      type: "booking-preview",
+      booking: response.updated_session,
+      message: response.message,
+    };
   }
-
+  if (response?.action === "suggest_booking") {
+    return {
+      type: "suggest-booking",
+      bookings: response.suggestions,
+      message: response.message,
+    };
+  }
   return response;
 };
+
+const fake = [
+  //Gợi ý nhà hàng
+  [
+    {
+      intent: "search",
+      type: "reply",
+      entity: "restaurant",
+      fields: {
+        food_name: { value: null, canonical: null, operator: null },
+        res_name: { value: null, canonical: null, operator: null },
+        distance_m: { value: null, canonical: null, operator: null },
+        address: { value: null, canonical: null, operator: null },
+        res_price: null,
+        food_price: null,
+        open_now: { value: null, canonical: null, operator: null },
+        time_range: null,
+        is_suggestion: true,
+        location: { value: null, type: "place", operator: null },
+      },
+    },
+  ],
+  //Tìm nhà hàng quận 3
+  [
+    {
+      intent: "search",
+      type: "reply",
+      entity: "restaurant",
+      fields: {
+        food_name: { value: null, canonical: null, operator: null },
+        res_name: { value: null, canonical: null, operator: null },
+        distance_m: { value: null, canonical: null, operator: null },
+        address: { value: "quận 3", canonical: null, operator: null },
+        res_price: null,
+        food_price: null,
+        open_now: { value: null, canonical: null, operator: null },
+        time_range: null,
+        is_suggestion: false,
+        location: { value: null, type: "place", operator: null },
+      },
+    },
+  ],
+  //Tìm quán quanh quận 3
+  [
+    {
+      intent: "search",
+      type: "reply",
+      entity: "restaurant",
+      fields: {
+        food_name: { value: null, canonical: null, operator: null },
+        res_name: { value: null, canonical: null, operator: null },
+        distance_m: { value: null, canonical: null, operator: null },
+        address: { value: null, canonical: null, operator: null },
+        res_price: null,
+        food_price: null,
+        open_now: { value: null, canonical: null, operator: null },
+        time_range: null,
+        is_suggestion: true,
+        location: { value: "quận 3", type: "place", operator: null },
+      },
+    },
+  ],
+  // Đặt bàn lúc 8 giờ ngày mai
+  [
+    {
+      intent: "booking",
+      type: "reply",
+      entity: "restaurant",
+      fields: {
+        restaurant: null,
+        booking_time: { from: "08:00", to: null },
+        booking_date: "2025-12-19",
+        quantity: null,
+        table: null,
+        is_suggestion: true,
+        location: null,
+      },
+    },
+  ],
+  //Đặt bàn tại The Elite Dining
+  [
+    {
+      intent: "booking",
+      type: "reply",
+      entity: "restaurant",
+      fields: {
+        restaurant: "The Elite Dining",
+        time: { from: null, to: null },
+        booking_date: null,
+        quantity: null,
+        table: null,
+        is_suggestion: false,
+        location: null,
+      },
+    },
+  ],
+];
+const fakeFirstSession = [
+  {
+    flow: "booking.create",
+    quantity: null,
+    booking_time: {
+      from: "08:00",
+      to: null,
+    },
+    booking_date: "2025-12-19",
+    restaurant: null,
+    table: null,
+    is_suggestion: true,
+  },
+];
+const fakeSession = [
+  // Lúc 8 giờ ngày mai
+  {
+    action: "update_booking",
+    updated_session: {
+      flow: "booking.update",
+      quantity: null,
+      booking_time: { from: "08:00", to: null },
+      booking_date: "2025-12-19T00:00:00.000Z",
+      restaurant: "The Elite Dining",
+      table: null,
+      is_suggestion: false,
+      location: { value: null, type: "place", operator: null },
+    },
+    reply:
+      "Dạ, em đã cập nhật nhà hàng The Elite Dining cho lịch hẹn lúc 08:00 ngày 19/12. Anh/Chị dự định đi bao nhiêu người và muốn đặt bàn loại mấy người (loại 2, 4 hay 8 chỗ) để em hoàn tất thông tin ạ?",
+  },
+  // 4 người và bàn loại 4
+  {
+    action: "update_booking",
+    updated_session: {
+      flow: "booking.update",
+      quantity: 4,
+      booking_time: { from: "08:00", to: null },
+      booking_date: "2025-12-19T00:00:00.000Z",
+      restaurant: "The Elite Dining",
+      table: 4,
+      is_suggestion: false,
+      location: { value: null, type: "place", operator: null },
+    },
+    reply:
+      "Dạ, em đã cập nhật đầy đủ thông tin: Anh/Chị đặt bàn cho 4 người (loại bàn 4 chỗ) tại nhà hàng The Elite Dining vào lúc 08:00 ngày 19/12/2025. Anh/Chị xác nhận thông tin này để em hoàn tất đặt chỗ nhé!",
+  },
+  // Ok hãy đặt bàn đó cho mình
+  {
+    action: "confirm_booking",
+    updated_session: {
+      flow: "booking.confirm",
+      quantity: 4,
+      booking_time: { from: "08:00", to: null },
+      booking_date: "2025-12-19T00:00:00.000Z",
+      restaurant: "The Elite Dining",
+      table: 4,
+      is_suggestion: false,
+      location: { value: null, type: "place", operator: null },
+    },
+    reply:
+      "Dạ vâng, em đã xác nhận đặt bàn thành công cho Anh/Chị tại nhà hàng The Elite Dining vào lúc 08:00 ngày 19/12/2025 cho 4 người (bàn 4 chỗ). Hẹn gặp lại Anh/Chị tại nhà hàng ạ!",
+  },
+];

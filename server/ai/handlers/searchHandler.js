@@ -7,6 +7,7 @@ import {
   buildFoodFilterFromJson,
   buildRestaurantFilterSpecFromJson,
 } from "../utils/filter.js";
+import { suggestRestaurant } from "../utils/suggest.js";
 
 const ENTITY_MAP = {
   restaurant: Restaurant,
@@ -36,25 +37,31 @@ export default class SearchHandler extends IntentHandler {
     const Menu = ENTITY_MAP["menu"];
     const Food = ENTITY_MAP["food"];
 
-    let filters = [];
-    let geoFilter = null;
-    // --- BUILD FILTERS ---
-    if (EntityModel === Restaurant) {
-      console.log("Building restaurant filters");
-      const res = await buildRestaurantFilterSpecFromJson(params, center);
-      filters = res.filters;
-      geoFilter = res.geoFilter;
-    }
+    let pipeline = null;
 
-    if (EntityModel === Menu || EntityModel === Food) {
-      console.log("Building food filters");
-      const res = await buildFoodFilterFromJson(params, center);
-      filters = res.filters;
-      geoFilter = res.geoFilter;
-    }
+    if (!params.is_suggestion) {
+      let filters = [];
+      let geoFilter = null;
+      // --- BUILD FILTERS ---
+      if (EntityModel === Restaurant) {
+        console.log("Building restaurant filters");
+        const res = await buildRestaurantFilterSpecFromJson(params, center);
+        filters = res.filters;
+        geoFilter = res.geoFilter;
+      }
 
-    // Convert to final MongoDB filter
-    const pipeline = buildFilter(filters, geoFilter, "AND");
+      if (EntityModel === Menu || EntityModel === Food) {
+        console.log("Building food filters");
+        const res = await buildFoodFilterFromJson(params, center);
+        filters = res.filters;
+        geoFilter = res.geoFilter;
+      }
+
+      // Convert to final MongoDB filter
+      pipeline = buildFilter(filters, geoFilter, "AND");
+    } else {
+      pipeline = await suggestRestaurant(center);
+    }
     console.dir(pipeline, { depth: null });
 
     // Query DB
@@ -79,6 +86,7 @@ export default class SearchHandler extends IntentHandler {
         images: item.images || [],
         description: item.description || "",
         location: item.location,
+        distance: item.distance,
       }));
 
       return {
@@ -130,15 +138,6 @@ export default class SearchHandler extends IntentHandler {
       message: "Không tìm thấy kết quả phù hợp",
       restaurants: EntityModel === Restaurant ? [] : undefined,
       items: EntityModel === Menu || EntityModel === Food ? [] : undefined,
-    };
-  }
-
-  async searchUI(entity, params) {
-    return {
-      type: "ui-action",
-      action: "search",
-      entity,
-      params,
     };
   }
 }

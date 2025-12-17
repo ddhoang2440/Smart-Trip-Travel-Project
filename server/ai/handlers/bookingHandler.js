@@ -2,6 +2,7 @@ import IntentHandler from "./base.js";
 import Restaurant from "../../model/restaurant.js";
 import Booking from "../../model/booking.js";
 import BookingSlot from "../../model/bookingSlot.js";
+import { suggestRestaurant, suggestBookingSlots } from "../utils/suggest.js";
 
 export default class BookingHandler extends IntentHandler {
   async handle(type, entity, params, center) {
@@ -20,6 +21,31 @@ export default class BookingHandler extends IntentHandler {
     const booking_date = params?.booking_date || null; // ISO date string
     const restaurant = params?.restaurant?.value || null;
     const table = params?.table?.value || null;
+    const is_suggestion = params?.is_suggestion || false;
+
+    if (is_suggestion && (!restaurant || !table || !quantity)) {
+      const suggestions = await generateBookingSuggestions(
+        {
+          restaurant,
+          booking_date,
+          booking_time,
+          table,
+          quantity,
+        },
+        params.location,
+        4
+      );
+
+      return {
+        action: "suggest_booking",
+        suggestions: suggestions.map((s, index) => ({
+          id: `SUGG_${index + 1}`,
+          ...s,
+        })),
+        message:
+          "Mình gợi ý một số lựa chọn phù hợp, bạn chọn 1 giúp mình nhé (ví dụ: chọn gợi ý 1)",
+      };
+    }
 
     // Nếu thiếu nhiều thông tin thì frontend hiển thị form điền
     const formatted_data = {
@@ -31,9 +57,10 @@ export default class BookingHandler extends IntentHandler {
         booking_date,
         restaurant,
         table,
+        is_suggestion,
       },
       message:
-        "Đây là thông tin đặt bàn của bạn. Vui lòng xác nhận để tiếp tục.",
+        "Đây là thông tin đặt bàn của bạn. Hãy cung cấp đủ thông tin để mình có thể đặt bàn",
     };
 
     console.log("Formatted booking data:", formatted_data);
@@ -111,7 +138,6 @@ export default class BookingHandler extends IntentHandler {
         restaurant_id: res._id,
         slot_id: slot._id,
         booking_date,
-        booking_time,
         table,
         quantity,
       };
@@ -148,4 +174,60 @@ export const findSlotByTime = async (restaurant_id, from, to) => {
   }).lean();
 
   return slot;
+};
+
+export const generateBookingSuggestions = async (
+  session = {},
+  userLocation = null,
+  maxSuggestions = 4
+) => {
+  const suggestions = [];
+  let restaurantDocs = [];
+
+  // --- Bước 1: Gợi ý nhà hàng ---
+  if (session.restaurant) {
+    const res = await findRestaurantByName(session.restaurant);
+    if (res) restaurantDocs = [res];
+  } else {
+    const pipeline = await suggestRestaurant(userLocation);
+    restaurantDocs = await Restaurant.aggregate(pipeline).limit(maxSuggestions);
+  }
+
+  console.log(restaurantDocs);
+
+  // --- Bước 2: Gợi ý slot cho mỗi nhà hàng ---
+  for (const res of restaurantDocs) {
+    // Nếu session chưa có booking_date → lấy ngày hôm nay
+    const bookingDate = session.booking_date
+      ? new Date(session.booking_date)
+      : new Date();
+    const table = session.table || 4; // default 4 người
+    const quantity = session.quantity || 1;
+
+    const slots = await suggestBookingSlots({
+      restaurantId: res._id,
+      bookingDate,
+      table,
+    });
+
+    console.log(slots);
+
+    for (const slot of slots) {
+      suggestions.push({
+        restaurant: res.name,
+        booking_date: bookingDate.toISOString(),
+        booking_time: { from: slot.time, to: slot.time },
+        table,
+        quantity,
+      });
+
+      if (suggestions.length >= maxSuggestions) break;
+    }
+
+    if (suggestions.length >= maxSuggestions) break;
+  }
+
+  // --- Bước 3: Trả về kết quả ---
+  console.log(suggestions);
+  return suggestions;
 };
