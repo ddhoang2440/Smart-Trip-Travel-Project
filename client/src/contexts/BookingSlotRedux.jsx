@@ -27,7 +27,7 @@ export const getBookingSlotById = createAsyncThunk(
   "/bookingslots/getid",
   async (id, thunkAPI) => {
     try {
-      const { data } = await axios.get(`/bookingslots/get/${id}`);
+      const { data } = await axios.get(`/bookingslots/getall`);
       if (!data.success) {
         return thunkAPI.rejectWithValue({ message: data.message });
       }
@@ -120,10 +120,13 @@ const BookingSlotSlice = createSlice({
       })
       .addCase(getBookingSlotById.fulfilled, (state, action) => {
         state.loading = false;
-        if (action.payload.bookingslot && action.payload.bookingslot._id) {
-          state.bookingslotsById[action.payload.bookingslot._id] =
-            action.payload.bookingslot;
-        }
+        // if (action.payload.bookingslot && action.payload.bookingslot._id) {
+        //   state.bookingslotsById[action.payload.bookingslot._id] =
+        //     action.payload.bookingslot;
+        // }
+        action.payload.bookingslot.forEach((item) => {
+          state.bookingslotsById[item._id] = item;
+        });
         toast.success(action.payload.message);
       })
       .addCase(getBookingSlotById.rejected, (state, action) => {

@@ -45,8 +45,7 @@ export const getBookingSlot = async (req, res) => {
 };
 export const getBookingSlotById = async (req, res) => {
   try {
-    const { id } = req.params;
-    const bookingslot = await BookingSlot.findById(id);
+    const bookingslot = await BookingSlot.find({});
     res.json({
       success: true,
       message: "get booking slot successfully",

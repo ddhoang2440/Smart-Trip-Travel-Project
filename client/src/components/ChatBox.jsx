@@ -4,6 +4,13 @@ import {
   IconUser,
   IconX,
   IconSend,
+  IconCalendar,
+  IconClock,
+  IconUsers,
+  IconCheck,
+  IconChartBarPopular,
+  IconLiveView,
+  IconUserPin,
 } from "@tabler/icons-react";
 import React, { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,7 +23,7 @@ import RestaurantCardChat from "./RestaurantCardChat";
 import { transformRestaurants } from "../utils/mongoFormatter.js";
 import { useNavigate } from "react-router-dom";
 import { FoodCardChat, FoodListChat } from "./FoodCardChat.jsx";
-// import { handleAddToCart, handleFoodSelect } from "../utils/foodHandlers.js";
+import { getBookingSlotById } from "../contexts/BookingSlotRedux.jsx";
 
 const ChatBox = () => {
   const [chat, setChat] = useState(false);
@@ -25,6 +32,8 @@ const ChatBox = () => {
   const dispatch = useDispatch();
 
   const { messages, loading, error } = useSelector((state) => state.chat);
+  const { restaurantsById } = useSelector((state) => state.restaurant);
+  const { bookingslotsById } = useSelector((state) => state.bookingslots);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -33,6 +42,9 @@ const ChatBox = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+  useEffect(() => {
+    dispatch(getBookingSlotById());
+  }, [dispatch]);
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
@@ -51,6 +63,7 @@ const ChatBox = () => {
       handleSendMessage();
     }
   };
+
   const formatTime = (timestamp) => {
     if (!timestamp) return "";
     const date = new Date(timestamp);
@@ -60,15 +73,257 @@ const ChatBox = () => {
     });
   };
 
+  const formatBookingDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("vi-VN", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
+
+  const handleBookingSelect = (suggestion) => {
+    dispatch(
+      addUserMessage(`Chọn gợi ý ${suggestion.id.replace("SUGG_", "")}`)
+    );
+    console.log("Đã chọn gợi ý booking:", suggestion);
+    // api xác nhận booking
+  };
+
+  const renderBookingSuggestions = (msg, index) => {
+    const { bookings = [], text = "" } = msg;
+    const time = formatTime(msg.timestamp);
+
+    return (
+      <div key={index} className="mb-6">
+        <div className="flex items-start gap-3 mb-4 w-full">
+          <div className="w-8 h-8 rounded-full bg-linear-to-r from-green-500 to-teal-500 flex items-center justify-center">
+            <IconCalendar className="w-5 h-5 text-white" />
+          </div>
+          <div className="flex-1">
+            <div className="font-medium text-gray-700">Trợ lý đặt bàn</div>
+            <div className="text-gray-900 mt-1">{text}</div>
+            <div className="text-xs text-gray-500 mt-1">
+              Có {bookings.length} gợi ý đặt bàn
+            </div>
+          </div>
+          <div className="text-xs text-gray-500">{time}</div>
+        </div>
+
+        <div className="ml-11 mt-4 space-y-4">
+          {bookings.map((booking, idx) => (
+            <div
+              key={booking.id || idx}
+              className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-lg transition-shadow duration-300"
+            >
+              <div className="flex items-start justify-between mb-3">
+                <div>
+                  <h3 className="font-semibold text-gray-900">
+                    {booking.restaurant || "Nhà hàng"}
+                  </h3>
+                  <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
+                    <div className="flex items-center gap-1">
+                      <IconCalendar className="w-4 h-4" />
+                      <span>{formatBookingDate(booking.booking_date)}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <IconClock className="w-4 h-4" />
+                      <span>
+                        {booking.booking_time?.from || "Không xác định"}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <IconUsers className="w-4 h-4" />
+                      <span>{booking.table || booking.quantity} người</span>
+                    </div>
+                  </div>
+                </div>
+                <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                  {booking.id}
+                </span>
+              </div>
+
+              <div className="flex justify-between items-center mt-4">
+                <div className="text-sm">
+                  <span className="text-gray-500">Ví dụ: </span>
+                  <span className="text-purple-600 font-medium">
+                    chọn gợi ý {idx + 1}
+                  </span>
+                </div>
+                <button
+                  onClick={() => handleBookingSelect(booking)}
+                  className="flex items-center gap-2 px-4 py-2 bg-linear-to-r from-green-500 to-teal-500 text-white rounded-lg hover:opacity-90 transition-all duration-200"
+                >
+                  <IconCheck className="w-4 h-4" />
+                  Chọn gợi ý này
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  const renderBookingPreview = (msg, index) => {
+    const { booking, text = "" } = msg;
+    const time = formatTime(msg.timestamp);
+
+    return (
+      <div key={index} className="mb-6">
+        <div className="flex items-start gap-3 mb-4 w-full">
+          <div className="w-8 h-8 rounded-full bg-linear-to-r from-blue-500 to-indigo-500 flex items-center justify-center">
+            <IconCalendar className="w-5 h-5 text-white" />
+          </div>
+          <div className="flex-1">
+            <div className="font-medium text-gray-700">Xác nhận đặt bàn</div>
+            <div className="text-gray-900 mt-1">{text}</div>
+          </div>
+          <div className="text-xs text-gray-500">{time}</div>
+        </div>
+
+        {booking && (
+          <div className="ml-11 mt-4 bg-linear-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100 p-5">
+            <h4 className="font-bold text-lg text-gray-900 mb-4">
+              Thông tin đặt bàn
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <IconCalendar className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Ngày đặt</p>
+                    <p className="font-medium text-gray-900">
+                      {formatBookingDate(booking.booking_date)}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <IconClock className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Giờ đặt</p>
+                    <p className="font-medium text-gray-900">
+                      {booking.booking_time?.from || "Không xác định"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <IconUsers className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Số lượng</p>
+                    <p className="font-medium text-gray-900">
+                      {booking.quantity} người
+                    </p>
+                  </div>
+                </div>
+                {booking.restaurant && (
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <IconCheck className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Nhà hàng</p>
+                      <p className="font-medium text-gray-900">
+                        {booking.restaurant}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-6 flex gap-3">
+              <button className="flex-1 px-4 py-2.5 bg-linear-to-r from-blue-500 to-indigo-500 text-white rounded-lg hover:opacity-90 transition-all duration-200 font-medium">
+                Xác nhận đặt bàn
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
   const renderMessage = (msg, index) => {
     const isUser = msg.sender === "user";
     const time = formatTime(msg.timestamp);
+
+    if (msg.type === "suggest-booking") {
+      return renderBookingSuggestions(msg, index);
+    }
+    if (msg.type === "booking-preview") {
+      return renderBookingPreview(msg, index);
+    }
+    if (msg.type === "booking-confirmed") {
+      return (
+        <div key={index} className="mb-6">
+          <div className="flex items-start gap-3 mb-4 w-full">
+            <div className="w-8 h-8 rounded-full bg-linear-to-r from-green-500 to-emerald-500 flex items-center justify-center">
+              <IconCheck className="w-5 h-5 text-white" />
+            </div>
+            <div className="flex-1">
+              <div className="font-medium text-gray-700">
+                Đặt bàn thành công
+              </div>
+              {/* <div className="text-gray-900 mt-1">{msg.text}</div> */}
+            </div>
+            <div className="text-xs text-gray-500">{time}</div>
+          </div>
+
+          {msg.booking && (
+            <div className="ml-11 mt-4">
+              <div className="bg-linear-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="font-bold text-lg text-gray-900">
+                    Thông tin đặt bàn
+                  </h4>
+                  <span className="bg-green-100 text-green-800 text-xs font-medium px-3 py-1 rounded-full">
+                    Đã xác nhận
+                  </span>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Nhà hàng:</span>
+                    <span className="font-medium">
+                      {restaurantsById[msg.booking?.restaurant_id]?.name}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Ngày:</span>
+                    <span className="font-medium">
+                      {formatBookingDate(msg.booking?.booking_date)}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Giờ:</span>
+                    <span className="font-medium">
+                      {bookingslotsById[msg.booking?.slot_id]?.time}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Số người:</span>
+                    <span className="font-medium">{msg.booking?.quantity}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
     if (msg.type === "restaurant-list" && msg.data) {
       const restaurants = transformRestaurants(msg.data);
       return (
         <div key={index} className="mb-6">
           <div className="flex items-start gap-3 mb-3 w-full">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-linear-to-r from-blue-500 to-purple-500 flex items-center justify-center">
               <IconRobot className="w-5 h-5 text-white" />
             </div>
             <div className="flex-1">
@@ -94,7 +349,6 @@ const ChatBox = () => {
         </div>
       );
     }
-    // ChatMessage.jsx
     if (msg.type === "food-list" && msg.data) {
       const foodData = Array.isArray(msg.data) ? msg.data : [];
       const foodCount = foodData.length;
@@ -112,7 +366,7 @@ const ChatBox = () => {
       return (
         <div key={index} className="mb-6">
           <div className="flex items-start gap-3 mb-3 w-full">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-linear-to-r from-blue-500 to-purple-500 flex items-center justify-center">
               <IconRobot className="w-5 h-5 text-white" />
             </div>
             <div className="flex-1">
@@ -155,7 +409,7 @@ const ChatBox = () => {
       return (
         <div key={index} className="flex justify-start mb-4">
           <div className="flex gap-3 max-w-[85%]">
-            <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+            <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center shrink-0">
               <IconRobot className="w-5 h-5 text-red-600" />
             </div>
             <div className="bg-red-50 border border-red-200 rounded-2xl px-4 py-3">
@@ -166,6 +420,7 @@ const ChatBox = () => {
         </div>
       );
     }
+
     return (
       <div
         key={index}
@@ -177,10 +432,10 @@ const ChatBox = () => {
           } gap-3`}
         >
           <div
-            className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+            className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
               isUser
-                ? "bg-gradient-to-r from-blue-500 to-cyan-500"
-                : "bg-gradient-to-r from-purple-500 to-pink-500"
+                ? "bg-linear-to-r from-blue-500 to-cyan-500"
+                : "bg-linear-to-r from-purple-500 to-pink-500"
             }`}
           >
             {isUser ? (
@@ -192,11 +447,11 @@ const ChatBox = () => {
           <div
             className={`rounded-2xl px-4 py-3 ${
               isUser
-                ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white"
+                ? "bg-linear-to-r from-blue-500 to-cyan-500 text-white"
                 : "bg-gray-100 text-gray-900"
             }`}
           >
-            <p className="whitespace-pre-wrap break-words">{msg.text}</p>
+            <p className="whitespace-pre-wrap wrap-break-word">{msg.text}</p>
             <p
               className={`text-xs mt-2 ${
                 isUser ? "text-blue-100" : "text-gray-500"
@@ -214,23 +469,22 @@ const ChatBox = () => {
     dispatch(addUserMessage(`Đặt bàn tại ${restaurant.name}`));
     console.log("Đặt bàn:", restaurant);
   };
+
   const navigate = useNavigate();
   const handleViewDetails = (restaurant) => {
     navigate(`/restaurant/${restaurant.id}`);
   };
+
   const quickActions = [
-    { label: "Nhà hàng gần đây", icon: "📍" },
-    { label: "Ẩm thực Việt", icon: "🇻🇳" },
-    { label: "Quán cafe", icon: "☕" },
-    { label: "Đồ ăn nhanh", icon: "🍔" },
-    { label: "Nhà hàng sang trọng", icon: "⭐" },
-    { label: "Đặt bàn trước", icon: "📅" },
+    { label: "Nhà hàng gần đây", icon: <IconUserPin /> },
+    { label: "Nhà hàng phổ biến", icon: <IconChartBarPopular /> },
+    { label: "Nhà hàng quận 3 ", icon: <IconLiveView /> },
   ];
 
   return (
     <>
       <div
-        className="fixed right-6 bottom-6 z-50 shadow-xl hover:scale-110 transition-all duration-500 p-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full cursor-pointer group"
+        className="fixed right-6 bottom-6 z-50 shadow-xl hover:scale-110 transition-all duration-500 p-4 bg-linear-to-r from-purple-600 to-pink-600 rounded-full cursor-pointer group"
         onClick={() => setChat(!chat)}
       >
         <div className="relative">
@@ -248,7 +502,7 @@ const ChatBox = () => {
 
       {chat && (
         <div className="fixed right-6 bottom-24 z-50 w-[95vw] sm:w-[700px] h-[70vh] max-h-[700px] bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col border border-gray-200">
-          <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4">
+          <div className="bg-linear-to-r from-purple-600 to-pink-600 text-white p-4">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
@@ -310,7 +564,7 @@ const ChatBox = () => {
             {loading && (
               <div className="flex justify-start mb-4">
                 <div className="flex gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-full bg-linear-to-r from-purple-500 to-pink-500 flex items-center justify-center">
                     <IconRobot className="w-5 h-5 text-white" />
                   </div>
                   <div className="bg-gray-100 rounded-2xl px-4 py-3">
@@ -356,7 +610,7 @@ const ChatBox = () => {
                 <button
                   onClick={handleSendMessage}
                   disabled={loading || !inputMessage.trim()}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-purple-600 to-pink-600 text-white p-2 rounded-full hover:opacity-90 disabled:opacity-50 transition disabled:cursor-not-allowed"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-linear-to-r from-purple-600 to-pink-600 text-white p-2 rounded-full hover:opacity-90 disabled:opacity-50 transition disabled:cursor-not-allowed"
                 >
                   <IconSend className="w-5 h-5" />
                 </button>

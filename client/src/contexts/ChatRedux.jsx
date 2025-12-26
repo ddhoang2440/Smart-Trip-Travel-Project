@@ -55,14 +55,35 @@ export const sendMessageToAI = createAsyncThunk(
           console.log("Food list data received:", data);
           return {
             type: "food-list",
-            data: data.data || [], // Mảng các món ăn
-            groupedData: data.groupedData || [], // Dữ liệu nhóm theo nhà hàng
-            stats: data.stats || {}, // Thống kê
-            metadata: data.metadata || {}, // Metadata
+            data: data.data || [],
+            groupedData: data.groupedData || [],
+            stats: data.stats || {},
+            metadata: data.metadata || {},
             text:
               data.text ||
               data.message ||
               `Tìm thấy ${data.data?.length || 0} món ăn phù hợp`,
+          };
+        }
+        if (data.type === "suggest-booking" && data.bookings) {
+          return {
+            type: "suggest-booking",
+            bookings: data.bookings,
+            text: data.message || "Mình gợi ý một số lựa chọn phù hợp",
+          };
+        }
+        if (data.type === "booking-preview") {
+          return {
+            type: "booking-preview",
+            booking: data.booking,
+            text: data.message || "Xin hãy xác nhận thông tin đặt bàn",
+          };
+        }
+        if (data.type === "booking-confirmed") {
+          return {
+            type: "booking-confirmed",
+            booking: data.booking,
+            text: data.message || "Đặt bàn thành công!",
           };
         }
         return {
@@ -99,6 +120,7 @@ const chatSlice = createSlice({
         text: "Xin chào! Tôi là trợ lý ẩm thực. Tôi có thể giúp bạn tìm nhà hàng, đặt bàn, so sánh món ăn và nhiều hơn thế!",
       },
     ],
+    bookings: [],
     loading: false,
     error: null,
     sessionId: null,
@@ -132,6 +154,7 @@ const chatSlice = createSlice({
         timestamp: new Date().toISOString(),
       });
     },
+
     addFoodList: (state, action) => {
       state.messages.push({
         sender: "ai",
@@ -142,6 +165,38 @@ const chatSlice = createSlice({
         metadata: action.payload.metadata || {},
         text:
           action.payload.message || action.payload.text || "Danh sách món ăn",
+        timestamp: new Date().toISOString(),
+      });
+    },
+
+    addBookingSuggestions: (state, action) => {
+      state.messages.push({
+        sender: "ai",
+        type: "suggest-booking",
+        bookings: action.payload.bookings || [],
+        text: action.payload.message || "Gợi ý đặt bàn",
+        timestamp: new Date().toISOString(),
+      });
+    },
+
+    addBookingPreview: (state, action) => {
+      state.messages.push({
+        sender: "ai",
+        type: "booking-preview",
+        booking: action.payload.booking || {},
+        text: action.payload.message || "Xác nhận đặt bàn",
+        timestamp: new Date().toISOString(),
+      });
+    },
+
+    confirmBooking: (state, action) => {
+      state.bookings.push(action.payload.booking);
+
+      state.messages.push({
+        sender: "ai",
+        type: "booking-confirmed",
+        booking: action.payload.booking,
+        text: action.payload.message || "Đặt bàn thành công!",
         timestamp: new Date().toISOString(),
       });
     },
@@ -171,6 +226,28 @@ const chatSlice = createSlice({
         ...action.payload,
       };
     },
+    selectBookingSuggestion: (state, action) => {
+      const { suggestionId } = action.payload;
+      const bookingMessage = state.messages.find(
+        (msg) => msg.type === "suggest-booking"
+      );
+
+      if (bookingMessage) {
+        const selectedSuggestion = bookingMessage.bookings?.find(
+          (booking) => booking.id === suggestionId
+        );
+
+        if (selectedSuggestion) {
+          state.messages.push({
+            sender: "ai",
+            type: "booking-preview",
+            booking: selectedSuggestion,
+            text: `Đã chọn ${selectedSuggestion.id}. Xin hãy xác nhận thông tin đặt bàn.`,
+            timestamp: new Date().toISOString(),
+          });
+        }
+      }
+    },
   },
 
   extraReducers: (builder) => {
@@ -195,11 +272,18 @@ const chatSlice = createSlice({
           role: "assistant",
           content: action.payload.text || "",
           data: action.payload.data,
+          type: action.payload.type,
           timestamp: new Date().toISOString(),
         });
 
         if (action.meta?.arg?.intent) {
           state.context.lastIntent = action.meta.arg.intent;
+        }
+        if (
+          action.payload.type === "booking-confirmed" &&
+          action.payload.booking
+        ) {
+          state.bookings.push(action.payload.booking);
         }
       })
 
@@ -224,9 +308,14 @@ export const {
   addUserMessage,
   addRestaurantList,
   addFoodList,
+  addBookingSuggestions,
+  addBookingPreview,
+  confirmBooking,
+  cancelBooking,
   clearChat,
   setError,
   updateContext,
+  selectBookingSuggestion,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

@@ -58,6 +58,7 @@ export const resSlice = createSlice({
   initialState: {
     userRestaurant: [],
     restaurants: [],
+    restaurantsById: [],
     currentRestaurant: {},
     status: "idle",
     popularRestaurant: [],
@@ -85,6 +86,9 @@ export const resSlice = createSlice({
         state.status = "succeed";
         state.restaurants = action.payload.restaurants;
         state.popularRestaurant = state.restaurants.slice(0, 20);
+        action.payload.restaurants.forEach((item) => {
+          state.restaurantsById[item._id] = item;
+        });
         console.log(action.payload.restaurants);
         toast.success(action.payload.message);
       })

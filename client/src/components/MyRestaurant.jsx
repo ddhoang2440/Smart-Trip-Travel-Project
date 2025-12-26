@@ -79,7 +79,7 @@ const MyRestaurant = ({ activeTab, setActiveTab, handleEditMenu }) => {
       );
       const restaurantId = userRestaurant[0]._id;
       dispatch(getBookingSlot(restaurantId));
-      dispatch(getBookingById(restaurantId));
+      dispatch(getBookingById());
       dispatch(getComment(restaurantId));
     }
   }, [activeTab, dispatch, userRestaurant]);

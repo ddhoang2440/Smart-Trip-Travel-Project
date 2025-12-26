@@ -87,7 +87,9 @@ export const profile = createAsyncThunk(
 export const authCheck = createAsyncThunk("auth/check", async (thunkAPI) => {
   try {
     const { data } = await axios.get("/auth/check", {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("<to></to>ken")}`,
+      },
     });
     if (!data.success) {
       return thunkAPI.rejectWithValue(data.message);

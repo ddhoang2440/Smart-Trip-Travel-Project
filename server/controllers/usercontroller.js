@@ -122,6 +122,7 @@ export const signup = async (req, res) => {
     };
     const newuser = await User.create(newUser);
     const token = await createToken(newuser);
+
     routelog.push(
       chalk.green("Create accout", newuser.username, "successfully!")
     );

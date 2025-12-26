@@ -15,6 +15,6 @@ bookingSlotRouter.get("/get", getBookingSlot);
 bookingSlotRouter.put("/update/:id", updateBookingSlot);
 bookingSlotRouter.delete("/delete/:id", deleteBookingSlot);
 // bookingSlotRouter.get("/get/:restaurantId", getTablesByRestaurant);
-bookingSlotRouter.get("/get/:id", getBookingSlotById);
+bookingSlotRouter.get("/getall", getBookingSlotById);
 
 export default bookingSlotRouter;
