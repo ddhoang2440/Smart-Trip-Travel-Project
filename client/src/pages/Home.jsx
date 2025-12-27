@@ -27,7 +27,6 @@ const Home = () => {
   const navigate = useNavigate();
 
   const { popularRestaurant, restaurants } = useSelector((state) => state.restaurant)
-  const { menu } = useSelector((state) => state.menu);
 
 
   
@@ -94,7 +93,7 @@ const Home = () => {
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={() => handleCurrent(item)}
                       >
-                        <div className="flex flex-row gap-2 items-center">
+                        <div className="flex flex-row lg:w-[20vw] gap-2 items-center">
                           <img
                             src={item.images[0]}
                             alt=""
@@ -120,19 +119,7 @@ const Home = () => {
             <HoverCard data={popularRestaurant} />
           </div>
           <div>
-            {/* <div className="bg-white shadow-2xl lg:px-[4vw] px-[6vw] py-[10vh] lg:py-[16vh]">
-              <Title
-                Title="Món Ăn Phổ Biến"
-                Decription="Khám phá thế giới ẩm thực thịnh soạn! Từ những món ăn vặt đường phố hấp dẫn đến những món ăn mang tính biểu tượng toàn cầu, hãy khám phá những món ăn được mọi người trên thế giới ưa chuộng nhất."
-                align="center"
-              />
-              <HoverCard data={menu} />
-              <div className="flex justify-center mt-[4vh]">
-                <button className="btn btn-wide btn-neutral text-white btn-lg">
-                  Xem Thêm
-                </button>
-              </div>
-            </div> */}
+
             <div className="px-[14vw] py-[16vh] bg-linear-to-b from-white to-warning flex flex-col items-center justify-center gap-[8vh]">
               <h1 className="text-warning lg:text-6xl text-4xl font-bold text-center">
                 Sử Dụng Như Thế Nào ?

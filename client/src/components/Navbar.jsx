@@ -71,10 +71,10 @@ const Navbar = () => {
             className="hidden lg:block p"
             color="white"
           />
-          <IconSearch
+          {/* <IconSearch
             className="p hidden lg:block"
             onClick={() => setSearch(true)}
-          />
+          /> */}
           {!islogin ? (
             <button className="btn w-32" onClick={() => navigate("/login")}>
               <IconUser color="black" />
@@ -115,20 +115,20 @@ const Navbar = () => {
               }}
             />
             {!mobile && (
-              <div className="lg:hidden w-[30vw] flex flex-col gap-2 border fade-in text-black py-2 px-4 bg-white absolute top-14 -left-20 z-100">
-                <span className="py-2 " onClick={() => navigate("/")}>
+              <div className="lg:hidden w-[30vw] flex flex-col gap-2 border fade-in text-black py-2  bg-white absolute top-14 -left-20 z-100">
+                <span className="py-2 px-4 border-b " onClick={() => navigate("/")}>
                   Trang Chủ
                 </span>
-                <span className="py-2 " onClick={() => navigate("/product")}>
+                <span className="py-2 px-4 border-b" onClick={() => navigate("/product")}>
                   Nhà Hàng
                 </span>
-                <span className="py-2 " onClick={() => navigate("/aboutUs")}>
+                <span className="py-2 px-4 border-b" onClick={() => navigate("/aboutUs")}>
                   Giới Thiệu
                 </span>
-                <span className="py-2 " onClick={() => navigate("/contact")}>
+                <span className="py-2 px-4 border-b" onClick={() => navigate("/contact")}>
                   Liên Hệ
                 </span>
-                <span className="py-2 " onClick={() => navigate("/cart")}>
+                <span className="py-2 px-4 " onClick={() => navigate("/cart")}>
                   Lịch Sử
                 </span>
               </div>

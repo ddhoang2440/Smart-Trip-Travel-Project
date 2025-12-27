@@ -101,10 +101,10 @@ export const getBooking = async (req, res) => {
 export const getBookingById = async (req, res) => {
   try {
     const { id } = req.params;
-    const bookings = await Booking.find({ restaurant_id: id });
-    // .sort({ createdAt: -1 })
-    // .populate("restaurant_id", "name address images type owner")
-    // .populate("slot_id");
+    const bookings = await Booking.find({ restaurant_id: id })
+      .sort({ createdAt: -1 })
+      .populate("user_id")
+      .populate("slot_id");
     if (!bookings) {
       return res
         .status(400)
@@ -120,6 +120,34 @@ export const getBookingById = async (req, res) => {
       .status(500)
       .json({ success: false, message: "fail to get booking by id" });
     console.log(error.message);
+  }
+};
+export const updateBookingStatus = async (req, res) => {
+  try {
+    const { bookingId } = req.params;
+    const { status } = req.body;
+
+    const booking = await Booking.findById(bookingId);
+    if (!booking) {
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy đơn đặt bàn",
+      });
+    }
+    booking.status = status;
+    await booking.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Cập nhật trạng thái đặt bàn thành công",
+      booking,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Lỗi server khi cập nhật booking",
+    });
   }
 };
 export const assignTableToBooking = async (req, res) => {

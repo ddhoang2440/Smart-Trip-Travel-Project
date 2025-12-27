@@ -8,7 +8,7 @@ import { CreateRestaurant, getAllRestaurants, getUserRestaurant } from '../contr
 const upload = multer({dest: "uploads/"});
 
 restaurantRoute.post("/create", protect, upload.array("images", 4), CreateRestaurant);
-restaurantRoute.get("/getall", getAllRestaurants);
+restaurantRoute.post("/getall", getAllRestaurants);
 restaurantRoute.get("/user", protect, getUserRestaurant);
 
 export default restaurantRoute;

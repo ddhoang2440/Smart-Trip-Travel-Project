@@ -8,9 +8,7 @@ const MenuAdd = ({ menuToEdit, onCancelEdit }) => {
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
-  const [ingredient, setIngredient] = useState("");
   const [restaurant, setRestaurant] = useState("");
   const [type, setType] = useState("");
   const [isEditing, setIsEditing] = useState(false);
@@ -21,9 +19,7 @@ const MenuAdd = ({ menuToEdit, onCancelEdit }) => {
     if (menuToEdit) {
       setIsEditing(true);
       setName(menuToEdit.name || "");
-      setDescription(menuToEdit.description || "");
       setPrice(menuToEdit.price || "");
-      setIngredient(menuToEdit.igredient || "");
       setRestaurant(menuToEdit.restaurant || "");
       setType(menuToEdit.type || "");
       setPreview(menuToEdit.image || null);
@@ -36,9 +32,7 @@ const MenuAdd = ({ menuToEdit, onCancelEdit }) => {
 
   const resetForm = () => {
     setName("");
-    setDescription("");
     setPrice("");
-    setIngredient("");
     setRestaurant("");
     setType("");
     setPreview(null);
@@ -55,9 +49,7 @@ const MenuAdd = ({ menuToEdit, onCancelEdit }) => {
 
     const data = new FormData();
     data.append("name", name);
-    data.append("description", description);
     data.append("price", price);
-    data.append("ingredient", ingredient);
     data.append("restaurant", restaurant);
     data.append("type", type);
 
@@ -148,23 +140,13 @@ const MenuAdd = ({ menuToEdit, onCancelEdit }) => {
           />
         </div>
 
-        <div className="flex flex-col gap-2">
-          <label className="text-lg font-medium">Mô tả</label>
-          <textarea
-            onChange={(e) => setDescription(e.target.value)}
-            value={description}
-            placeholder="Nhập mô tả chi tiết món ăn"
-            className="textarea textarea-bordered outline-0 w-full text-xl"
-            rows={3}
-          />
-        </div>
 
         <div className="w-full">
           <h2 className="text-2xl font-semibold mb-4 text-left">
             {isEditing ? "Cập nhật thông tin" : "Thông tin món ăn"}
           </h2>
 
-          <div className="mb-4 flex items-center w-full h-auto justify-around flex-col md:flex-row gap-6">
+          <div className="mb-4 flex  w-full h-auto justify-around flex-col md:flex-row gap-6">
             <div className="flex flex-col items-center gap-4">
               <div className="w-full max-w-xs h-64 border-2 border-dashed border-gray-300 rounded-lg overflow-hidden">
                 <img
@@ -174,7 +156,7 @@ const MenuAdd = ({ menuToEdit, onCancelEdit }) => {
                 />
               </div>
 
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 ">
                 <label className="block text-lg font-medium">
                   {isEditing ? "Thay đổi ảnh" : "Chọn ảnh *"}
                 </label>
@@ -229,19 +211,6 @@ const MenuAdd = ({ menuToEdit, onCancelEdit }) => {
                 </select>
               </div>
 
-              <div className="flex flex-col gap-2">
-                <div className="flex gap-2 items-center">
-                  <IconCurrencyDollar className="text-gray-600" />
-                  <label className="text-lg font-medium">Nguyên liệu</label>
-                </div>
-                <input
-                  onChange={(e) => setIngredient(e.target.value)}
-                  value={ingredient}
-                  type="text"
-                  className="input input-bordered outline-0 w-full"
-                  placeholder="Nhập nguyên liệu (cách nhau bằng dấu phẩy)"
-                />
-              </div>
             </div>
           </div>
 

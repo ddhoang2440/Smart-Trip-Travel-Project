@@ -6,6 +6,7 @@ import {
   getMenu,
   getRestaurantMenu,
   getUserMenu,
+  removeMenu,
   updateRestaurantMenu,
 } from "../controllers/menucontroller.js";
 
@@ -22,5 +23,6 @@ menuRoute.put(
   upload.single("image"),
   updateRestaurantMenu
 );
+menuRoute.get("/remove/:menu_id", removeMenu)
 
 export default menuRoute;

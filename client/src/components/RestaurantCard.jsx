@@ -24,21 +24,21 @@ const RestaurantCard = ({ data }) => {
 
   const renderItem = (index, dat) => {
     return (
-      <div className="flex justify-center w-full px-[1vw] lg:px-0 py-[3vh] border-b-2 border-gray-200">
-        <div className="flex flex-col lg:flex-row items-center gap-4  bg-transparent border-gray-300 lg:max-w-[64vw]  lg:w-[56vw]">
+      <div className="flex lg:justify-center w-full px-[1vw] lg:px-0 py-[3vh] border-b-2 max-w-[98vw] border-gray-200">
+        <div className="flex flex-col lg:flex-row items-center gap-4  bg-transparent border-gray-300  lg:max-w-[64vw]  lg:w-[56vw]">
           <figure
-            className="lg:w-[20vw] w-full hover:cursor-pointer shrink-0"
+            className="lg:w-[20vw] w-[90vw] hover:cursor-pointer shrink-0 rounded-lg"
             onClick={() => handleClick(dat)}
           >
             <img
-              className="rounded-lg lg:w-[20vw] lg:h-[13vw] w-[80vw]  object-cover"
+              className="rounded-lg lg:w-[20vw] lg:h-[13vw] w-full  object-cover"
               src={dat.images ? dat.images[0] : ""}
               alt="Food"
             />
           </figure>
 
-          <div className="h-full py-[2vh] lg:w-[26vw] w-full">
-            <div className="flex flex-col justify-between h-full py-[1vh] px-[1vw] text-sm gap-1 lg:gap-2 w-full">
+          <div className="h-full py-[2vh] lg:w-[26vw] lg:px-0  w-full">
+            <div className="flex flex-col lg:justify-between justify-start h-full py-[1vh] px-[1vw] text-sm gap-1 lg:gap-2 w-full">
               <div className="flex flex-col gap-4">
                 <h2 className="font-bold font-playfair text-2xl items-center flex">
                   {dat.name}
@@ -63,25 +63,22 @@ const RestaurantCard = ({ data }) => {
 
                 <div className="flex gap-1 items-center">
                   <IconMapPin size={18} className="shrink-0" />
-                  <p className="flex flex-row gap-2 items-center text-gray-600 truncate">
+                  <p className="flex flex-row max-w-[80vw] gap-2 items-center text-gray-600 ">
                     {dat.address}
                   </p>
                 </div>
 
                 <div className="flex flex-row gap-3 flex-wrap">
-                  {["6 giờ 30", "7 giờ 30", "8 giờ 30", "9 giờ 30"].map(
-                    (time, tIdx) => (
-                      <div
-                        key={tIdx}
-                        className="bg-error py-2 px-4 rounded-lg hover:cursor-pointer"
-                      >
-                        <p className="text-white font-semibold">{time}</p>
-                      </div>
-                    )
-                  )}
+                  {dat.bookingslots.map((item, tIdx) => (
+                    <div
+                      key={tIdx}
+                      className="bg-error py-2 px-4 rounded-lg hover:cursor-pointer"
+                    >
+                      <p className="text-white font-semibold">{item.time}</p>
+                    </div>
+                  ))}
                 </div>
               </div>
-
               <p className="flex gap-1 items-center font-semibold text-xl mt-2 ">
                 <IconMoneybag />
                 {formatPrice(dat.medium_price)}đ/ bữa ăn

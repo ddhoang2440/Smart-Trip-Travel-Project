@@ -29,12 +29,13 @@ export const getComment = createAsyncThunk(
     try {
       const { data } = await axios.get(
         "/comment/get",
-        { params: { restaurantId } },
-        {
+        { params:  restaurantId ,
+        
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-        }
+        
+      }
       );
       if (!data.success) {
         return thunkAPI.rejectWithValue(data.message);

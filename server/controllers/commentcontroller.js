@@ -39,13 +39,11 @@ export const createComment = async (req, res) => {
 
 export const getComment = async (req, res) => {
   try {
-    const { restaurantId } = req.query;
+    const { restaurant_id } = req.query;
 
     const data = await Comment.find({
-      restaurant_id: restaurantId,
-    });
-    // .populate("user_id")
-    // .sort({ createdAt: -1 });
+      restaurant_id: restaurant_id,
+    }).populate("user_id").sort({ createdAt: -1 });
     if (!data) {
       res.json({ success: false, message: "Get Comment Failed !" });
     }

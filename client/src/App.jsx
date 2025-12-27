@@ -19,7 +19,7 @@ import { getMenu } from "./contexts/MenuRedux";
 import ScrollTop from "./components/ScrollTop";
 
 const App = () => {
-  const { email, location } = useSelector((state) => state.auth);
+  const { email } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   useEffect(() => {
     const success = (position) => {
@@ -29,12 +29,13 @@ const App = () => {
           longitude: position.coords.longitude,
         })
       );
+      dispatch(getAllRestaurant({ latitude: position.coords.latitude,longitude: position.coords.longitude,  }));
     };
     const error = (err) => {
       console.error(err);
     };
     navigator.geolocation.getCurrentPosition(success, error, {
-      enableHighAccuracy: false,
+      enableHighAccuracy: true,
       timeout: 20000,
       maximumAge: 10000,
     });
@@ -45,11 +46,6 @@ const App = () => {
       dispatch(authCheck());
     }
   }, [dispatch]);
-
-  useEffect(() => {
-    dispatch(getAllRestaurant());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   useEffect(() => {
     if (localStorage.getItem("token")) {

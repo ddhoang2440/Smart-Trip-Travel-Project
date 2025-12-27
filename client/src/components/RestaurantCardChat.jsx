@@ -88,7 +88,7 @@ const RestaurantCard = ({
           </span>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/50 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-linear-to-t from-black/50 to-transparent" />
       </div>
 
       <div className="p-4">
@@ -108,7 +108,7 @@ const RestaurantCard = ({
           </div> */}
         </div>
         <div className="flex items-start gap-2 mb-3">
-          <IconMapPin className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
+          <IconMapPin className="w-4 h-4 text-gray-500 mt-0.5 shrink-0" />
           <p className="text-sm text-gray-600 line-clamp-2 flex-1">
             {restaurant.address}
           </p>
@@ -146,7 +146,7 @@ const RestaurantCard = ({
             {restaurant.bookingAvailable && (
               <button
                 onClick={onBookTable}
-                className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg hover:opacity-90 transition"
+                className="px-4 py-2 bg-linear-to-r from-blue-500 to-purple-500 text-white rounded-lg hover:opacity-90 transition"
               >
                 Đặt bàn
               </button>

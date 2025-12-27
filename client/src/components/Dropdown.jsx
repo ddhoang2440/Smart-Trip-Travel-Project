@@ -25,7 +25,7 @@ const Dropdown = ({ showDropdown, setShowDropdown, logout }) => {
       {showDropdown && (
         <>
           <div
-            className="fixed inset-0 z-40 bg-transparent"
+            className="fixed inset-0 z-40 "
             onClick={() => setShowDropdown(false)}
           />
           <div className="absolute right-0 z-50">
@@ -45,19 +45,6 @@ const Dropdown = ({ showDropdown, setShowDropdown, logout }) => {
                   </span>
                 </div>
               </div>
-              <div
-                className="dropdown-item border-gray-500 border-b py-2 hover:scale-95 group"
-                onClick={() => setShowDropdown(false)}
-              >
-                <a href="#!" className="flex items-center flex-1 ">
-                  <IconBell />
-                  <span className="text-sm px-1 flex-1">Notifications</span>
-                  <span className="text-xs text-gray-500 group-hover:text-white">
-                    Allow
-                  </span>
-                </a>
-              </div>
-
               <div className="dropdown-divider"></div>
               <div className="dropdown-item hover:scale-95">
                 <button

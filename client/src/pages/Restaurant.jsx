@@ -24,12 +24,14 @@ const Restaurant = () => {
 
   const { currentRestaurant } = useSelector((state) => state.restaurant);
   const { comment } = useSelector((state) => state.comment);
-  const { restaurantmenu, menu } = useSelector((state) => state.menu);
+  const { restaurantmenu } = useSelector((state) => state.menu);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("currentRestaurant"));
-    dispatch(setCurrent(data));
+    if (currentRestaurant.length > 0 && currentRestaurant) {
+      const data = JSON.parse(localStorage.getItem("currentRestaurant"));
+      dispatch(setCurrent(data));
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -37,7 +39,7 @@ const Restaurant = () => {
     dispatch(getComment({ restaurant_id: currentRestaurant?._id }));
   }, [dispatch, currentRestaurant]);
   useEffect(() => {
-    dispatch(getRestaurantMenu({ restaurant_id: currentRestaurant?._id }));
+    dispatch(getRestaurantMenu({ restaurant_id: currentRestaurant._id }));
     console.log(restaurantmenu);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -54,7 +56,7 @@ const Restaurant = () => {
   const [formdata, setFormData] = useState({
     booking_date: "",
     restaurant_id: currentRestaurant?._id,
-    slot_id: currentRestaurant?.bookingslots[0]._id,
+    slot_id: currentRestaurant?.bookingslots?.[0]?._id || "",
     quantity: 1,
     table: 2,
   });
@@ -70,18 +72,18 @@ const Restaurant = () => {
   if (!currentRestaurant) {
     return <div>loading...</div>;
   }
-
+  console.log("comment", comment);
   return (
     <div>
       <div className=" pt-[20vh] pb-[10vh] px-[10vw] bg-indigo-50/40">
-        <div className="flex flex-row justify-between">
+        <div className="flex flex-col lg:flex-row justify-between">
           <div className="flex flex-col gap-3">
-            <div className="flex items-end gap-4">
+            <div className="flex items-end   gap-4">
               <h1 className="font-playfair font-bold  text-2xl lg:text-4xl">
                 {currentRestaurant.name}
               </h1>
-              <p>{currentRestaurant.type}</p>
-              <p className="bg-orange-400 text-white px-2 py-1 rounded-xl">
+              <p className="badge badge-dash">{currentRestaurant.type}</p>
+              <p className="hidden lg:block bg-orange-400 text-white px-2 py-1 rounded-xl">
                 20% OFF
               </p>
             </div>
@@ -103,9 +105,9 @@ const Restaurant = () => {
                 })}
               <p>{currentRestaurant.review}+ reviews </p>
             </div>
-            <span className="flex gap-2 lg-max-w-full max-w-[40vw]">
+            <span className="flex lg:pb-0 pb-6 gap-2 lg-max-w-full lg:max-w-[40vw]">
               <IconMapPin />
-              <p>{currentRestaurant.address}</p>
+              <p className="text-sm">{currentRestaurant.address}</p>
             </span>
           </div>
           <div className="flex flex-col items-center gap-4">
@@ -129,44 +131,52 @@ const Restaurant = () => {
         <div className="flex flex-row gap-8 py-8">
           <img
             className="w-[55%] max-h-[54vh] hidden lg:block rounded-2xl fade-in"
-            src={currentRestaurant.images[idx]}
+            src={currentRestaurant?.images?.[idx]}
             alt=""
           />
-          <div className="lg:w-[55%]  grid grid-cols-2 gap-6">
+          <div className="lg:w-[55%]  grid grid-cols-1 lg:grid-cols-2  gap-6">
             <img
               className="rounded-2xl p shadow-xl h-[25vh]"
-              src={currentRestaurant.images[0]}
+              src={currentRestaurant?.images?.[0]}
               alt=""
               onClick={() => setIdx(0)}
             />
             <img
               className="rounded-2xl p shadow-xl h-[25vh]"
-              src={currentRestaurant.images[1]}
+              src={currentRestaurant?.images?.[1]}
               alt=""
               onClick={() => setIdx(1)}
             />
             <img
               className="rounded-2xl p shadow-xl h-[25vh] w-full"
-              src={currentRestaurant.images[2]}
+              src={currentRestaurant.images?.[2]}
               alt=""
               onClick={() => setIdx(2)}
             />
             <img
               className="rounded-2xl p shadow-xl h-[25vh] w-full"
-              src={currentRestaurant.images[3]}
+              src={currentRestaurant.images?.[3]}
               alt=""
               onClick={() => setIdx(3)}
             />
           </div>
         </div>
-        <div className="lg:flex justify-between  py-4 border-b border-gray-300">
+        <div className="lg:flex lg:flex-row flex-col justify-between  py-4 border-b border-gray-300">
           <div className="gap-4">
-            <p className="text-3xl font-playfair font-semibold">
+            <p className="text-xl lg:text-3xl font-playfair font-semibold">
               Mang Đến Những Trải Nghiệm Bất Ngờ
             </p>
           </div>
-          <p className="text-3xl font-bold p">
-            Average {formatPrice(currentRestaurant.medium_price)}đ/ Meal
+          <p className="text-2xl lg:text-3xl font-bold p">
+            Trung Bình: <br></br>{" "}
+            {formatPrice(
+              Number(
+                restaurantmenu.reduce((a, b) => {
+                  return a + (b.price || 0);
+                }, 0) / restaurantmenu.length
+              ).toFixed(0)
+            )}
+            đ/ Bữa Ăn
           </p>
         </div>
         <div className="flex lg:flex-row flex-col gap-4 lg:gap-0 justify-between bg-white rounded-xl shadow-gray px-8 py-8 my-12">
@@ -176,33 +186,34 @@ const Restaurant = () => {
               <input
                 type="date"
                 value={formdata.booking_date}
+                min={new Date().toISOString().split("T")[0]}
                 onChange={(e) =>
                   handlechange({ key: "booking_date", value: e.target.value })
                 }
               />
             </span>
-            <span className="lg:border-r flex flex-row gap-4 items-center border-gray-400 lg:px-12">
+            <span className="lg:border-r flex flex-row lg:gap-4 lg:justify-normal justify-between items-center border-gray-400 lg:px-12">
               <p>Giờ</p>
               <select
                 onChange={(e) =>
                   handlechange({ key: "slot_id", value: e.target.value })
                 }
-                className="select lg:w-auto w-[50vw]"
+                className="select lg:w-auto w-[40vw]"
               >
-                {currentRestaurant.bookingslots.map((item) => (
+                {currentRestaurant?.bookingslots?.map((item) => (
                   <option key={item._id} value={item._id}>
                     {item.time}
                   </option>
                 ))}
               </select>
             </span>
-            <span className="px-4 flex flex-row items-center gap-4">
+            <span className="lg:px-4 flex flex-row items-center lg:gap-4 lg:justify-normal justify-between">
               <p className="lg:w-[6vw] w-[20vw]">Loại Bàn</p>
               <select
                 onChange={(e) =>
                   handlechange({ key: "table", value: e.target.value })
                 }
-                className="select"
+                className="select lg:w-auto w-[40vw]"
                 name=""
                 id=""
               >
@@ -211,7 +222,7 @@ const Restaurant = () => {
                 <option value={8}>8 người</option>
               </select>
             </span>
-            <div className="lg:flex px-6 flex flex-row items-center gap-4 ">
+            <div className="lg:flex lg:px-6 flex flex-row items-center lg:gap-4 justify-between ">
               <p>Số Bàn</p>
               <input
                 value={formdata.quantity}
@@ -219,7 +230,7 @@ const Restaurant = () => {
                   handlechange({ key: "quantity", value: e.target.value })
                 }
                 type="number"
-                className="border border-gray-300 rounded-lg py-2 px-2 max-w-[2vw]"
+                className="border border-gray-300 lg:w-auto w-[40vw] rounded-lg py-2 px-2 lg:max-w-[2vw]"
               />
             </div>
           </div>
@@ -232,18 +243,23 @@ const Restaurant = () => {
         </div>
       </div>
       <div className="px-[10vw] py-[6vh] w-full flex justify-center relative z-0">
-        <SimpleMap center={[currentRestaurant.lat, currentRestaurant.lon]} />
+        <SimpleMap
+          center={[
+            currentRestaurant?.location?.coordinates[1],
+            currentRestaurant?.location?.coordinates[0],
+          ]}
+        />
       </div>
-      <div className="lg:px-[10vw] px-[4vw] py-[12vh]">
+      <div className="lg:px-[10vw] pb-[8vh] ">
         <Title Title="Menu" Decription={""} align={"center"} />
-        <Menu data={menu} />
+        <Menu data={restaurantmenu} />
       </div>
       <div className="px-[12vw] pb-[8vh] pt-[4vh] flex flex-col gap-4">
         <h1 className="text-4xl font-bold font-playfair">
           Bình Luận Và Đánh Giá
         </h1>
         <div className="px-[4vw] py-[2vh] flex flex-col gap-[3vh] ">
-          {comment.map((item, idx) => (
+          {comment.map((item) => (
             <div key={item._id} className="flex flex-row gap-4 ">
               <img
                 className="rounded-full w-[4vw] h-[4vw]"

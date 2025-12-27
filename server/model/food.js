@@ -4,9 +4,7 @@ const foodSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     price: { type: Number, required: true },
-    igredient: { type: [String] },
     type: { type: String },
-    isVegetarian: { type: Boolean, default: false },
     restaurant: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "restaurant",
@@ -14,7 +12,6 @@ const foodSchema = new mongoose.Schema(
     },
     image: { type: String },
     image_id: { type: String },
-    description: { type: String },
   },
   { timestamps: true }
 );

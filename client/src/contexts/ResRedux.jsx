@@ -25,7 +25,7 @@ export const getAllRestaurant = createAsyncThunk(
   "/restaurant/getall",
   async (_data, thunkAPI) => {
     try {
-      const { data } = await axios.get("/restaurant/getall");
+      const { data } = await axios.post("/restaurant/getall", _data);
       if (!data.success) {
         return thunkAPI.rejectWithValue(data.message);
       }
@@ -59,7 +59,9 @@ export const resSlice = createSlice({
     userRestaurant: [],
     restaurants: [],
     restaurantsById: [],
-    currentRestaurant: {},
+    currentRestaurant: {
+      slot_id: [],
+    },
     status: "idle",
     popularRestaurant: [],
   },

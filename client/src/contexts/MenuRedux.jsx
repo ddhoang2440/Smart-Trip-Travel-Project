@@ -74,6 +74,21 @@ export const updateRestaurantMenu = createAsyncThunk(
     }
   }
 );
+export const removeMenu = createAsyncThunk(
+  "menu/remove", async (id, thunkAPI) => {
+     try {
+       const { data } = await axios.get(
+         `/menu/remove/${id}`,
+       );
+       if (!data.success) {
+         return thunkAPI.rejectWithValue(data.message);
+       }
+       return data;
+     } catch (error) {
+       return thunkAPI.rejectWithValue(error.message);
+     }
+  }
+)
 const menuSlice = createSlice({
   name: "menu",
   initialState: {
@@ -83,7 +98,13 @@ const menuSlice = createSlice({
     usermenu: [],
     restaurantmenu: [],
   },
-  reducers: {},
+  reducers: {
+    filterRestaurantMenu: (state, action) => {
+      state.usermenu = state.usermenu.filter((item) => {
+        return item._id !== action.payload;
+      })
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(createMenu.pending, (state) => {
@@ -140,8 +161,15 @@ const menuSlice = createSlice({
       .addCase(updateRestaurantMenu.rejected, (state, action) => {
         state.loading = false;
         toast.error(action.payload);
-      });
+      })
+      .addCase(removeMenu.fulfilled, (state, action) => {
+      toast.success(action.payload.message)
+      })
+      .addCase(removeMenu.rejected, (state, action) => {
+        toast.error(action.payload)
+      })
   },
 });
+export const { filterRestaurantMenu } = menuSlice.actions;
 
 export default menuSlice.reducer;

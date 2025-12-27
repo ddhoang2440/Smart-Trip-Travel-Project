@@ -74,10 +74,32 @@ export const assignTableToBooking = createAsyncThunk(
     }
   }
 );
+export const updateBookingStatus = createAsyncThunk(
+  "booking/update",
+  async ({ bookingId, status }, thunkAPI) => {
+    try {
+      const { data } = await axios.put(`/booking/update/${bookingId}`, {
+        status,
+      });
+
+      if (!data.success) {
+        return thunkAPI.rejectWithValue(data.message);
+      }
+
+      return data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message ||
+          error.message ||
+          "Có lỗi xảy ra khi sắp bàn"
+      );
+    }
+  }
+);
 const bookingSlice = createSlice({
   name: "booking",
   initialState: {
-    bookings: [],
+    bookings: null,
     bookingById: [],
   },
   reducers: {},
@@ -101,6 +123,12 @@ const bookingSlice = createSlice({
         toast.success(action.payload.message);
       })
       .addCase(getBookingById.rejected, (state, action) => {
+        toast.error(action.payload);
+      })
+      .addCase(updateBookingStatus.fulfilled, (state, action) => {
+        toast.success(action.payload.message);
+      })
+      .addCase(updateBookingStatus.rejected, (state, action) => {
         toast.error(action.payload);
       });
   },

@@ -6,32 +6,37 @@ const log = console.log;
 
 export const createMenu = async (req, res) => {
   try {
-    const { name, description, price, ingredient, type, restaurant } = req.body;
+    const { name, price, type, restaurant } = req.body;
     const file = req.file;
 
     console.log(file);
-    if (!name || !description || !price || !ingredient || !restaurant) {
+    if (!name || !price || !restaurant || !type) {
       return res.json({ success: false, message: "All Input Must Valid !" });
     }
+
+    if (Number(price) <= 0) {
+      return res.json({
+        success: false,
+        message: "Price must be greater than 0!",
+      });
+    }
+
     if (!file) {
       return res.json({ success: false, message: "Cant not get image !" });
     }
-    const _ingredient = ingredient.split(",").map((items) => items.trim());
     const result = await cloudinary.uploader.upload(file.path, {
       folder: "menu",
     });
     const newMenu = {
       name,
-      description,
-      price,
-      igredient: _ingredient,
+      price: Number(price),
       type: type,
       restaurant,
       image: result.secure_url,
       image_id: result.public_id,
     };
     await Menu.create(newMenu);
-
+    await updateRestaurantMediumPrice(restaurant);
     res.json({ success: true, message: "Create Menu Successfully!" });
   } catch (error) {
     log("error: ", error.message);
@@ -98,13 +103,13 @@ export const getRestaurantMenu = async (req, res) => {
 export const updateRestaurantMenu = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, price, ingredient, type, restaurant } = req.body;
+    const { name, price, type, restaurant } = req.body;
     const file = req.file;
 
     console.log("req.body:", req.body);
     console.log("req.file:", req.file);
 
-    if (!name || !description || !price || !ingredient || !restaurant) {
+    if (!name || !price || !restaurant) {
       return res.json({
         success: false,
         message: "Vui lòng điền đầy đủ thông tin!",
@@ -117,12 +122,9 @@ export const updateRestaurantMenu = async (req, res) => {
         message: "Không tìm thấy menu!",
       });
     }
-    const _ingredient = ingredient.split(",").map((items) => items.trim());
     const updateData = {
       name,
-      description,
-      price,
-      igredient: _ingredient,
+      price: Number(price),
       type,
       restaurant,
     };
@@ -149,23 +151,49 @@ export const updateRestaurantMenu = async (req, res) => {
       new: true,
     });
 
+    if (updatedMenu) {
+      await updateRestaurantMediumPrice(updatedMenu.restaurant);
+    }
+
     if (!updatedMenu) {
       return res.json({
         success: false,
-        message: "Không thể cập nhật menu!",
+        message: "Can't update menu!",
       });
     }
 
     res.json({
       success: true,
-      message: "Cập nhật menu thành công!",
+      message: "Updated menu successfully!",
       newMenu: updatedMenu,
     });
   } catch (error) {
-    console.log("Lỗi update menu:", error.message);
+    console.log("Updated menu error!", error.message);
     res.json({
       success: false,
-      message: error.message || "Cập nhật menu thất bại!",
+      message: error.message || "Update menu failed!",
     });
+  }
+};
+
+export const removeMenu = async (req, res) => {
+  try {
+    const { menu_id } = req.params;
+
+    const menuItem = await Menu.findById(menu_id);
+
+    if (!menuItem) {
+      return res.json({ success: false, message: "Menu item not found!" });
+    }
+
+    const restaurantId = menuItem.restaurant;
+    await Menu.findByIdAndDelete(menu_id);
+
+    await updateRestaurantMediumPrice(restaurantId);
+
+    res.json({ success: true, message: "Remove Menu Items Successfully !" });
+  } catch (error) {
+    log("error: ", error.message);
+    res.json({ success: false, message: "Remove Menu Items Failed!" });
   }
 };

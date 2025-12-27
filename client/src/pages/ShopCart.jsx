@@ -88,17 +88,25 @@ const ShopCart = () => {
             </div>
           </div>
           <div className="flex items-center justify-center w-[17vw] ">
-            {card?.booking_date.split("T")[0]}
+            {card?.booking_date?.split("T")?.[0]}
           </div>
           <div className="flex items-center justify-center w-[17vw] ">
             {card?.quantity}
           </div>
-          {!card?.status === "Confirmed" ? (
-            <div className="text-green-700 flex items-center justify-center w-[16vw]">
-              Đặt Bàn Thành Công !
+          {card?.status === "confirmed" ? (
+            <div className="text-blue-700 flex items-center justify-center w-[16vw]">
+              Đặt bàn đã được duyệt
+            </div>
+          ) : card?.status === "pending" ? (
+            <div className="text-orange-500 flex flex-col items-center justify-center w-[16vw] gap-4 relative ">
+              Đơn Đặt Đang Được Xử Lý
+            </div>
+          ) : card?.status === "cancelled" ? (
+            <div className="text-red-500 flex flex-col items-center justify-center w-[16vw] gap-4 relative ">
+              Đơn Đặt Đã Bị Hủy
             </div>
           ) : (
-            <div className="text-green-700 flex flex-col items-center justify-center w-[16vw] gap-4 relative ">
+            <div className="text-green-500 flex flex-col items-center justify-center w-[16vw] gap-4 relative ">
               Đơn Đặt Đã Hoàn Thành !
               <button
                 onClick={() => {
@@ -120,7 +128,7 @@ const ShopCart = () => {
               alt=""
             />
             <div className="flex flex-col gap-1 ">
-              <p>{card.restaurant_id.name}</p>
+              <p>{card?.restaurant_id?.name}</p>
               <p className="flex flex-row gap-2">
                 <IconChairDirector /> Bàn {card.table} chỗ !
               </p>
@@ -138,7 +146,7 @@ const ShopCart = () => {
           <div className="flex gap-2 justify-between">
             <div className="flex flex-col items-center">
               <p>Ngày Hẹn</p>
-              <p>{card.booking_date.split("T")[0]}</p>
+              <p>{card?.booking_date?.split("T")?.[0]}</p>
             </div>
             <div className="flex flex-col items-center">
               <p>Số Bàn</p>
@@ -146,7 +154,7 @@ const ShopCart = () => {
             </div>
             <div className="flex flex-col items-center">
               <p>Giờ</p>
-              <p>{card.slot_id.time}</p>
+              <p>{card?.slot_id?.time}</p>
             </div>
             <div className="text-green-700 flex flex-col items-center justify-center w-[16vw] gap-4 relative ">
               Hoàn Thành !
@@ -282,7 +290,7 @@ const ShopCart = () => {
           <Virtuoso
             className=""
             style={{ height: "55vh", width: "100%" }}
-            data={bookings || []}
+            data={bookings}
             itemContent={CartCard}
             overscan={200}
           />

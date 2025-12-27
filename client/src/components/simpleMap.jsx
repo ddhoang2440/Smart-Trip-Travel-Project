@@ -4,18 +4,22 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 
 const SimpleMap = ({ center }) => {
   const marketRef = useRef(null)
+  
   useEffect(() => {
     if (marketRef.current) {
       marketRef.current.openPopup();
     }
   })
-  const googlemapUrl = `https://www.google.com/maps/dir/?api=1&destination=${center[0]},${center[1]}`;
+   if (center?.[0] === undefined || center?.[1] === undefined) {
+     return null;
+   }
+  const googlemapUrl = `https://www.google.com/maps/dir/?api=1&destination=${center?.[0]},${center?.[1]}`;
   return (
     <MapContainer
       center={center}
       zoom={13}
       scrollWheelZoom={true}
-      className="w-[70vw] h-[70vh]"
+      className="lg:w-[70vw] lg:h-[70vh] w-full h-[50vh] "
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

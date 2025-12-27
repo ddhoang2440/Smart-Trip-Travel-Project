@@ -25,7 +25,7 @@ const restaurantSchema = new mongoose.Schema({
     special_close: [{ type: Date }]
 },{timestamps: true});
 
-
 const Restaurant = mongoose.model("restaurant", restaurantSchema);
+Restaurant.createIndexes({ location: "2dsphere" });
 
 export default Restaurant;
