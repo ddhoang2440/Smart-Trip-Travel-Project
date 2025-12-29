@@ -49,7 +49,7 @@ const cartslice = createSlice({
   reducers: {
     removeProduct: (state, action) => {
       state.usercart.splice(action.payload, 1);
-      toast.success("Remove Product");
+      //toast.success("Remove Product");
     },
     increaseQuantity: (state, action) => {
       state.usercart[action.payload].quantity += 1;
@@ -71,7 +71,7 @@ const cartslice = createSlice({
     addToCart: (state, action) => {
       const { isVegetarian, image_id, description, type, ...restitem } =
         action.payload;
-      toast.success("Add Product");
+      //toast.success("Add Product");
       console.log(restitem);
       const isExist = state.usercart.find((item) => item._id === restitem._id);
       if (isExist) {
@@ -94,10 +94,10 @@ const cartslice = createSlice({
         state.status = "succeed";
         state.orders = action.payload.orders;
         console.log(action.payload.orders);
-        toast.success(action.payload.message);
+        //toast.success(action.payload.message);
       })
       .addCase(getOrderByRestaurant.rejected, (state, action) => {
-        toast.error(action.payload);
+        //toast.error(action.payload);
       });
   },
 });

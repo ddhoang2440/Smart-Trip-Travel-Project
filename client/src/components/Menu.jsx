@@ -1,70 +1,34 @@
-import {
-  IconContract,
-  IconCurrency,
-  IconCurrencyDollar,
-  IconFileDescription,
-  IconStar,
-  IconStarFilled,
-  IconToolsKitchen2,
-} from "@tabler/icons-react";
+import { IconContract, IconCurrency, IconCurrencyDollar, IconFileDescription, IconStar, IconStarFilled, IconToolsKitchen2 } from "@tabler/icons-react";
 import React from "react";
-import { addToCart } from "../contexts/CartRedux";
-import { useDispatch } from "react-redux";
-import { formatPrice } from "./ultil";
+
 
 const Menu = ({ data }) => {
-  const dispatch = useDispatch();
   return (
-    <div className="grid lg:grid-cols-3 grid-cols-1 py-[6vh] max-w-full  lg:max-w-[60vw] px-[2vw] gap-6">
-      {data.map((items, idx) => {
-        return (
-          <div
-            key={items._id + idx}
-            className="card bg-base-100 shadow-gray max-=w-[20vw]"
-          >
-            <figure className="">
-              <img className="w-full h-[24vh]" src={items.image} alt="Food" />
-            </figure>
-            <div className="card-body gap-1 lg:gap-2">
-              <div className="flex gap-1 items-center">
-                <IconToolsKitchen2 />
-                <h2 className="font-bold text-lg truncate">
-                  Dish: {items.name}
-                </h2>
-              </div>
-              <div className="flex gap-1 items-center">
-                <IconCurrencyDollar />
-                <p className="text-sm">Price: {formatPrice(items.price)}đ</p>
-              </div>
-
-              <div
-                className="flex gap-1 items-center tooltip"
-                data-tip={items.igredient?.join(" , ")}
-              >
-                <IconContract className="shrink-0" />
-                <p className=" truncate">
-                  Igredients: {items.igredient?.join(" , ")}.
-                </p>
-              </div>
-              <div
-                className="flex gap-1 items-center tooltip"
-                data-tip={items.description}
-              >
-                <IconFileDescription className="shrink-0" />
-                <p className="truncate">Description: {items.description}</p>
-              </div>
-              <div className="card-actions justify-end items-center gap-1">
-                <button
-                  onClick={() => dispatch(addToCart({ ...items, quantity: 1 }))}
-                  className="btn bg-black/80 border-2 border-black hover:bg-black btn-neutral btn-soft text-white lg:px-8"
-                >
-                  Add To Cart
-                </button>
+    <div className="flex flex-col gap-2 items-center">
+      <div className="grid lg:grid-cols-3 grid-cols-1 py-[6vh]  max-w-full  lg:max-w-[74vw] px-[2vw] gap-26">
+        {data.map((items, idx) => {
+          return (
+            <div
+              key={items._id + idx}
+              className="card bg-base-100  relative"
+            >
+              <div className="p-1 border rounded-full">
+                <figure className="">
+                  <img
+                    className="size-[28vh] rounded-full border-2 border-gray-600 
+                  outline-offset-2"
+                    src={items.image}
+                    alt="Food"
+                  />
+                  <div className="absolute bottom-0 left-0 w-full h-[6vh] border flex justify-center items-center bg-[#EEB557] rounded-tr-4xl rounded-br-4xl">
+                    <p className="text-xl text-gray-700 font-bold">{items.name}</p>
+                  </div>
+                </figure>
               </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 };

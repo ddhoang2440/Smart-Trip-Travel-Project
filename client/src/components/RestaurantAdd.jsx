@@ -11,53 +11,41 @@ import { useDispatch } from "react-redux";
 import { createRestaurant } from "../contexts/ResRedux";
 
 const RestaurantAdd = () => {
-  const dispatch = useDispatch();
-  const initialState = {
-    name: "",
-    type: "",
-    from: "",
-    to: "",
-    address: "",
-    description: "",
-    price: 0,
-  };
-
-  const [, setImage] = useState([]);
-  const [formData, setFormData] = useState(initialState);
+  const [name, setName] = useState("");
+  const [type, setType] = useState("");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+  const [address, setAddress] = useState("");
+  const [decription, setDescription] = useState("");
+  const [price, setPrice] = useState(0);
+  const [image, setImage] = useState([]);
   const [preview, setPreview] = useState([]);
+  const [lat, setLat] = useState();
+  const [lon, setLon] = useState();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  const dispatch = useDispatch();
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === "price" ? Number(value) : value,
-    }));
-  };
-
-  const resetForm = () => {
-    setFormData(initialState);
-    setPreview([]);
-  };
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     const data = new FormData();
-    Object.keys(formData).forEach((key) => {
-      if (key === "image") {
-        formData.image.forEach((file) => {
-          data.append("images", file);
-        });
-      } else {
-        data.append(key, formData[key]);
-      }
+    data.append("name", name);
+    data.append("type", type);
+    data.append("from", from);
+    data.append("to", to);
+    data.append("address", address);
+    data.append("medium_price", price);
+    data.append("description", decription);
+    image.forEach((img) => {
+      data.append("images", img);
     });
-    try {
-      await dispatch(createRestaurant(data));
-      resetForm();
-    } catch (error) {
-      console.log("Error:", error);
-    }
+    data.append(
+      "location",
+      JSON.stringify({
+        type: "Point",
+        coordinates: [Number(lon), Number(lat)],
+      })
+    );
+    dispatch(createRestaurant(data));
   };
 
   const handleImageChange = (e) => {
@@ -66,14 +54,12 @@ const RestaurantAdd = () => {
       setPreview([]);
       setImage([]);
       toast.error("Maximum image is 4");
-      e.target.value = "";
       return;
     }
     if (files && files.length > 0) {
       const urls = Array.from(files).map((file) => URL.createObjectURL(file));
       setPreview((prev) => [...prev, ...urls]);
-      setImage((prev) => [...prev, ...Array.from(files)]);
-      e.target.value = "";
+      setImage(Array.from(files));
     }
   };
 
@@ -90,11 +76,10 @@ const RestaurantAdd = () => {
           <label className="text-black "> Name</label>
           <input
             type="text"
-            name="name"
             placeholder="Restaurant Name"
             className="input w-full outline-0"
-            value={formData.name}
-            onChange={handleChange}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
           />
         </div>
         <div className="flex flex-col gap-3  pb-1">
@@ -104,11 +89,10 @@ const RestaurantAdd = () => {
           </label>
           <input
             type="text"
-            name="type"
             placeholder="Name"
             className="input w-full text-black outline-0"
-            value={formData.type}
-            onChange={handleChange}
+            value={type}
+            onChange={(e) => setType(e.target.value)}
           />
         </div>
 
@@ -119,11 +103,10 @@ const RestaurantAdd = () => {
           </label>
           <input
             type="number"
-            name="price"
-            placeholder="Average Price"
+            placeholder="Name"
             className="input w-full text-black outline-0"
-            value={formData.price === 0 ? "" : formData.price}
-            onChange={handleChange}
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
           />
         </div>
         <div className="flex flex-col gap-3  pb-1">
@@ -138,50 +121,77 @@ const RestaurantAdd = () => {
           <div className="flex gap-3 w-full justify-between">
             <input
               type="time"
-              name="from"
               className="w-full input text-black outline-0"
-              value={formData.from}
-              onChange={handleChange}
+              value={from}
+              onChange={(e) => setFrom(e.target.value)}
             />
             <input
               type="time"
-              name="to"
               className="input w-full text-black outline-0"
-              value={formData.to}
-              onChange={handleChange}
+              value={to}
+              onChange={(e) => setTo(e.target.value)}
             />
           </div>
         </div>
-        <div className="flex flex-col gap-3  pb-1">
-          <label className="label text-black font-serif">
-            <IconMapPin />
-            Location
-          </label>
-          <input
-            className="input w-full text-black outline-0"
-            placeholder="Address"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-          />
+        <div className="flex gap-4">
+          <div className="flex flex-col gap-2 flex-1">
+            <label className="label text-black font-serif flex items-center gap-1">
+              <IconMapPin size={16} />
+              Địa chỉ
+            </label>
+            <input
+              type="text"
+              className="input w-full text-black outline-0"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+            />
+          </div>
+
+          <div className="flex flex-col gap-2 w-40">
+            <label className="label text-black font-serif flex items-center gap-1">
+              <IconMapPin size={16} />
+              Latitude
+            </label>
+            <input
+              type="number"
+              step="any"
+              className="input w-full text-black outline-0"
+              value={lat}
+              onChange={(e) => setLat(e.target.value)}
+            />
+          </div>
+
+          <div className="flex flex-col gap-2 w-40">
+            <label className="label text-black font-serif flex items-center gap-1">
+              <IconMapPin size={16} />
+              Longitude
+            </label>
+            <input
+              type="number"
+              step="any"
+              className="input w-full text-black outline-0"
+              value={lon}
+              onChange={(e) => setLon(e.target.value)}
+            />
+          </div>
         </div>
+
         <div className="flex flex-col gap pb-1">
           <label className="label text-black font-serif">Description</label>
           <textarea
             type="text"
-            name="description"
             placeholder="Description"
             className="textarea w-full outline-0"
-            value={formData.decription}
-            onChange={handleChange}
+            value={decription}
+            onChange={(e) => setDescription(e.target.value)}
           />
         </div>
         <div className="w-full flex gap-2 ">
-          {preview.map((url, index) => (
-            <div key={`preview-${index}`} className="w-1/4 h-[15vh]">
-              <img src={url} alt="" className="rounded-lg" />
-            </div>
-          ))}
+          {preview.map((img) => {
+            return (
+              <img src={img} alt="" className="w-1/4 h-[15vh] rounded-lg" />
+            );
+          })}
         </div>
         <div className="flex justify-between items-center">
           <p>Choose Image ( Maximum image is 4)</p>

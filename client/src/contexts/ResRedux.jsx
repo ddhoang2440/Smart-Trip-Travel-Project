@@ -1,35 +1,31 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import toast from "react-hot-toast";
+//import toast from "react-hot-toast";
 
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 
 export const createRestaurant = createAsyncThunk(
-  "restaurant/create",
-  async (formData, thunkAPI) => {
+  "/restaurant/create",
+  async (_data, thunkAPI) => {
     try {
-      const { data } = await axios.post("/restaurant/create", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+      const { data } = await axios.post("restaurant/create", _data, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       if (!data.success) {
         return thunkAPI.rejectWithValue(data.message);
       }
       return data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(
-        error.response?.data?.message || error.message
-      );
+      return thunkAPI.rejectWithValue(error.message);
     }
   }
 );
+
 export const getAllRestaurant = createAsyncThunk(
   "/restaurant/getall",
   async (_data, thunkAPI) => {
     try {
-      const { data } = await axios.get("/restaurant/getall");
+      const { data } = await axios.post("/restaurant/getall", _data);
       if (!data.success) {
         return thunkAPI.rejectWithValue(data.message);
       }
@@ -56,13 +52,30 @@ export const getUserRestaurant = createAsyncThunk(
     }
   }
 );
+export const getRestaurantById = createAsyncThunk(
+  "/restaurant/get/",
+  async (id, thunkAPI) => {
+    try {
+      const { data } = await axios.get(`/restaurant/get/${id}`)
+      if (!data.success) {
+        return thunkAPI.rejectWithValue(data.message);
+      }
+      return data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
 
 export const resSlice = createSlice({
   name: "restaurant",
   initialState: {
     userRestaurant: [],
     restaurants: [],
-    currentRestaurant: {},
+    restaurantsById: [],
+    currentRestaurant: {
+      slot_id: [],
+    },
     status: "idle",
     popularRestaurant: [],
   },
@@ -70,6 +83,9 @@ export const resSlice = createSlice({
     setCurrent: (state, action) => {
       state.currentRestaurant = action.payload;
     },
+    setOpen: (state, action) => {
+      state.currentRestaurant.open = action.payload.state;
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -77,10 +93,10 @@ export const resSlice = createSlice({
         state.status = "loading";
       })
       .addCase(createRestaurant.fulfilled, (state, action) => {
-        toast.success(action.payload.message);
+        //toast.success(action.payload.message);
       })
       .addCase(createRestaurant.rejected, (state, action) => {
-        toast.error(action.payload);
+        //toast.error(action.payload);
       })
       .addCase(getAllRestaurant.pending, (state) => {
         state.status = "loading";
@@ -88,13 +104,16 @@ export const resSlice = createSlice({
       .addCase(getAllRestaurant.fulfilled, (state, action) => {
         state.status = "succeed";
         state.restaurants = action.payload.restaurants;
-        state.popularRestaurant = state.restaurants.slice(0, 4);
-        console.log(action.payload.restaurants);
-        toast.success(action.payload.message);
+        state.popularRestaurant = state.restaurants.slice(0, 20);
+        action.payload.restaurants.forEach((item) => {
+          state.restaurantsById[item._id] = item;
+        });
+        // console.log(action.payload.restaurants);
+        //toast.success(action.payload.message);
       })
       .addCase(getAllRestaurant.rejected, (state, action) => {
         state.status = "failed";
-        toast.error(action.payload);
+        //toast.error(action.payload);
       })
       .addCase(getUserRestaurant.pending, (state) => {
         state.status = "loading";
@@ -102,15 +121,21 @@ export const resSlice = createSlice({
       .addCase(getUserRestaurant.fulfilled, (state, action) => {
         state.status = "succeed";
         state.userRestaurant = action.payload.restaurant;
-        console.log(action.payload.restaurant);
-        toast.success(action.payload.message);
+        //toast.success(action.payload.message);
       })
       .addCase(getUserRestaurant.rejected, (state, action) => {
-        toast.error(action.payload);
-      });
+        //toast.error(action.payload);
+      })
+      .addCase(getRestaurantById.fulfilled, (state, action) => {
+        state.currentRestaurant = action.payload.restaurant;
+        //toast.success(action.payload.message)
+      })
+      .addCase(getRestaurantById.rejected, (state, action) => {
+        //toast.error(action.payload);
+    })
   },
 });
 
-export const { setCurrent } = resSlice.actions;
+export const { setCurrent, setOpen } = resSlice.actions;
 
 export default resSlice.reducer;
