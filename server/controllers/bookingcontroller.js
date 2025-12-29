@@ -197,9 +197,8 @@ export const assignTableToBooking = async (req, res) => {
       });
     }
 
-    // Cập nhật booking với bàn được gán
     booking.table_id = tableId;
-    booking.status = "seated"; // Cập nhật trạng thái
+    booking.status = "seated"; 
     booking.table_assigned_at = new Date();
     await booking.save();
 

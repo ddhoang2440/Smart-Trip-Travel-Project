@@ -102,7 +102,15 @@ const bookingSlice = createSlice({
     bookings: null,
     bookingById: [],
   },
-  reducers: {},
+  reducers: {
+    setBookingStatus: (state, action) => {
+      state.bookingById.forEach((item) => {
+        if (item._id === action.payload._id) {
+          item.status = action.payload.status;
+        }
+      })
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(createBooking.fulfilled, (state, action) => {
@@ -111,27 +119,27 @@ const bookingSlice = createSlice({
       .addCase(createBooking.rejected, (state, action) => {
         toast.error(action.payload);
       })
-      .addCase(getBooking.fulfilled, (state, action) => {
+      .addCase(getBooking.fulfilled, (state, action) => { 
         state.bookings = action.payload.bookings;
-        toast.success(action.payload.message);
+        // toast.success(action.payload.message);
       })
       .addCase(getBooking.rejected, (state, action) => {
-        toast.error(action.payload);
+        // toast.error(action.payload);
       })
       .addCase(getBookingById.fulfilled, (state, action) => {
-        state.bookingById = action.payload.bookingById;
-        toast.success(action.payload.message);
+      state.bookingById = action.payload.bookingById;
+      //  toast.success(action.payload.message);
       })
       .addCase(getBookingById.rejected, (state, action) => {
-        toast.error(action.payload);
+        //toast.error(action.payload);
       })
       .addCase(updateBookingStatus.fulfilled, (state, action) => {
-        toast.success(action.payload.message);
+        //toast.success(action.payload.message);
       })
       .addCase(updateBookingStatus.rejected, (state, action) => {
-        toast.error(action.payload);
+        //toast.error(action.payload);
       });
   },
 });
-
+export const { setBookingStatus } = bookingSlice.actions;
 export default bookingSlice.reducer;

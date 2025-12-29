@@ -32,7 +32,7 @@ const RestaurantFilter = ({
   const secondColumnTimes = commonTimes.slice(splitIndex);
   return (
     <>
-      <div className="hidden lg:flex flex-col gap-4 sticky bg-transparent  py-[2vh] mt-[6vh] top-[16%] l-0 w-[30vw]  lg:w-[24vw] h-fit border-2 border-gray-400/40">
+      <div className="hidden lg:flex flex-col gap-4 sticky bg-transparent  py-[2vh] top-[16%] l-0 w-[30vw]  lg:w-[24vw] h-fit border-2 border-gray-400/40">
         <h1 className="text-3xl font-bold  py-2 border-b border-gray-300/60 px-8">
           Bộ Lọc
         </h1>
@@ -91,7 +91,7 @@ const RestaurantFilter = ({
         </div>
         <div className="flex flex-col gap-4  py-4  px-8 ">
           <h1 className="text-xl">Theo Giá</h1>
-          <div className="flex gap-2">
+          <div className="flex gap-2 px-8">
             <input
               onChange={(e) => {
                 e.target.checked
@@ -103,7 +103,7 @@ const RestaurantFilter = ({
             />
             <p className="text-gray-500">Thấp Đến Cao</p>
           </div>
-          <div className="flex gap-2 items-center">
+          <div className="flex gap-2 items-center px-8">
             <input
               onChange={(e) => {
                 e.target.checked
@@ -118,7 +118,7 @@ const RestaurantFilter = ({
         </div>
         <div className="flex flex-col gap-4  pb-4  px-8 ">
           <p className="text-xl">Theo Đánh Giá</p>
-          <div className="flex gap-2 items-center">
+          <div className="flex gap-2 items-center px-8">
             <input
               onChange={(e) => {
                 e.target.checked
@@ -130,7 +130,7 @@ const RestaurantFilter = ({
             />
             <p className="text-gray-500">Cao Đến Thấp</p>
           </div>
-          <div className="flex gap-2 items-center">
+          <div className="flex gap-2 items-center px-8">
             <input
               onChange={(e) => {
                 e.target.checked

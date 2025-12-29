@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {
   IconHeart,
   IconMapPin,
@@ -13,26 +14,22 @@ import { useEffect } from "react";
 import { getComment } from "../contexts/CommentRedux";
 import { useState } from "react";
 import { getRestaurantMenu } from "../contexts/MenuRedux";
-import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import SimpleMap from "../components/simpleMap";
 import { formatPrice } from "../components/ultil";
 import { createBooking } from "../contexts/BookingRedux";
-import { setCurrent } from "../contexts/ResRedux";
+import { getRestaurantById,  setOpen } from "../contexts/ResRedux";
+import { useParams } from "react-router-dom";
 
 const Restaurant = () => {
   const [idx, setIdx] = useState(0);
-
+  const { restaurant_id } = useParams()
   const { currentRestaurant } = useSelector((state) => state.restaurant);
   const { comment } = useSelector((state) => state.comment);
   const { restaurantmenu } = useSelector((state) => state.menu);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (currentRestaurant.length > 0 && currentRestaurant) {
-      const data = JSON.parse(localStorage.getItem("currentRestaurant"));
-      dispatch(setCurrent(data));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+      dispatch(getRestaurantById(restaurant_id));
   }, []);
 
   useEffect(() => {
@@ -41,7 +38,6 @@ const Restaurant = () => {
   useEffect(() => {
     dispatch(getRestaurantMenu({ restaurant_id: currentRestaurant._id }));
     console.log(restaurantmenu);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
     if (currentRestaurant && currentRestaurant._id) {
@@ -52,7 +48,19 @@ const Restaurant = () => {
       }));
     }
   }, [currentRestaurant]);
-
+  useEffect(() => {
+    const openState = setInterval(() => {
+      const currentDate = new Date();
+      const from = currentRestaurant.from.split(':');
+      const to = currentRestaurant.to.split(':');
+      console.log("runn");
+      if ((from[0] > currentDate.getHours() && from[1] > currentDate.getMinutes()) || (to[0] < currentDate.getHours() && to[1] < currentDate.getMinutes())) {
+        dispatch(setOpen({ state: false }))
+      }
+      else dispatch(setOpen({ state: true }))
+    }, 10000);
+    return () => clearInterval(openState)
+  }, [])
   const [formdata, setFormData] = useState({
     booking_date: "",
     restaurant_id: currentRestaurant?._id,
@@ -68,10 +76,15 @@ const Restaurant = () => {
     }));
     console.log(formdata);
   };
-
   if (!currentRestaurant) {
     return <div>loading...</div>;
   }
+  const today = new Date();
+
+  const maxDate = new Date();
+  maxDate.setMonth(today.getMonth() + 1);
+
+  const maxStr = maxDate.toISOString().split("T")[0];
   console.log("comment", comment);
   return (
     <div>
@@ -83,9 +96,6 @@ const Restaurant = () => {
                 {currentRestaurant.name}
               </h1>
               <p className="badge badge-dash">{currentRestaurant.type}</p>
-              <p className="hidden lg:block bg-orange-400 text-white px-2 py-1 rounded-xl">
-                20% OFF
-              </p>
             </div>
             <div className="flex gap-2">
               {Array(5)
@@ -134,27 +144,27 @@ const Restaurant = () => {
             src={currentRestaurant?.images?.[idx]}
             alt=""
           />
-          <div className="lg:w-[55%]  grid grid-cols-1 lg:grid-cols-2  gap-6">
+          <div className="lg:w-[55%]  grid grid-cols-2 lg:grid-cols-2  gap-6">
             <img
-              className="rounded-2xl p shadow-xl h-[25vh]"
+              className="rounded-2xl p shadow-xl w-full lg:w-auto h-[13vh] lg:h-[25vh]"
               src={currentRestaurant?.images?.[0]}
               alt=""
               onClick={() => setIdx(0)}
             />
             <img
-              className="rounded-2xl p shadow-xl h-[25vh]"
+              className="rounded-2xl p shadow-xl w-full h-[13vh] lg:w-auto lg:h-[25vh]"
               src={currentRestaurant?.images?.[1]}
               alt=""
               onClick={() => setIdx(1)}
             />
             <img
-              className="rounded-2xl p shadow-xl h-[25vh] w-full"
+              className="rounded-2xl p shadow-xl w-full h-[13vh] lg:w-full  lg:h-[25vh]"
               src={currentRestaurant.images?.[2]}
               alt=""
               onClick={() => setIdx(2)}
             />
             <img
-              className="rounded-2xl p shadow-xl h-[25vh] w-full"
+              className="rounded-2xl p shadow-xl w-full h-[13vh]  lg:h-[25vh]"
               src={currentRestaurant.images?.[3]}
               alt=""
               onClick={() => setIdx(3)}
@@ -167,15 +177,8 @@ const Restaurant = () => {
               Mang Đến Những Trải Nghiệm Bất Ngờ
             </p>
           </div>
-          <p className="text-2xl lg:text-3xl font-bold p">
-            Trung Bình: <br></br>{" "}
-            {formatPrice(
-              Number(
-                restaurantmenu.reduce((a, b) => {
-                  return a + (b.price || 0);
-                }, 0) / restaurantmenu.length
-              ).toFixed(0)
-            )}
+          <p className="text-xl lg:text-3xl font-bold p">
+            Trung Bình: {formatPrice(currentRestaurant.medium_price)}
             đ/ Bữa Ăn
           </p>
         </div>
@@ -187,6 +190,7 @@ const Restaurant = () => {
                 type="date"
                 value={formdata.booking_date}
                 min={new Date().toISOString().split("T")[0]}
+                max={maxStr}
                 onChange={(e) =>
                   handlechange({ key: "booking_date", value: e.target.value })
                 }
@@ -200,7 +204,8 @@ const Restaurant = () => {
                 }
                 className="select lg:w-auto w-[40vw]"
               >
-                {currentRestaurant?.bookingslots?.map((item) => (
+                <option>--:--</option>
+                {currentRestaurant?.slot_id?.map((item) => (
                   <option key={item._id} value={item._id}>
                     {item.time}
                   </option>
@@ -235,7 +240,7 @@ const Restaurant = () => {
             </div>
           </div>
           <button
-            className="btn btn-primary text-white btn-lg btn-wide"
+            className="btn btn-primary text-white lg:w-[20vw] lg:btn-lg w-full"
             onClick={() => dispatch(createBooking(formdata))}
           >
             Kiểm Tra Đặt Bàn

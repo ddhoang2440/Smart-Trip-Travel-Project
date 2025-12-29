@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
-// import { AuthProvider } from "./contexts/AuthContext";
 import Home from "./pages/Home";
 import Navbar from "./components/Navbar";
 import Restaurant from "./pages/Restaurant";
@@ -65,7 +64,7 @@ const App = () => {
       <ScrollTop />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/restaurant" element={<Restaurant />} />
+        <Route path="/restaurant/:restaurant_id" element={<Restaurant />} />
         <Route path="/login" element={<Login />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/cart" element={<ShopCart />} />

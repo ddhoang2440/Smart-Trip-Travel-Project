@@ -8,18 +8,14 @@ import {
   IconStarFilled,
 } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { setCurrent } from "../contexts/ResRedux";
 import { formatPrice } from "./ultil";
 import { Virtuoso } from "react-virtuoso";
 
 const RestaurantCard = ({ data }) => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   const handleClick = (item) => {
-    dispatch(setCurrent(item));
-    navigate("/restaurant");
+    navigate(`/restaurant/${item._id}`);
   };
 
   const renderItem = (index, dat) => {
@@ -60,7 +56,6 @@ const RestaurantCard = ({ data }) => {
                   </div>
                   <b>{dat.review}+ reviews</b>
                 </div>
-
                 <div className="flex gap-1 items-center">
                   <IconMapPin size={18} className="shrink-0" />
                   <p className="flex flex-row max-w-[80vw] gap-2 items-center text-gray-600 ">
@@ -68,10 +63,10 @@ const RestaurantCard = ({ data }) => {
                   </p>
                 </div>
 
-                <div className="flex flex-row gap-3 flex-wrap">
-                  {dat.bookingslots.map((item, tIdx) => (
+                <div className="flex flex-row gap-3 max-w-[85vw] overflow-scroll scrollbar-hide">
+                  {dat.bookingslots.map((item, idx) => (
                     <div
-                      key={tIdx}
+                      key={item._id + idx}
                       className="bg-error py-2 px-4 rounded-lg hover:cursor-pointer"
                     >
                       <p className="text-white font-semibold">{item.time}</p>
@@ -81,7 +76,7 @@ const RestaurantCard = ({ data }) => {
               </div>
               <p className="flex gap-1 items-center font-semibold text-xl mt-2 ">
                 <IconMoneybag />
-                {formatPrice(dat.medium_price)}đ/ bữa ăn
+                {formatPrice((dat.medium_price))}đ/ bữa ăn
               </p>
             </div>
           </div>

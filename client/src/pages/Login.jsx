@@ -7,7 +7,7 @@ import {
 import React, { useState } from "react";
 import Footer from "../components/Footer";
 import { useDispatch, useSelector } from "react-redux";
-import { loginWithGoogle, signin, signup } from "../contexts/AuthRedux";
+import { getOTP, loginWithGoogle, resetPassword, signin, signup } from "../contexts/AuthRedux";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useGoogleLogin } from "@react-oauth/google";
@@ -16,7 +16,7 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-
+  const [OTP, setOTP] = useState();
   const dispatch = useDispatch();
 
   const { islogin } = useSelector((state) => state.auth);
@@ -50,6 +50,17 @@ const Login = () => {
     }
   }, [islogin, navigate]);
 
+  const handleGetOTP = (e, email) => {
+    e.preventDefault()
+    if (!email) return;
+      dispatch(getOTP({email}))
+  }
+  const handleResetPassword = (e, user) => {
+    e.preventDefault()
+    if (!user) return;
+    dispatch(resetPassword(user));
+  }
+
   return (
     <>
       <div className="pt-[16vh] lg:pt-[13vh] pb-[10vh] px-[8vw] bg-[rgb(255,230,201)]">
@@ -69,16 +80,16 @@ const Login = () => {
                   Golden<span className="text-warning">Plate</span>
                 </p>
               </div>
-              <h1 className="text-3xl">Login to your Account</h1>
+              <h1 className="text-3xl">Đăng nhập vào tài khoản của bạn</h1>
               <p className="text-gray-500">
-                See what is going on in world of Food
+                Tìm kiếm những nhà hàng thượng hạng
               </p>
               <button
-                className=" py-2 px-4 bg-blue-500 text-white text-xl flex justify-center items-center gap-2 cursor-pointer hover:bg-blue-400 rounded-xl"
+                className=" py-2 px-4 btn btn-accent btn-soft rounded-sm hover:text-white"
                 onClick={() => login()}
               >
-                <IconBrandGoogle color="white" />{" "}
-                <span>Continue with Google</span>
+                <IconBrandGoogle color="black" />{" "}
+                <span>Tiếp tục với Google</span>
               </button>
               {stage === "login" && (
                 <>
@@ -97,21 +108,21 @@ const Login = () => {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                     />
-                    <label className="label">Password</label>
+                    <label className="label">mật Khẩu</label>
                     <input
                       className="input w-full "
                       type="password"
-                      placeholder="Nhập Password"
+                      placeholder="Nhập mật khẩu"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                     />
                     <div className="flex flex-row justify-between gap-2">
                       <div className="flex items-center gap-2">
                         <input type="checkbox" className="checkbox" />
-                        Remember me
+                        Nhớ mật khẩu ?
                       </div>
                       <p className="p" onClick={() => setStage("forgot")}>
-                        Forgot Password ?
+                        Quên mật khẩu ?
                       </p>
                     </div>
                     <button
@@ -119,17 +130,17 @@ const Login = () => {
                       className="btn btn-warning text-white text-xl"
                       type="submit"
                     >
-                      Login
+                      Đăng Nhập
                     </button>
                   </form>
                   <p className="flex justify-center pt-4 gap-2">
-                    Not register Yet?{" "}
+                    Chưa có tài khoản ?{" "}
                     <span
                       onClick={() => setStage("register")}
                       className="text-accent p"
                     >
                       {" "}
-                      Create an account
+                      Tạo tài khoản mới
                     </span>{" "}
                   </p>
                 </>
@@ -143,7 +154,7 @@ const Login = () => {
                     <div className="divider text-gray-500">
                       Register with your email
                     </div>
-                    <label className="label">Username</label>
+                    <label className="label">Tên đăng nhập</label>
                     <input
                       className="input w-full"
                       type="text"
@@ -159,31 +170,32 @@ const Login = () => {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                     />
-                    <label className="label">Password</label>
+                    <label className="label">Mật khẩu</label>
                     <input
                       className="input w-full "
                       type="password"
-                      placeholder="Nhập Password"
+                      placeholder="Nhập mật khẩu"
                       value={password}
+                      minLength={8}
                       onChange={(e) => setPassword(e.target.value)}
                     />
                     <div className="flex flex-row justify-between gap-2">
                       <div className="flex items-center gap-2">
                         <input type="checkbox" className="checkbox" />
-                        Remember me
+                        Nhớ mật khẩu
                       </div>
                     </div>
                     <button className="btn btn-warning text-white text-xl">
-                      Register
+                      Đăng Ký
                     </button>
                   </form>
                   <p className="flex justify-center pt-4 gap-2">
-                    Already has an account ?{" "}
+                    Đã có tài khoản?{" "}
                     <span
                       onClick={() => setStage("login")}
                       className="text-accent p"
                     >
-                      Back to Login
+                      Đăng nhập ngay
                     </span>
                   </p>
                 </>
@@ -200,17 +212,45 @@ const Login = () => {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                     />
-                    <button className="btn btn-warning text-white">
-                      Forgot
+                    <label className="label">Mật Khẩu Mới</label>
+                    <input
+                      className="input w-full "
+                      type="password"
+                      placeholder="Nhập mật khẩu mới"
+                      value={password}
+                      minLength={8}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <div className="flex justify-between">
+                      <label className="label">Mã OTP</label>
+                      <button
+                        type="button"
+                        onClick={(e) => handleGetOTP(e, email)}
+                        className="hover:cursor-pointer text-sm text-red-500 underline"
+                      >
+                        Nhận Mã OTP
+                      </button>
+                    </div>
+                    <input
+                      className="input w-full "
+                      type="number"
+                      placeholder="Nhập OTP"
+                      value={OTP}
+                      minLength={6}
+                      maxLength={6}
+                      onChange={(e) => setOTP(e.target.value)}
+                    />
+                    <button className="btn btn-warning text-white" type="submit" onClick={(e) => handleResetPassword(e, { email, password, OTP})} >
+                      Đặt Lại Mật Khẩu
                     </button>
                   </form>
                   <p className="flex justify-center pt-4 gap-2">
-                    Already has an account ?{" "}
+                    Đã có tài khoản ?{" "}
                     <span
                       onClick={() => setStage("login")}
                       className="text-accent p"
                     >
-                      Back to Login
+                      Đăng nhập ngay !
                     </span>
                   </p>
                 </>

@@ -1,29 +1,20 @@
 import {
-  Icon12Hours,
-  IconArrowRight,
   IconArrowRightBar,
   IconBellFilled,
   IconChartDonutFilled,
   IconMapPinFilled,
-  IconMichelinStar,
   IconPlayCard1Filled,
-  IconPoint,
   IconPointFilled,
   IconSearch,
-  IconSquareDot,
 } from "@tabler/icons-react";
-import React, { useState } from "react";
-import Title from "../components/Title";
+import { useState } from "react";
 import Footer from "../components/Footer";
-import AvatarCard from "../components/AvatarCard";
 import HoverCard from "../components/HoverCard";
-import {useDispatch, useSelector} from 'react-redux'
+import { useSelector} from 'react-redux'
 import { Activity } from "react";
 import { useNavigate } from "react-router-dom";
-import { setCurrent } from "../contexts/ResRedux";
 
 const Home = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const { popularRestaurant, restaurants } = useSelector((state) => state.restaurant)
@@ -39,8 +30,8 @@ const Home = () => {
    });
   
     const handleCurrent = (_res) => {
-      dispatch(setCurrent(_res));
-      navigate("/restaurant");
+      console.log(_res);
+      navigate(`/restaurant/${_res}`);
   };
   
       return (
@@ -91,7 +82,7 @@ const Home = () => {
                         key={"filter" + item._id}
                         className="px-4 hover:cursor-pointer justify-between hover:bg-slate-100 py-2 flex flex-row items-center font-semibold gap-2"
                         onMouseDown={(e) => e.preventDefault()}
-                        onClick={() => handleCurrent(item)}
+                        onClick={() => handleCurrent(item._id)}
                       >
                         <div className="flex flex-row lg:w-[20vw] gap-2 items-center">
                           <img
@@ -119,7 +110,6 @@ const Home = () => {
             <HoverCard data={popularRestaurant} />
           </div>
           <div>
-
             <div className="px-[14vw] py-[16vh] bg-linear-to-b from-white to-warning flex flex-col items-center justify-center gap-[8vh]">
               <h1 className="text-warning lg:text-6xl text-4xl font-bold text-center">
                 Sử Dụng Như Thế Nào ?
@@ -172,7 +162,10 @@ const Home = () => {
                       từng chiếc bánh
                     </p>
                   </div>
-                  <button className="btn lg:btn-wide btn-sm btn-warning lg:btn-lg text-white">
+                  <button
+                    className="btn lg:btn-wide btn-sm btn-warning lg:btn-lg text-white"
+                    onClick={() => navigate("/product")}
+                  >
                     Tiếp tục khám phá <IconArrowRightBar color="white" />
                   </button>
                 </div>
@@ -204,7 +197,10 @@ const Home = () => {
                       xoa từng lần cắn!
                     </p>
                   </div>
-                  <button className="btn lg:btn-wide btn-sm btn-warning lg:btn-lg text-white">
+                  <button
+                    className="btn lg:btn-wide btn-sm btn-warning lg:btn-lg text-white"
+                    onClick={() => navigate("/product")}
+                  >
                     Tiếp tục khám phá
                     <IconArrowRightBar color="white" />
                   </button>
@@ -226,7 +222,10 @@ const Home = () => {
                       thực không thể bỏ qua!
                     </p>
                   </div>
-                  <button className="btn lg:btn-wide btn-sm btn-warning lg:btn-lg text-white">
+                  <button
+                    className="btn lg:btn-wide btn-sm btn-warning lg:btn-lg text-white"
+                    onClick={() => navigate("/product")}
+                  >
                     Tiếp tục khám phá <IconArrowRightBar color="white" />
                   </button>
                 </div>

@@ -8,7 +8,7 @@ const HoverCard = ({ data }) => {
   const navigate = useNavigate()
   const handleCurrent = (_res) => {
     dispatch(setCurrent(_res))
-    navigate("/restaurant")
+    navigate(`/restaurant/${_res._id}`)
   }
   const CreateCard = ({ card }) => {
     return (
@@ -17,8 +17,8 @@ const HoverCard = ({ data }) => {
         style={{ backgroundImage: `url('${card.images?.[0] || card.image}')` }}>
         <div className="flex gap-2">
           <div className="flex flex-col">
-            <div className="flex items-center gap-1">
-              <p className="text-white">{card.name}</p>
+            <div className="flex items-center bg-gray-800/60 px-2 py-1 gap-1">
+              <p className="text-white ">{card.name}</p>
             </div>
           </div>
         </div>

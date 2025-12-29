@@ -484,19 +484,19 @@ const ChatBox = () => {
   return (
     <>
       <div
-        className="fixed right-6 bottom-6 z-50 shadow-xl hover:scale-110 transition-all duration-500 p-4 bg-linear-to-r from-purple-600 to-pink-600 rounded-full cursor-pointer group"
+        className="fixed right-6 bottom-6 z-50 shadow-xl hover:scale-110 transition-all duration-500 p-4 bg-linear-to-r from-purple-600 to-pink-600 rounded-full cursor-pointer group animate-bounce"
         onClick={() => setChat(!chat)}
       >
         <div className="relative">
-          <IconMessage className="text-white w-6 h-6" />
+          <IconRobot className="text-white w-6 h-6" />
           {messages.length > 1 && (
             <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
               {messages.length - 1}
             </span>
           )}
         </div>
-        <div className="absolute right-16 bottom-1/2 translate-y-1/2 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-          Chat với trợ lý ẩm thực
+        <div className="absolute right-4 -top-16 translate-y-1/2 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg opacity-100 group-hover:opacity-0 transition-opacity duration-300 whitespace-nowrap">
+          Chat với trợ lý ẩm thực !
         </div>
       </div>
 

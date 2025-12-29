@@ -53,11 +53,11 @@ const ShopCart = () => {
     }
 
     dispatch(createComment(formdata));
+    setComment(false);
   };
 
   useEffect(() => {
     dispatch(getBooking());
-    console.log(bookings);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [email]);
   const BookingItemCard = ({ card, onCommentClick, setRestaurant_id }) => {
@@ -65,7 +65,7 @@ const ShopCart = () => {
       <>
         <div
           key={card._id}
-          className="hidden lg:flex flex-row py-[3vh] border-b border-gray-400/50 "
+          className="hidden ] lg:flex flex-row py-[3vh] border-b border-gray-400/50 "
         >
           <div className="flex flex-row w-[30vw] items-center gap-6">
             <img
@@ -120,8 +120,8 @@ const ShopCart = () => {
             </div>
           )}
         </div>
-        <div className="flex flex-col gap-2 lg:hidden">
-          <div className="flex gap-2 items-center">
+        <div className="flex flex-col gap-4 lg:hidden pb-[4vh]">
+          <div className="flex lg:gap-2 gap-[4vw] items-center">
             <img
               className="w-[40vw]"
               src={card.restaurant_id?.images[0]}

@@ -13,7 +13,7 @@ const Products = () => {
   const [seachtext, setSearchText] = useState("");
   const [filtertype, setFilterType] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
-  console.log("restaurant ", restaurants);
+  // console.log("restaurant ", restaurants);
   const filterRestaurant = restaurants.filter((item) => {
     const keyword = seachtext.toLowerCase();
     const matchesSearch =
@@ -22,7 +22,7 @@ const Products = () => {
     let matchesTime = true;
     if (selectedTime) {
       matchesTime =
-        item.bookingslots?.some((slot) => slot.time === selectedTime) || false;
+        item.bookingslots?.some((slot) => slot.time.split(':')[0] === selectedTime.split(':')[0]) || false;
     }
 
     return matchesSearch && matchesTime;

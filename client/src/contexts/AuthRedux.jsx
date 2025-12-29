@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import toast from "react-hot-toast";
+// import toast from "react-hot-toast";
 
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 
@@ -130,6 +130,52 @@ export const getUserById = createAsyncThunk(
     }
   }
 );
+export const getOTP = createAsyncThunk(
+  "auth/forgot",
+  async( { email }, thunkAPI) => {
+    try {
+      const { data } = await axios.post(`/auth/forgot`, { email });
+      if (!data.success) {
+        return thunkAPI.rejectWithValue(data.message);
+      }
+      return data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+export const resetPassword = createAsyncThunk(
+  "auth/reset",
+  async ( user, thunkAPI) => {
+    try {
+      const { data } = await axios.post(`/auth/reset`, user);
+      if (!data.success) {
+        return thunkAPI.rejectWithValue(data.message);
+      }
+      return data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
+export const contact = createAsyncThunk(
+  "auth/contact",
+  async (_data, thunkAPI) => {
+    try {
+      const { data } = await axios.post(`/auth/contact`, _data);
+      if (!data.success) {
+        return thunkAPI.rejectWithValue(data.message);
+      }
+      return data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
+
+
 
 const AuthSlice = createSlice({
   name: "auth",
@@ -152,11 +198,11 @@ const AuthSlice = createSlice({
       state.email = "";
       state.allergy = [];
       localStorage.removeItem("token");
-      toast.success("SignOut successfully !");
+      //toast.success("SignOut successfully !");
     },
     setLocation: (state, action) => {
       state.location = action.payload;
-      console.log(action.payload);
+      // console.log(action.payload);
     },
   },
   extraReducers: (builder) => {
@@ -174,12 +220,12 @@ const AuthSlice = createSlice({
         state.allergy = action.payload.user.allergy;
         state.image = action.payload.user.image;
         localStorage.setItem("token", action.payload.token);
-        toast.success(action.payload.message);
+        //toast.success(action.payload.message);
       })
       .addCase(signin.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
-        toast.error(action.payload);
+        //toast.error(action.payload);
       })
       .addCase(signup.pending, (state) => {
         state.status = "loading";
@@ -194,12 +240,12 @@ const AuthSlice = createSlice({
         state.allergy = action.payload.user.allergy;
         localStorage.setItem("token", action.payload.token);
         state.image = action.payload.user.image;
-        toast.success(action.payload.message);
+        //toast.success(action.payload.message);
       })
       .addCase(signup.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
-        toast.error(action.payload);
+        //toast.error(action.payload);
       })
       .addCase(profile.pending, (state) => {
         (state.status = "loading"), (state.error = "");
@@ -209,12 +255,12 @@ const AuthSlice = createSlice({
         state.allergy = action.payload.user.allergy;
         state.image = action.payload.user.image;
         state.status = "succeed";
-        toast.success(action.payload.message);
+        //toast.success(action.payload.message);
       })
       .addCase(profile.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
-        toast.error(state.error);
+        //toast.error(state.error);
       })
       .addCase(authCheck.pending, (state) => {
         (state.status = "loading"), (state.error = "");
@@ -226,12 +272,12 @@ const AuthSlice = createSlice({
         state.username = action.payload.user.username;
         state.image = action.payload.user.image;
         state.allergy = action.payload.user.allergy;
-        toast.success(action.payload.message);
+        //toast.success(action.payload.message);
       })
       .addCase(authCheck.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
-        toast.error(action.payload);
+        //toast.error(action.payload);
       })
       .addCase(deleteAccount.pending, (state) => {
         (state.status = "loading"), (state.error = "");
@@ -248,7 +294,7 @@ const AuthSlice = createSlice({
       .addCase(deleteAccount.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
-        toast.error(action.payload);
+        //toast.error(action.payload);
       })
       .addCase(loginWithGoogle.fulfilled, (state, action) => {
         state.status = "succeed";
@@ -259,24 +305,49 @@ const AuthSlice = createSlice({
         state.allergy = action.payload.user.allergy;
         state.image = action.payload.user.image;
         localStorage.setItem("token", action.payload.token);
-        toast.success(action.payload.message);
+        //toast.success(action.payload.message);
       })
       .addCase(loginWithGoogle.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
-        toast.error(action.payload);
+        //toast.error(action.payload);
       })
       .addCase(getUserById.fulfilled, (state, action) => {
         state.status = "succeed";
         if (action.payload.user && action.payload.user._id) {
           state.users[action.payload.user._id] = action.payload.user;
         }
-        toast.success(action.payload.message);
+        //toast.success(action.payload.message);
       })
       .addCase(getUserById.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
-        toast.error(action.payload);
+        //toast.error(action.payload);
+      })
+      .addCase(getOTP.fulfilled, (state, action) => {
+        state.status = "succeed";
+        //toast.success(action.payload.message);
+      })
+      .addCase(getOTP.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+        //toast.error(action.payload);
+      })
+      .addCase(resetPassword.fulfilled, (state, action) => {
+        state.status = "succeed";
+        state.islogin = true;
+        state.username = action.payload.user.username;
+        state.email = action.payload.user.email;
+        state.contact = action.payload.contact;
+        state.allergy = action.payload.user.allergy;
+        state.image = action.payload.user.image;
+        localStorage.setItem("token", action.payload.token);
+        //toast.success(action.payload.message);
+      })
+      .addCase(resetPassword.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+        //toast.error(action.payload);
       });
   },
 });

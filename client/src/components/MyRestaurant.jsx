@@ -1,31 +1,21 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import {
-  IconAdjustments,
   IconStar,
   IconStarFilled,
-  IconThumbDown,
-  IconThumbUp,
   IconX,
   IconCalendar,
   IconClock,
   IconUsers,
   IconReceipt,
-  IconChartBar,
-  IconBell,
   IconEdit,
   IconTrash,
   IconCheck,
-  IconBan,
   IconLayoutGrid,
-  IconCalendarEvent,
-  IconChartPie,
-  IconMessage,
-  IconSettings,
-  IconPlus,
   IconInfoCircle,
   IconChairDirector,
   IconMail,
+  IconPlus
 } from "@tabler/icons-react";
 import { useDispatch, useSelector } from "react-redux";
 import { getUserRestaurant } from "../contexts/ResRedux";
@@ -39,12 +29,11 @@ import {
   createBookingSlot,
   deleteBookingSlot,
   getBookingSlot,
-  getBookingSlotById,
   updateBookingSlot,
 } from "../contexts/BookingSlotRedux";
 import toast from "react-hot-toast";
 import { getComment } from "../contexts/CommentRedux";
-import { getBookingById, updateBookingStatus } from "../contexts/BookingRedux";
+import { getBookingById, setBookingStatus, updateBookingStatus } from "../contexts/BookingRedux";
 
 const MyRestaurant = ({ activeTab, setActiveTab, handleEditMenu }) => {
   const [activeSection, setActiveSection] = useState("dashboard");
@@ -63,7 +52,6 @@ const MyRestaurant = ({ activeTab, setActiveTab, handleEditMenu }) => {
   const { usermenu } = useSelector((state) => state.menu);
   const { bookingslots } = useSelector((state) => state.bookingslots);
   const { bookingById } = useSelector((state) => state.booking);
-  const { bookingslotsById } = useSelector((state) => state.bookingslots);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -78,10 +66,10 @@ const MyRestaurant = ({ activeTab, setActiveTab, handleEditMenu }) => {
       userRestaurant &&
       userRestaurant[0]?._id
     ) {
-      console.log(
-        "Lấy booking slots cho restaurant ID:",
-        userRestaurant[0]._id
-      );
+      // //console.log(
+      //   "Lấy booking slots cho restaurant ID:",
+      //   userRestaurant[0]._id
+      // );
       const restaurantId = userRestaurant[0]._id;
       dispatch(getBookingSlot(restaurantId));
       dispatch(getBookingById(restaurantId));
@@ -89,16 +77,16 @@ const MyRestaurant = ({ activeTab, setActiveTab, handleEditMenu }) => {
     }
   }, []);
 
-  useEffect(() => {
-    if (bookingById && bookingById.length > 0) {
-      const newBookingSlotIds = bookingById
-        .map((item) => item.slot_id)
-        .filter((slotId) => slotId && !bookingslotsById[slotId]);
-      newBookingSlotIds.forEach((slotId) => {
-        dispatch(getBookingSlotById(slotId));
-      });
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (bookingById && bookingById.length > 0) {
+  //     const newBookingSlotIds = bookingById
+  //       .map((item) => item.slot_id)
+  //       .filter((slotId) => slotId && !bookingslotsById[slotId]);
+  //     // newBookingSlotIds.forEach((slotId) => {
+  //     //   dispatch(getBookingSlotById(slotId));
+  //     // });
+  //   }
+  // }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -176,29 +164,30 @@ const MyRestaurant = ({ activeTab, setActiveTab, handleEditMenu }) => {
       }
     });
   };
-  console.log(bookingById);
+  //console.log(bookingById);
   const handleDeleteTable = async (id) => {
     dispatch(deleteBookingSlot(id));
     dispatch(getBookingSlot(userRestaurant[0]?._id));
   };
   const handleUpdateStatus = (bookingId, nextStatus) => {
     dispatch(updateBookingStatus({ bookingId, status: nextStatus }));
+    dispatch(setBookingStatus({_id: bookingId, status: nextStatus }))
   };
 
   const renderStatusAction = (item) => {
     switch (item.status) {
       case "confirmed":
         return (
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 items-center">
             <p className="text-blue-600 font-medium">Đã xác nhận</p>
 
             <button
               onClick={() => handleUpdateStatus(item._id, "completed")}
-              className="btn btn-soft btn-neutral rounded-full"
+              className="btn btn-soft btn-neutral rounded-full btn-sm"
             >
               Hoàn thành đơn hàng
             </button>
-          </div>
+          </div>  
         );
       case "cancelled":
         return <p className="text-red-600 font-medium">Đã hủy</p>;
@@ -207,19 +196,19 @@ const MyRestaurant = ({ activeTab, setActiveTab, handleEditMenu }) => {
 
       default:
         return (
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 items-center">
             <p className="text-orange-400 font-medium">Đang xử lý</p>
 
             <div className="flex gap-2 items-center justify-center">
               <button
                 onClick={() => handleUpdateStatus(item._id, "confirmed")}
-                className="btn btn-soft btn-neutral rounded-full"
+                className="btn btn-soft btn-sm btn-neutral rounded-full"
               >
                 Xác nhận
               </button>
               <button
                 onClick={() => handleUpdateStatus(item._id, "cancelled")}
-                className="btn btn-soft btn-neutral rounded-full"
+                className="btn btn-soft btn-sm btn-neutral rounded-full"
               >
                 Hủy đơn
               </button>
@@ -231,8 +220,9 @@ const MyRestaurant = ({ activeTab, setActiveTab, handleEditMenu }) => {
 
   const slotStats = {};
 
-  bookingById.forEach((booking) => {
-    const slotId = booking.slot_id._id;
+  //console.log(bookingById)
+  bookingById?.forEach((booking) => {
+    const slotId = booking?.slot_id?._id;
 
     if (!slotStats[slotId]) {
       slotStats[slotId] = {
@@ -246,7 +236,7 @@ const MyRestaurant = ({ activeTab, setActiveTab, handleEditMenu }) => {
 
   const renderDashboard = () => (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
         <div className="bg-white p-6 rounded-xl shadow">
           <div className="flex items-center justify-between">
             <div>
@@ -276,38 +266,6 @@ const MyRestaurant = ({ activeTab, setActiveTab, handleEditMenu }) => {
           </div>
         </div>
       </div>
-
-      <div className="bg-white p-6 rounded-xl shadow">
-        <h3 className="text-xl font-bold mb-4">Tỷ lệ bàn theo giờ cao điểm</h3>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {Object.values(slotStats).map((item, idx) => {
-            const { slot, totalBooked } = item;
-
-            const totalCapacity =
-              slot.max_slot_2 + slot.max_slot_4 + slot.max_slot_8;
-
-            const percent = Math.min((totalBooked / totalCapacity) * 100, 100);
-
-            return (
-              <div key={slot._id + idx} className="p-4 border rounded-lg mb-4">
-                <p className="font-semibold mb-2">{slot.time}</p>
-
-                <div className="h-4 bg-gray-200 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-green-500 transition-all"
-                    style={{ width: `${percent}%` }}
-                  />
-                </div>
-
-                <div className="flex justify-between mt-2 text-sm">
-                  <span>Bàn đã đặt: {totalBooked}</span>
-                  <span>Bàn trống: {totalCapacity - totalBooked}</span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
     </div>
   );
 
@@ -329,11 +287,11 @@ const MyRestaurant = ({ activeTab, setActiveTab, handleEditMenu }) => {
           <div className="bg-white/95 rounded-2xl shadow-2xl border border-gray-200/80 p-2 mb-8">
             <div className="flex items-center justify-between mb-8 pb-6 border-b border-gray-100">
               <div>
-                <div className="flex items-center gap-3 mb-2">
+                <div className="flex items-center gap-3 mb-2 pl-4">
                   <div className="p-2 bg-linear-to-br from-blue-500 to-blue-600 rounded-lg">
                     <IconClock className="text-white" size={24} />
                   </div>
-                  <div>
+                  <div className="px-4">
                     <h3 className="text-2xl font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                       Thiết lập khung giờ
                     </h3>
@@ -356,7 +314,7 @@ const MyRestaurant = ({ activeTab, setActiveTab, handleEditMenu }) => {
             </div>
 
             <form onSubmit={handleAddTable}>
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 px-8">
                 <div className="lg:col-span-1">
                   <div className=" bg-linear-to-br from-blue-50 to-indigo-50 rounded-xl p-5 border border-blue-100">
                     <div className="flex items-center gap-3 mb-4">
@@ -937,8 +895,8 @@ const MyRestaurant = ({ activeTab, setActiveTab, handleEditMenu }) => {
               <div className="flex justify-between items-start">
                 <h4 className="font-bold text-gray-900 truncate">
                   {item.name}
-                </h4>
-                <span className="text-green-600 font-bold text-sm">
+                </h4> 
+                <span className="text-green-600 font-bold text-sm text-center">
                   {formatPrice(item.price)}đ
                 </span>
               </div>
@@ -986,7 +944,7 @@ const MyRestaurant = ({ activeTab, setActiveTab, handleEditMenu }) => {
               {usermenu.map((item, idx) => (
                 <tr
                   key={item._id + idx}
-                  className="hover:bg-gray-50 transition-colors"
+                  className="hover:bg-gray-50 transition-colors "
                 >
                   <td className="px-6 py-4">
                     <div className="max-w-[200px]">
@@ -1147,7 +1105,7 @@ const MyRestaurant = ({ activeTab, setActiveTab, handleEditMenu }) => {
           {userRestaurant[0]?.name || "Nhà hàng của tôi"}
         </h1>
         <div className="flex gap-4">
-          <button className="px-6 py-2 bg-green-600 hover:bg-green-700 rounded-3xl text-white flex items-center gap-2">
+          <button className="px-3 justify-center py-2 text-sm bg-green-600 lg:w-[10vw] max-w-[30vw] hover:bg-green-700 rounded-3xl text-white flex items-center gap-2">
             <IconCheck size={20} />
             Đang mở
           </button>
@@ -1191,8 +1149,8 @@ const MyRestaurant = ({ activeTab, setActiveTab, handleEditMenu }) => {
               </div>
               {bookingById.map((item, idx) => (
                 <React.Fragment key={item._id + idx}>
-                  <div className="flex flex-row  items-center">
-                    <div className="flex gap-4 items-center w-[56vw] lg:w-[18vw]">
+                  <div className="flex flex-row w-full items-center">
+                    <div className="flex gap-4 items-center w-[80vw] lg:w-[18vw]">
                       <img
                         src={
                           item.user_id.image ||
@@ -1201,65 +1159,40 @@ const MyRestaurant = ({ activeTab, setActiveTab, handleEditMenu }) => {
                         alt=""
                         className="rounded-full size-[6vh]"
                       />
-                      <div className="flex flex-col gap-1">
+                      <div className="flex flex-col gap-1 ">
                         <p>@{item.user_id.username}</p>
                         <p className="flex gap-1">
                           <IconMail />
                           {item.user_id.email}
                         </p>
-                        <p className="flex gap-1">
+                        <p className="flex gap-1 w-full lg:w-auto">
                           <IconChairDirector />
-                          <p>
-                            Bàn {item.table} người{" "}
-                            <span>- {item.quantity} bàn</span>
-                          </p>
+                          Bàn {item.table} người{" "}
+                          <span> - {item.quantity} bàn</span>
                         </p>
                       </div>
                     </div>
-                    <div className=" w-[20vw] lg:w-[12vw] text-center">
+                    <div className=" w-[20vw] lg:w-[12vw] hidden lg:block text-center">
                       {item.booking_date.split("T")[0]}
                     </div>
                     <div className="w-[10vw] hidden lg:block text-center">
                       {item.quantity}
                     </div>
                     <div className="hidden lg:block w-[12vw] text-center font-semibold text-green-700">
-                      {/* {item.status === "Confirmed" ? (
-                        <div className="flex flex-col gap-2">
-                          <p>Đã Xác Nhận</p>
-                          <button
-                            onClick={handleUpdateStatus}
-                            className="btn btn-soft btn-neutral rounded-full"
-                          >
-                            Hoàn Thành Đơn Hàng
-                          </button>
-                        </div>
-                      ) : item.status === "Finished" ? (
-                        <p>Hoàn Thành</p>
-                      ) : (
-                        <div className="flex flex-col gap-2">
-                          <p className="text-orange-400">Đang xử lý</p>
-                          <button
-                            onClick={handleUpdateStatus}
-                            className="btn btn-soft btn-neutral rounded-full"
-                          >
-                            Xác nhận đơn hàng
-                          </button>
-                        </div>
-                      )} */}
                       {renderStatusAction(item)}
                     </div>
                   </div>
-                  <div className="flex lg:hidden flex-row gap-4 ">
-                    {item.status === "Confirmed" ? (
-                      <div className="flex flex-col w-full gap-2 items-center justify-center text-green-700">
-                        <p>Đã Xác Nhận</p>
-                        <button className="btn btn-soft btn-neutral rounded-full btn-wide">
-                          Hoàn Thành Đơn Hàng
-                        </button>
+                  <div className="flex flex-row justify-between ">
+                    <div className="flex flex-col gap-1 items-center ">
+                      <p>Ngày Đặt</p>
+                      <div className="block lg:hidden w-[20vw] lg:w-[12vw] text-center">
+                        {item.booking_date.split("T")[0]}
                       </div>
-                    ) : (
-                      <p>Hoàn Thành</p>
-                    )}
+                    </div>
+                    <div className="lg:hidden flex flex-col gap-1 items-center">
+                      <p>Trạng Thái</p>
+                      {renderStatusAction(item)}
+                    </div>
                   </div>
                 </React.Fragment>
               ))}

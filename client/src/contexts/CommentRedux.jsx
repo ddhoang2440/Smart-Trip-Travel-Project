@@ -72,11 +72,11 @@ export const commentSlice = createSlice({
       .addCase(getComment.fulfilled, (state, action) => {
         state.loading = false;
         state.comment = action.payload.comment;
-        toast.success(action.payload.message);
+        //toast.success(action.payload.message);
       })
       .addCase(getComment.rejected, (state, action) => {
         state.loading = false;
-        toast.error(action.payload);
+        //toast.error(action.payload);
       });
   },
 });

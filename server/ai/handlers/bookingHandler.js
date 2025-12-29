@@ -15,10 +15,9 @@ export default class BookingHandler extends IntentHandler {
   }
 
   async bookingText(params) {
-    // --- Lấy dữ liệu từ params ---
     const quantity = params?.quantity || null;
-    const booking_time = params?.booking_time || null; // { from, to }
-    const booking_date = params?.booking_date || null; // ISO date string
+    const booking_time = params?.booking_time || null; 
+    const booking_date = params?.booking_date || null; 
     const restaurant = params?.restaurant || null;
     const table = params?.table || null;
     const is_suggestion = params?.is_suggestion || false;
@@ -47,7 +46,6 @@ export default class BookingHandler extends IntentHandler {
       };
     }
 
-    // Nếu thiếu nhiều thông tin thì frontend hiển thị form điền
     const formatted_data = {
       action: "create_booking",
       updated_session: {

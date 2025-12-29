@@ -7,6 +7,7 @@ import validator from "validator";
 import Restaurant from "../model/restaurant.js";
 import Menu from "../model/food.js";
 import axios from "axios";
+import nodemailer from 'nodemailer';
 const log = console.log;
 
 // sign in
@@ -182,12 +183,6 @@ export const profile = async (req, res) => {
       password: hashPass || User.password,
       image: result ? result.secure_url : User.image,
       image_url: result ? result.public_id : User.image_id,
-      allergy: data.allergy
-        ? data.allergy
-            .split(",")
-            .map((a) => a.trim())
-            .filter((a) => a !== "")
-        : User.allergy,
       contact: data.contact.length === 10 ? data.contact : User.contact,
     };
     const newuser = await User.findOneAndUpdate({ _id }, newProfile, {
@@ -253,7 +248,6 @@ export const authDelete = async (req, res) => {
     const _user = await User.findById(_id);
     await cloudinary.uploader.destroy(_user.image_url, { invalidate: true });
     await User.findByIdAndDelete({ _id });
-
     routelog.push(chalk.green("Delete Account ", email, " Successfully"));
     routelog.push(chalk.white("End Route"));
     log(routelog.join(" | "));
@@ -280,3 +274,106 @@ export const getUserById = async (req, res) => {
     res.json({ success: false, message: "Error while get Account !" });
   }
 };
+
+
+const UserOTP = new Map();
+export const sendMail = async (req, res) => {
+
+  let transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com", 
+    port: 587,
+    secure: false, 
+    auth: {
+      user: "duyhan44@gmail.com", 
+      pass: process.env.SECRET_GOOGLE_PASS, 
+    },
+  });
+  let OTP = 100000;
+  let mailOptions = {
+    from: 'duyhan44@gmail.com',
+    to: "recipient@example.com", 
+    subject: "Forgot PassWord", 
+    html: ``, 
+  };
+
+  try {
+    OTP = (Math.random() * 900000) + 100000;
+    const { email } = req.body;
+    const user = await User.findOne({ email }, "-password");
+    if (!user) {
+      return res.json({ success: false, message: "Send Email Failed Not Found User !" });
+    }
+    UserOTP.set(email, OTP.toFixed(0));
+    mailOptions.to = email;
+    mailOptions.html = `
+    <div>
+      <div> Xin chào đây là mã OTP đặt lại mật khẩu của bạn <div>
+      <p> OTP của bạn là: ${OTP.toFixed(0)} </p>
+    </div>`
+    let info = await transporter.sendMail(mailOptions);
+    res.json({ success: true, message: "Send Email SuccessFully !" });
+  } catch (error) {
+    console.error(error);
+    res.json({ success: false, message: "Send Email Failed !"})
+  }
+}
+
+
+export const changePassWordWithOTP = async (req, res) => {
+  try {
+    const { email, password, OTP } = req.body;
+    if (!email || !password || !OTP) {
+      return res.json({ success: false, message: "All Input Must Valid" });
+    }
+    console.log(OTP, UserOTP.get(email))
+    if (OTP !== UserOTP.get(email)) {
+      return res.json({ success: false, message: "OTP Not Equal"})
+    }
+    const hashPass = await bcrypt.hash(password, 10);
+    const user = await User.findOneAndUpdate({ email }, { password: hashPass }, { new: true }).select("-password");
+    const token = createToken(user);
+    UserOTP.delete(email);
+    res.json({ success: true, message: "Reset PassWord Successfully !", user, token })
+  } catch (error) {
+    console.error(error);
+    res.json({ success: false, message: "Change PassWord Failed !" });
+  }
+}
+
+
+export const sendContact = async (req, res) => {
+
+  let transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
+    auth: {
+      user: "duyhan44@gmail.com",
+      pass: process.env.SECRET_GOOGLE_PASS,
+    },
+  });
+  let mailOptions = {
+    from: "",
+    to: "duyhan44@gmail.com",
+    subject: "",
+    html: ``,
+  };
+  try {
+    const { email, username, subject, content } = req.body;
+    if (!email || !username || !subject || !content) {
+      return res.json({ success: false, message: "All Value Must Valid"})
+    }
+    mailOptions.from = email;
+    mailOptions.subject = subject;
+    mailOptions.html = `
+    <div>
+    <div> ${email} </div>
+    <p> ${content} </p>
+    </div>`
+    await transporter.sendMail(mailOptions);
+    res.json({ success: true, message: "Send Contact Successfully !"})
+  } catch (error) {
+    console.error(error);
+    res.json({ success: false, message: "Send Contact Failed!" });
+  }
+}

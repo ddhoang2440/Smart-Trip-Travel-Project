@@ -12,7 +12,7 @@ import { suggestRestaurant } from "../utils/suggest.js";
 const ENTITY_MAP = {
   restaurant: Restaurant,
   menu: Menu,
-  food: Menu, // food dùng chung schema menu
+  food: Menu,
 };
 
 export default class SearchHandler extends IntentHandler {
@@ -42,7 +42,6 @@ export default class SearchHandler extends IntentHandler {
     if (!params.is_suggestion) {
       let filters = [];
       let geoFilter = null;
-      // --- BUILD FILTERS ---
       if (EntityModel === Restaurant) {
         console.log("Building restaurant filters");
         const res = await buildRestaurantFilterSpecFromJson(params, center);
@@ -57,20 +56,17 @@ export default class SearchHandler extends IntentHandler {
         geoFilter = res.geoFilter;
       }
 
-      // Convert to final MongoDB filter
       pipeline = buildFilter(filters, geoFilter, "AND");
     } else {
       pipeline = await suggestRestaurant(center);
     }
     console.dir(pipeline, { depth: null });
 
-    // Query DB
+
     const results = await EntityModel.aggregate(pipeline);
     console.log("Results:", results.length);
 
-    // ------------------------
-    // FORMAT RESTAURANT RESULT
-    // ------------------------
+
     if (EntityModel === Restaurant) {
       const formatted = results.map((item) => ({
         id: String(item._id),
@@ -96,9 +92,6 @@ export default class SearchHandler extends IntentHandler {
       };
     }
 
-    // ------------------------
-    // FORMAT FOOD / MENU RESULT
-    // ------------------------
     if ((EntityModel === Menu || EntityModel === Food) && results.length > 0) {
       const restaurantIds = [
         ...new Set(results.map((r) => r.restaurant).filter(Boolean)),
@@ -130,9 +123,7 @@ export default class SearchHandler extends IntentHandler {
       };
     }
 
-    // ------------------------
-    // NO RESULTS
-    // ------------------------
+
     return {
       type: "no-results",
       message: "Không tìm thấy kết quả phù hợp",

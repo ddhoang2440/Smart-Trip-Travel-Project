@@ -2,6 +2,7 @@ import { v2 as cloudinary } from "cloudinary";
 
 import chalk from "chalk";
 import Restaurant from "../model/restaurant.js";
+import BookingSlot from "../model/bookingSlot.js";
 
 const log = console.log;
 
@@ -148,3 +149,20 @@ export const getAllRestaurants = async (req, res) => {
     res.json({ success: false, message: "get all restaurant failed!" });
   }
 };
+
+
+
+export const getRestaurantById = async (req, res) => {
+  try {
+    const { restaurant_id } = req.params
+    const restaurant = await Restaurant.findById(restaurant_id);
+    const slot_id = await BookingSlot.find({restaurant_id})
+    if (!restaurant) {
+      return res.json({ success: false, message: "Cant Find Restaurant !" })
+    }
+    return res.json({ success: true, message: "Get restaurant by id successfully !", restaurant: {...restaurant._doc, slot_id}})
+  } catch (error) {
+    res.json({ success: false, message: "get restaurant by id failed!" });
+    console.log(error)
+  }
+}

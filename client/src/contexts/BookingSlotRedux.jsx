@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import toast from "react-hot-toast";
+// import toast from "react-hot-toast";
 export const getBookingSlot = createAsyncThunk(
   "/bookingslots/get",
   async (restaurantId, thunkAPI) => {
@@ -108,11 +108,11 @@ const BookingSlotSlice = createSlice({
       .addCase(getBookingSlot.fulfilled, (state, action) => {
         state.loading = false;
         state.bookingslots = action.payload.bookingslots;
-        toast.success(action.payload.message);
+        //toast.success(action.payload.message);
       })
       .addCase(getBookingSlot.rejected, (state, action) => {
         state.loading = false;
-        toast.error(action.payload.message);
+        //toast.error(action.payload.message);
       })
       .addCase(getBookingSlotById.pending, (state) => {
         state.loading = true;
@@ -127,11 +127,11 @@ const BookingSlotSlice = createSlice({
         action.payload.bookingslot.forEach((item) => {
           state.bookingslotsById[item._id] = item;
         });
-        toast.success(action.payload.message);
+        //toast.success(action.payload.message);
       })
       .addCase(getBookingSlotById.rejected, (state, action) => {
         state.loading = false;
-        toast.error(action.payload.message);
+        //toast.error(action.payload.message);
       })
       .addCase(createBookingSlot.pending, (state) => {
         state.loading = true;
@@ -139,11 +139,11 @@ const BookingSlotSlice = createSlice({
       })
       .addCase(createBookingSlot.fulfilled, (state, action) => {
         state.loading = false;
-        toast.success(action.payload.message);
+        //toast.success(action.payload.message);
       })
       .addCase(createBookingSlot.rejected, (state, action) => {
         state.loading = false;
-        toast.error(action.payload.message);
+        //toast.error(action.payload.message);
       })
       .addCase(updateBookingSlot.pending, (state) => {
         state.loading = true;
@@ -151,11 +151,11 @@ const BookingSlotSlice = createSlice({
       })
       .addCase(updateBookingSlot.fulfilled, (state, action) => {
         state.loading = false;
-        toast.success(action.payload.message);
+        //toast.success(action.payload.message);
       })
       .addCase(updateBookingSlot.rejected, (state, action) => {
         state.loading = false;
-        toast.error(action.payload.message);
+        //toast.error(action.payload.message);
       })
       .addCase(deleteBookingSlot.pending, (state) => {
         state.loading = true;
@@ -163,11 +163,11 @@ const BookingSlotSlice = createSlice({
       })
       .addCase(deleteBookingSlot.fulfilled, (state, action) => {
         state.loading = false;
-        toast.success(action.payload.message);
+        //toast.success(action.payload.message);
       })
       .addCase(deleteBookingSlot.rejected, (state, action) => {
         state.loading = false;
-        toast.error(action.payload.message);
+        //toast.error(action.payload.message);
       });
   },
 });

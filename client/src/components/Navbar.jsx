@@ -1,14 +1,13 @@
 import {
-  IconBell,
-  IconBowlChopsticks,
-  IconChevronCompactRight,
-  IconHourglassLow,
-  IconLogout,
+  IconCalendar,
+  IconCalendarEvent,
+  IconHistory,
+  IconHistoryToggle,
   IconMenu3,
   IconPlanet,
-  IconSearch,
-  IconSettings,
   IconShoppingBag,
+  IconTimeDuration60,
+  IconTimeline,
   IconUser,
 } from "@tabler/icons-react";
 import React, { useEffect, useState } from "react";
@@ -23,7 +22,7 @@ const Navbar = () => {
   const [search, setSearch] = useState(false);
   const [scroll, setScroll] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [mobile, setMobile] = useState(false);
+  const [mobile, setMobile] = useState(true);
 
   const dispatch = useDispatch();
   const { islogin, username, image } = useSelector((state) => state.auth);
@@ -66,7 +65,7 @@ const Navbar = () => {
         </div>
 
         <div className="flex flex-row gap-6 items-center">
-          <IconShoppingBag
+          <IconCalendarEvent  
             onClick={() => navigate("/cart")}
             className="hidden lg:block p"
             color="white"
@@ -83,7 +82,7 @@ const Navbar = () => {
           ) : (
             <div className="relative" onClick={(e) => e.stopPropagation()}>
               <button
-                className={` lg:w-[10vw] text-sm w-[40vw] flex items-center gap-2 bg-transparent p-2 active:scale-95 cursor-pointer transition-all
+                className={` lg:w-[8vw] text-sm w-[26vw] flex items-center gap-2 bg-transparent p-2 active:scale-95 cursor-pointer transition-all
     ${showDropdown ? "rounded-t-2xl border-gray-500 border-b" : "rounded-2xl"}`}
                 onClick={() => setShowDropdown(!showDropdown)}
               >
@@ -95,7 +94,7 @@ const Navbar = () => {
                   alt="Avatar"
                   className="lg:size-[2.25vw] size-[3vh] rounded-full"
                 />
-                <span className=" flex-1 text-xl truncate">{username}</span>
+                <span className=" flex-1 text-sm truncate">{username}</span>
                 <span>▼</span>
               </button>
               <Dropdown

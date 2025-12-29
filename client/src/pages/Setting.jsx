@@ -1,14 +1,9 @@
 import {
-  IconCurrencyDollar,
-  IconDeviceMobile,
-  IconMapPin,
-  IconShoppingCartDollar,
   IconTrash,
   IconX,
   IconMenu2,
 } from "@tabler/icons-react";
-import React, { useState } from "react";
-import { Restaurants } from "../assets/assets";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteAccount, profile } from "../contexts/AuthRedux";
 import RestaurantAdd from "../components/RestaurantAdd";
@@ -20,7 +15,7 @@ import { getUserMenu } from "../contexts/MenuRedux";
 const Setting = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const [selectedImage, setSelectedImage] = useState(null);
-  const [name, setName] = useState("");
+  const [name, setName] = useState(null);
   const [password, setPassword] = useState("");
   const [contact, setContact] = useState("");
   const [_image, set_Image] = useState([]);
@@ -86,7 +81,7 @@ const Setting = () => {
                 </label>
                 <input
                   type="text"
-                  value={name}
+                  value={ name !== null ? name : username}
                   onChange={(e) => setName(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                   placeholder="Nhập họ và tên"
@@ -204,7 +199,7 @@ const Setting = () => {
       <div className="lg:hidden mb-4">
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg"
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600/80 font-semibold text-white rounded-lg"
         >
           <IconMenu2 className="h-5 w-5" />
           <span>Menu Cài Đặt</span>
