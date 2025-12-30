@@ -7,16 +7,14 @@ export default class IntentHandler {
     const params = payload.fields || {};
 
     let center = null;
-    // location
     if (params.location?.type === "place") {
       center = await getCoordinates(params.location.value);
     } else if (params.location?.type === "geo") {
-      center = params.location.value; // {lat,lng}
+      center = params.location.value; 
     } else {
-      center = { lat, lng }; // {lat,lng} từ frontend
+      center = { lat, lng };
     }
 
-    // Nếu không có center, fallback mặc định (quận 1)
     if (!center) center = { lat: 10.7769, lng: 106.7009 };
     return await this.handle(type, entity, params, center);
   }

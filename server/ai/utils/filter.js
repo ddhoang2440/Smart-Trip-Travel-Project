@@ -85,8 +85,9 @@ export class GeoFilterSpec {
         distanceField: "distance",
         maxDistance: this.maxDistance,
         spherical: true,
+        key: "location",
       },
-    };
+    };  
   }
 }
 

@@ -21,7 +21,7 @@ const Menu = ({ data }) => {
                     alt="Food"
                   />
                   <div className="absolute bottom-0 left-0 w-full h-[6vh] border flex justify-center items-center bg-[#EEB557] rounded-tr-4xl rounded-br-4xl">
-                    <p className="text-xl text-gray-700 font-bold">{items.name}</p>
+                    <p className=" text-gray-700 font-semibold text-sm  px-2 py-2">{items.name}</p>
                   </div>
                 </figure>
               </div>

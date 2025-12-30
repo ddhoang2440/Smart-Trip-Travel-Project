@@ -11,9 +11,6 @@ export const INTENT_HANDLERS = {
   booking: new BookingHandler(),
 };
 
-// =====================================================
-//     EXTRACT USER INTENT
-// =====================================================
 export const extractUserIntent = async (request) => {
   const prompt = intentPrompt(request.message);
   //const raw = await callGemini(prompt);
@@ -40,9 +37,7 @@ export const extractUserIntent = async (request) => {
   // }
 };
 
-// =====================================================
-//     BUILD USER SESSION
-// =====================================================
+
 export const buildUserSession = async (message, session) => {
   const prompt = sessionPrompt(message, session);
   const output = await callGemini(prompt);

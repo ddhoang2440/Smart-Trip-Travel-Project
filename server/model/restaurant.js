@@ -19,13 +19,14 @@ const restaurantSchema = new mongoose.Schema({
     lon: { type: Number },
     location: {
         type: { type: String, default: 'Point' },
-        coordinates: { type: [Number], index: '2dsphere' } // Quan trọng: index 2dsphere
+        coordinates: { type: [Number]} // Quan trọng: index 2dsphere
     },
     normal_close: [{ type: Number }],
     special_close: [{ type: Date }]
 },{timestamps: true});
 
 const Restaurant = mongoose.model("restaurant", restaurantSchema);
-// Restaurant.createIndexes({ location: "2dsphere" });
+
+Restaurant.createIndexes({ location: "2dsphere" });
 
 export default Restaurant;
