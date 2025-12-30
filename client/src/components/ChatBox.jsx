@@ -484,7 +484,7 @@ const ChatBox = () => {
   return (
     <>
       <div
-        className="fixed right-6 bottom-6 z-50 shadow-xl hover:scale-110 transition-all duration-500 p-4 bg-linear-to-r from-purple-600 to-pink-600 rounded-full cursor-pointer group animate-bounce"
+        className="fixed right-6 bottom-4 lg:right-6 lg:bottom-6 z-50 shadow-xl hover:scale-110 transition-all duration-500 p-4 bg-linear-to-r from-purple-600 to-pink-600 rounded-full cursor-pointer group animate-bounce"
         onClick={() => setChat(!chat)}
       >
         <div className="relative">
@@ -501,7 +501,7 @@ const ChatBox = () => {
       </div>
 
       {chat && (
-        <div className="fixed right-6 bottom-24 z-50 w-[95vw] sm:w-[700px] h-[70vh] max-h-[700px] bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col border border-gray-200">
+        <div className="fixed right-4 lg:right-6 bottom-24 z-50 w-[95vw] sm:w-[700px] h-[70vh] max-h-[700px] bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col border border-gray-200">
           <div className="bg-linear-to-r from-purple-600 to-pink-600 text-white p-4">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-3">

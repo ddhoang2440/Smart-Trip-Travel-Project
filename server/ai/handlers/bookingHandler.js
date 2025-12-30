@@ -270,7 +270,6 @@ export const generateBookingSuggestions = async (
   const suggestions = [];
   let restaurantDocs = [];
 
-  // --- Bước 1: Gợi ý nhà hàng ---
   if (session.restaurant) {
     const res = await findRestaurantByName(session.restaurant);
     if (res) restaurantDocs = [res];
@@ -279,13 +278,12 @@ export const generateBookingSuggestions = async (
     restaurantDocs = await Restaurant.aggregate(pipeline).limit(maxSuggestions);
   }
   console.log(restaurantDocs);
-  // --- Bước 2: Gợi ý slot cho mỗi nhà hàng ---
+
   for (const res of restaurantDocs) {
-    // Nếu session chưa có booking_date → lấy ngày hôm nay
     const bookingDate = session.booking_date
       ? new Date(session.booking_date)
       : new Date();
-    const table = session.table || 4; // default 4 người
+    const table = session.table || 4; 
     const quantity = session.quantity || 1;
 
     const slots = await suggestBookingSlots({
@@ -311,7 +309,7 @@ export const generateBookingSuggestions = async (
     if (suggestions.length >= maxSuggestions) break;
   }
 
-  // --- Bước 3: Trả về kết quả ---
+
   console.log(suggestions);
   return suggestions;
 };

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Navbar from "./components/Navbar";
 import Restaurant from "./pages/Restaurant";
@@ -18,7 +18,7 @@ import { getMenu } from "./contexts/MenuRedux";
 import ScrollTop from "./components/ScrollTop";
 
 const App = () => {
-  const { email } = useSelector((state) => state.auth);
+  const { email, islogin } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   useEffect(() => {
     const success = (position) => {
@@ -65,12 +65,12 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/restaurant/:restaurant_id" element={<Restaurant />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={!islogin ?   <Login /> : <Navigate to={"/"} />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/cart" element={<ShopCart />} />
+        <Route path="/cart" element={islogin ? <ShopCart /> : <Navigate to="/login" />} />
         <Route path="/product" element={<Products />} />
         <Route path="/aboutUs" element={<AboutUs />} />
-        <Route path="/setting" element={<Setting />} />
+        <Route path="/setting" element={islogin ? <Setting /> : <Navigate to="/login" />} />
       </Routes>
     </div>
   );

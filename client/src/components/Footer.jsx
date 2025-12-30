@@ -5,6 +5,8 @@ import {
   IconBrandInstagram,
   IconBrandLinkedin,
   IconBrandX,
+  IconPlane,
+  IconPlanet,
 } from "@tabler/icons-react";
 import { Link } from "react-router-dom";
 
@@ -14,9 +16,9 @@ const Footer = () => {
       <div className="bg-neutral-800 text-white  px-[10vw] pt-[4vh] lg:py-[10vh]">
         <div className="flex flex-col gap-4 lg:hidden mb-[4vh]">
           <div className="flex items-center gap-4 p-child">
-            <IconBowlChopsticks color="orange" size={56} />
+            <IconPlanet color="orange" size={56} />
             <p className="text-xl">
-              Food<span className="text-warning">Tuck</span>
+              Golden<span className="text-warning">Plate</span>
             </p>
           </div>
           <div className="lg:hidden flex flex-row gap-2 px-[2vw]">
@@ -26,7 +28,7 @@ const Footer = () => {
             <IconBrandLinkedin />
           </div>
         </div>
-        <div className="  grid lg:grid-cols-4 grid-cols-3 gap-8 pb-[4vh] border-b border-white/50">
+        <div className="  grid lg:grid-cols-4 grid-cols-2 gap-8 pb-[4vh] border-b border-white/50">
           <div className="lg:flex flex-col gap-4 hidden">
             <div className="flex items-center gap-4 p-child">
               <IconBowlChopsticks color="orange" size={56} />
@@ -70,7 +72,7 @@ const Footer = () => {
               </li>
             </ul>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-4 lg:block hidden">
             <h1>Theo Dõi</h1>
             <p className="lg:block hidden">
               Đăng ký nhận bản tin của chúng tôi để nhận cảm hứng du lịch và các
@@ -86,6 +88,23 @@ const Footer = () => {
                 <IconArrowForward />
               </button>
             </div>
+          </div>
+        </div>
+        <div className="space-y-4  py-4">
+          <h1>Theo Dõi</h1>
+          <p className="lg:block hidden">
+            Đăng ký nhận bản tin của chúng tôi để nhận cảm hứng du lịch và các
+            ưu đãi đặc biệt.
+          </p>
+          <div className="text-black flex">
+            <input
+              type="text"
+              placeholder="Your Email"
+              className="input border lg:w-[10vw] w-[30vw]"
+            />
+            <button className="btn btn-neutral">
+              <IconArrowForward />
+            </button>
           </div>
         </div>
         <div className="pt-[4vh]">© 2025 FoodTuck. All rights reserved.</div>

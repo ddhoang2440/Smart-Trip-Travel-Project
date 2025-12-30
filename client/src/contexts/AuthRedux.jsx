@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-// import toast from "react-hot-toast";
+import toast from "react-hot-toast";
 
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 
@@ -220,12 +220,12 @@ const AuthSlice = createSlice({
         state.allergy = action.payload.user.allergy;
         state.image = action.payload.user.image;
         localStorage.setItem("token", action.payload.token);
-        //toast.success(action.payload.message);
+        toast.success("Đăng nhập thành công ! chào mừng bạn trở lại !");
       })
       .addCase(signin.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
-        //toast.error(action.payload);
+        toast.error("Đăng nhập thất bại ! hãy kiểm tra email và mật khẩu !");
       })
       .addCase(signup.pending, (state) => {
         state.status = "loading";
@@ -240,12 +240,12 @@ const AuthSlice = createSlice({
         state.allergy = action.payload.user.allergy;
         localStorage.setItem("token", action.payload.token);
         state.image = action.payload.user.image;
-        //toast.success(action.payload.message);
+        toast.success("Đăng ký thành công ! chào mừng bạn !");
       })
       .addCase(signup.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
-        //toast.error(action.payload);
+        toast.error("Đăng ký thất bại ! vui lòng thử lại");
       })
       .addCase(profile.pending, (state) => {
         (state.status = "loading"), (state.error = "");
@@ -255,12 +255,12 @@ const AuthSlice = createSlice({
         state.allergy = action.payload.user.allergy;
         state.image = action.payload.user.image;
         state.status = "succeed";
-        //toast.success(action.payload.message);
+        toast.success("Sữa thông tin cá nhân thành công !");
       })
       .addCase(profile.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
-        //toast.error(state.error);
+        toast.error("Sữa thông tin cá nhân không thành công !");
       })
       .addCase(authCheck.pending, (state) => {
         (state.status = "loading"), (state.error = "");
@@ -282,7 +282,7 @@ const AuthSlice = createSlice({
       .addCase(deleteAccount.pending, (state) => {
         (state.status = "loading"), (state.error = "");
       })
-      .addCase(deleteAccount.fulfilled, (state) => {
+      .addCase(deleteAccount.fulfilled, (state, action) => {
         state.status = "succeed";
         localStorage.removeItem("token");
         state.email = "";
@@ -290,11 +290,12 @@ const AuthSlice = createSlice({
         state.allergy = [];
         state.image = "";
         state.islogin = false;
+        toast.success(action.payload.message)
       })
       .addCase(deleteAccount.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
-        //toast.error(action.payload);
+        toast.error(action.payload);
       })
       .addCase(loginWithGoogle.fulfilled, (state, action) => {
         state.status = "succeed";
@@ -305,12 +306,12 @@ const AuthSlice = createSlice({
         state.allergy = action.payload.user.allergy;
         state.image = action.payload.user.image;
         localStorage.setItem("token", action.payload.token);
-        //toast.success(action.payload.message);
+        toast.success("Đăng nhập bằng google thành công !");
       })
       .addCase(loginWithGoogle.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
-        //toast.error(action.payload);
+        toast.error("Đăng nhập bằng google không thành công !");
       })
       .addCase(getUserById.fulfilled, (state, action) => {
         state.status = "succeed";
@@ -324,14 +325,16 @@ const AuthSlice = createSlice({
         state.error = action.payload;
         //toast.error(action.payload);
       })
-      .addCase(getOTP.fulfilled, (state, action) => {
+      .addCase(getOTP.fulfilled, (state) => {
         state.status = "succeed";
         //toast.success(action.payload.message);
+        toast.success("OTP đã được gửi đến email của bạn")
       })
       .addCase(getOTP.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
         //toast.error(action.payload);
+        toast.error("gửi OTP thất bại vui lòng kiểm tra email")
       })
       .addCase(resetPassword.fulfilled, (state, action) => {
         state.status = "succeed";
@@ -342,12 +345,12 @@ const AuthSlice = createSlice({
         state.allergy = action.payload.user.allergy;
         state.image = action.payload.user.image;
         localStorage.setItem("token", action.payload.token);
-        //toast.success(action.payload.message);
+        toast.success("Đặt lại mật khẩu thành công");
       })
       .addCase(resetPassword.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
-        //toast.error(action.payload);
+        toast.error("Đặt lại mật khẩu thất bại");
       });
   },
 });
